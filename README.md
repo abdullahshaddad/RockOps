@@ -33,4 +33,31 @@ A full-stack web application designed to streamline and digitize operations acro
 ---
 
 ## 🧩 Project Structure
+```
+RockOps/
+├── backend/ → Spring Boot Application
+├── frontend/ → React App (JSX + SCSS)
+└── README.md
+```
 
+## 🧪 Setup Instructions
+
+### Backend (Spring Boot)
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+### Frontend (React)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 📦Build for Production
+
+```bash
+cd frontend
+npm run build
+```
