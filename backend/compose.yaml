@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:latest
-    container_name: Rock4MiningDBContainer
+    container_name: RockOpsDBContainer
     restart: always
     ports:
       - "5432:5432"
