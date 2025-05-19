@@ -19,7 +19,7 @@ A full-stack web application designed to streamline and digitize operations acro
 ## 🛠️ Tech Stack
 
 **Backend**:
-- Java 17
+- Java 23
 - Spring Boot
 - Spring Data JPA
 - PostgreSQL
