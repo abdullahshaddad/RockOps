@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import com.fasterxml.jackson.annotation.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,16 +33,6 @@ public class Site
     @Column(length = 500)
     private String photoUrl;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "site_partner",
-//            joinColumns = @JoinColumn(name = "site_id"),
-//            inverseJoinColumns = @JoinColumn(name = "partner_id")
-//    )
-//    @JsonManagedReference
-//    @JsonIgnore
-//    private List<Partner> partners = new ArrayList<>();
-
     @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<SitePartner> sitePartners = new ArrayList<>();
@@ -50,9 +40,6 @@ public class Site
 
     @OneToMany(mappedBy = "site", cascade = CascadeType.ALL) // Equipment is the owner
     @JsonBackReference // Prevents infinite loop
-    //@JsonIgnore
-    //@JsonManagedReference
-    //@JsonIgnoreProperties("equipment")
     private List<Equipment> equipment;
 
     @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
