@@ -15,7 +15,8 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Allow specific origin (your React app)
-        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("http://localhost:5174");
+        config.addAllowedOrigin("http://localhost:5173");
 
         // Allow all HTTP methods
         config.addAllowedMethod("GET");
