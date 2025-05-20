@@ -1,0 +1,294 @@
+/* login.scss - Modern, responsive login with namespace-isolated classes */
+
+// Import Google Font
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap');
+
+// Define variables for this component only
+$rockops-blue: #4285f4;
+$rockops-blue-dark: #3367d6;
+$rockops-blue-light: #a4c2f4;
+$rockops-text-dark: #333333;
+$rockops-text-medium: #555555;
+$rockops-text-light: #777777;
+$rockops-bg-light: #ffffff;
+$rockops-bg-field: #f9f9f9;
+$rockops-border: #e0e0e0;
+$rockops-error: #ff4d4f;
+$rockops-error-bg: #fff2f0;
+$rockops-error-border: #ffccc7;
+$rockops-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+$rockops-border-radius: 8px;
+
+// Reset styles specifically for login page
+.rockops-login__container *,
+.rockops-login__container *::before,
+.rockops-login__container *::after {
+    box-sizing: border-box;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+// Main container
+.rockops-login__container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4285f4;
+    //background: linear-gradient(135deg, #4285f4 0%, #34495e 100%);
+    position: relative;
+
+    // Pattern overlay
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        //background-image: url('/assets/imgs/rock4mining-pattern.png');
+        background-size: 300px;
+        background-repeat: repeat;
+        opacity: 0.1;
+    }
+
+    @media (max-width: 480px) {
+        padding: 0 24px ;
+    }
+
+    @media (min-width: 1200px) {
+        padding: 0 24px;
+    }
+}
+
+// Login card
+.rockops-login__card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 420px;
+    padding: 36px;
+    background-color: $rockops-bg-light;
+    border-radius: $rockops-border-radius;
+    box-shadow: $rockops-shadow;
+    animation: card-slide-up 0.5s ease-out;
+
+    @media (max-width: 480px) {
+        padding: 24px;
+    }
+
+    @media (min-width: 1200px) {
+        max-width: 460px;
+        padding: 40px;
+    }
+}
+
+@keyframes card-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Header section
+.rockops-login__header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.rockops-login__title {
+    font-size: 28px;
+    font-weight: 700;
+    color: $rockops-text-dark;
+    margin: 0 0 12px 0;
+
+    @media (max-width: 480px) {
+        font-size: 24px;
+    }
+}
+
+.rockops-login__subtitle {
+    font-size: 15px;
+    color: $rockops-text-light;
+    margin: 0;
+    line-height: 1.5;
+}
+
+// Form elements
+.rockops-login__form-group {
+    margin-bottom: 20px;
+}
+
+.rockops-login__label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: $rockops-text-medium;
+}
+
+.rockops-login__input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    border: 1px solid $rockops-border;
+    border-radius: $rockops-border-radius;
+    background-color: $rockops-bg-field;
+    color: $rockops-text-dark;
+    transition: all 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: $rockops-blue;
+        box-shadow: 0 0 0 3px rgba($rockops-blue, 0.15);
+        background-color: $rockops-bg-light;
+    }
+
+    &::placeholder {
+        color: lighten($rockops-text-light, 15%);
+    }
+
+    @media (max-width: 480px) {
+        padding: 12px 14px;
+    }
+}
+
+// Password header with forgot password link
+.rockops-login__password-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.rockops-login__forgot-link {
+    font-size: 13px;
+    color: $rockops-blue;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: $rockops-blue-dark;
+        text-decoration: underline;
+    }
+}
+
+// Remember me checkbox
+.rockops-login__remember {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.rockops-login__checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    accent-color: $rockops-blue;
+    cursor: pointer;
+}
+
+.rockops-login__remember-label {
+    font-size: 14px;
+    color: $rockops-text-medium;
+    cursor: pointer;
+}
+
+// Submit button
+.rockops-login__button {
+    position: relative;
+    width: 100%;
+    padding: 14px;
+    background-color: $rockops-blue;
+    color: white;
+    border: none;
+    border-radius: $rockops-border-radius;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover:not(:disabled) {
+        background-color: $rockops-blue-dark;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba($rockops-blue-dark, 0.25);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        background-color: $rockops-blue-light;
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+
+    @media (max-width: 480px) {
+        padding: 12px;
+    }
+}
+
+// Loading spinner
+.rockops-login__spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spinner 0.8s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// Sign up link
+.rockops-login__signup {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: $rockops-text-medium;
+}
+
+.rockops-login__signup-link {
+    color: $rockops-blue;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: $rockops-blue-dark;
+        text-decoration: underline;
+    }
+}
+
+// Error message
+.rockops-login__error {
+    background-color: $rockops-error-bg;
+    border: 1px solid $rockops-error-border;
+    border-left: 4px solid $rockops-error;
+    color: $rockops-error;
+    padding: 12px 16px;
+    border-radius: $rockops-border-radius;
+    margin-bottom: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+
+    &::before {
+        content: "⚠️";
+        margin-right: 10px;
+        font-size: 16px;
+    }
+}

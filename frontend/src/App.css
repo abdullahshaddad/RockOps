@@ -1,42 +1,187 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* App.css - Main application styles with improved dark/light theme support */
+
+/* Import theme variables */
+@import url('Styles/theme-variables.css');
+
+/* Base styles */
+body {
+  background-color: var(--main-background-color);
+  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Smooth transitions for theme changes */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: var(--transition-fast);
+  transition-timing-function: ease-in-out;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* App Container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.main-content-wrapper {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 70px); /* Adjust based on navbar height */
+  margin-top: 70px; /* Should match navbar height */
 }
 
+.main-content {
+  width: 85%;
+  /*max-width: 1280px;*/
+  margin-left:250px;
+  padding: 5vh 5vh;
+}
+
+/* Common UI elements */
 .card {
-  padding: 2em;
+  background-color: var(--section-background-color);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+  border: 1px solid var(--border-color);
 }
 
-.read-the-docs {
-  color: #888;
+.button {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
+
+.button-primary {
+  background-color: var(--color-primary);
+  color: var(--text-hover);
+  border: none;
+}
+
+.button-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.button-secondary {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.button-secondary:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Form elements */
+input, select, textarea {
+  background-color: var(--section-background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-color);
+  padding: 8px 12px;
+}
+
+/* Focus styles */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .main-content-wrapper {
+    position: relative;
+  }
+
+  .main-content {
+    width: 100%;
+    padding: 16px;
+    margin-left:0;
+  }
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background-color: var(--section-background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.theme-toggle:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Webkit browsers (Chrome, Safari, newer versions of Opera) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Dark Mode Scrollbars */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] * {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+/* Utility classes for color variants */
+.bg-primary { background-color: var(--color-primary); color: var(--text-hover); }
+.bg-primary-light { background-color: var(--color-primary-light); color: var(--text-hover); }
+.bg-secondary { background-color: var(--color-primary-dark); color: var(--text-hover); }
+.bg-success { background-color: var(--color-success); color: var(--text-hover); }
+.bg-danger { background-color: var(--color-danger); color: var(--text-hover); }
+.bg-warning { background-color: var(--color-warning); color: var(--text-color); }
+.bg-info { background-color: var(--color-info); color: var(--text-hover); }
+.bg-surface { background-color: var(--section-background-color); color: var(--text-color); }
+
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-primary-dark); }
+.text-success { color: var(--color-success); }
+.text-danger { color: var(--color-danger); }
+.text-warning { color: var(--color-warning); }
+.text-info { color: var(--color-info); }
+.text-muted { color: var(--color-text-secondary); }
+.text-light { color: var(--color-text-tertiary); }

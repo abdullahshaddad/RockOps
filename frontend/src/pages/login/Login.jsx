@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import './login.css';
+import './login.scss';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -39,33 +39,29 @@ const Login = () => {
         }
     };
 
-    const backgroundStyle = {
-        backgroundImage: "url('/Assets/imgs/rock4mining-pattern.png')",
-    };
-
     return (
-        <div className="login-container" style={backgroundStyle}>
-            <div className="login-card">
-                <div className="login-header">
-                    <h2 className="login-title">Login to Account</h2>
-                    <p className="login-subtitle">Please enter your username and password to continue</p>
+        <div className="rockops-login__container">
+            <div className="rockops-login__card">
+                <div className="rockops-login__header">
+                    <h2 className="rockops-login__title">Login to Account</h2>
+                    <p className="rockops-login__subtitle">Please enter your username and password to continue</p>
                 </div>
 
                 {error && (
-                    <div className="error-message">
+                    <div className="rockops-login__error">
                         {error}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label className="form-label" htmlFor="username">
-                            Username:
+                    <div className="rockops-login__form-group">
+                        <label className="rockops-login__label" htmlFor="username">
+                            Username
                         </label>
                         <input
                             id="username"
                             type="text"
-                            className="form-control"
+                            className="rockops-login__input"
                             placeholder="@username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -73,48 +69,53 @@ const Login = () => {
                         />
                     </div>
 
-                    <div className="form-group">
-                        <div className="password-header">
-                            <label className="form-label" htmlFor="password">
+                    <div className="rockops-login__form-group">
+                        <div className="rockops-login__password-header">
+                            <label className="rockops-login__label" htmlFor="password">
                                 Password
                             </label>
-                            <a href="#" className="forgot-password">Forgot Password?</a>
+                            <a href="#" className="rockops-login__forgot-link">Forgot Password?</a>
                         </div>
                         <input
                             id="password"
                             type="password"
-                            className="form-control"
+                            className="rockops-login__input"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
 
-                    <div className="remember-container">
+                    <div className="rockops-login__remember">
                         <input
                             id="remember"
                             type="checkbox"
-                            className="remember-checkbox"
+                            className="rockops-login__checkbox"
                             checked={rememberPassword}
                             onChange={(e) => setRememberPassword(e.target.checked)}
                         />
-                        <label htmlFor="remember" className="remember-label">
+                        <label htmlFor="remember" className="rockops-login__remember-label">
                             Remember Password
                         </label>
                     </div>
 
                     <button
                         type="submit"
-                        className="login-submit-button"
+                        className="rockops-login__button"
                         disabled={isLoading}
                     >
-                        {isLoading ? 'Signing in...' : 'Sign In'}
+                        {isLoading ? (
+                            <>
+                                <span className="rockops-login__spinner"></span>
+                                Signing in...
+                            </>
+                        ) : 'Sign In'}
                     </button>
                 </form>
 
-                <div className="signup-link">
+                <div className="rockops-login__signup">
                     <span>Don't have an account? </span>
-                    <a href="/register">Create Account</a>
+                    <a href="/register" className="rockops-login__signup-link">Create Account</a>
                 </div>
             </div>
         </div>

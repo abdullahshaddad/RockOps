@@ -1,0 +1,344 @@
+/* Responsive logo adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .logo-image {
+        max-height: 40px; /* Made a bit smaller */
+    }
+}/* Sidebar.css - Updated with theme variables */
+.sidebar {
+    background-color: var(--section-background-color);
+    border: none; /* Removed border for cleaner look like MetaMask */
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: none; /* Removed shadow for cleaner look */
+    z-index: 1000;
+    transition: transform var(--transition-normal), background-color var(--transition-normal);
+}
+
+.sidebar-header {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Removed border-bottom */
+}
+
+.logo {
+    color: var(--color-primary);
+    font-weight: var(--bold-font-weight);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    display: none; /* Hidden when displaying logo image */
+}
+
+.logo-image {
+    max-width: 90%; /* Made logo a bit smaller */
+    height: auto;
+}
+
+.sidebar-menu {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 0; /* Increased top/bottom padding */
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem; /* Increased padding to make items bigger */
+    margin: 0.5rem 0.75rem; /* Added margin for gaps between items */
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+    border-left: none; /* Removed left border */
+    white-space: nowrap;
+    border-radius: var(--radius-md); /* Full rounded corners like MetaMask */
+}
+
+.menu-item:hover {
+    background-color: var(--color-surface-hover);
+}
+
+.menu-item.active {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 500;
+}
+
+.menu-icon {
+    width: 24px;
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem; /* Made icons slightly larger */
+    color: #9fa6ae; /* MetaMask icon color */
+}
+
+.menu-item.active .menu-icon {
+    color: white; /* White icon for active state */
+}
+
+.menu-item:hover .menu-icon {
+    color: var(--text-color); /* Brighter icon on hover */
+}
+
+.menu-title {
+    font-size: 0.95rem; /* Increased font size slightly */
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.logout-btn:hover {
+    background-color: var(--color-surface-hover);
+}
+
+.logout-btn span {
+    margin-left: 0.75rem;
+}
+
+/* Theme toggle switch styling */
+.theme-toggle-container {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.theme-toggle-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-color);
+    transition: background-color var(--transition-fast);
+    background-color: transparent;
+}
+
+.theme-toggle-item:hover {
+    background-color: var(--color-surface-hover);
+}
+
+.theme-toggle-item .menu-icon {
+    width: 24px;
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: #9fa6ae;
+}
+
+.theme-toggle-item .menu-title {
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+/* Toggle switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-primary-light);
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--color-primary-dark);
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--color-primary);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(22px);
+}
+
+/* For responsive design, make sure everything fits nicely */
+@media (max-width: 768px) {
+    .theme-toggle-item {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/* Main content adjustment to accommodate sidebar */
+.main-with-sidebar {
+    margin-left: 250px;
+    transition: margin-left var(--transition-normal);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mobile-sidebar-toggle {
+        display: flex;
+    }
+
+    .sidebar {
+        width: 250px;
+        transform: translateX(-100%);
+        transition: transform var(--transition-normal);
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    .sidebar.mobile-closed {
+        transform: translateX(-100%);
+    }
+
+    .main-with-sidebar {
+        margin-left: 0;
+    }
+}
+
+/* Mobile toggle button */
+.mobile-sidebar-toggle {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1001;
+    background-color: var(--color-primary); /* Fixed to use color-primary */
+    color: var(--text-hover);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+}
+
+.menu-item-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Styling for the toggle button in menu items with submenus */
+.menu-item .submenu-toggle {
+    margin-left: auto;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    transition: transform var(--transition-fast);
+}
+
+/* Submenu styles */
+.submenu {
+    padding-left: 0.75rem;
+    margin-left: 1rem;
+    border-left: 1px solid var(--border-color);
+    margin-bottom: 0.5rem;
+}
+
+.submenu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+}
+
+
+.submenu-item:hover {
+    background-color: var(--color-surface-hover);
+}
+
+.submenu-item.active {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 500;
+}
+
+.submenu-item .menu-icon {
+    width: 20px; /* Slightly smaller than main menu icons */
+    margin-right: 0.75rem;
+    font-size: 1.0rem;
+    color: #9fa6ae;
+}
+
+.submenu-item.active .menu-icon {
+    color: white;
+    font-size:30px;
+}
+
+/* Make parent menu items with submenu clickable */
+.menu-item-container .menu-item {
+    cursor: pointer;
+}
+
+
+/* Specifically target and make smaller only the submenu toggle chevron icon */
+.menu-item .submenu-toggle {
+    margin-left: auto;
+    font-size: 0.6rem; /* Reduced size - you can go smaller if needed */
+    display: flex;
+    align-items: center;
+    transition: transform var(--transition-fast);
+}
+
+/* You can also add some spacing if needed */
+.menu-item .submenu-toggle svg {
+    margin-left: 4px; /* Add a little space between the menu text and icon */
+}

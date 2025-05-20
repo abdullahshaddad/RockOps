@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import './App.css'
-import {LanguageProvider} from "./contexts/LanguageContext.jsx";
-import {ThemeProvider} from "./contexts/ThemeContext.jsx";
-import {AuthProvider, useAuth} from "./contexts/AuthContext.jsx";
+import { LanguageProvider } from "./contexts/LanguageContext.jsx";
+import { ThemeProvider } from "./contexts/ThemeContext.jsx";
+import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
 import Login from "./pages/login/Login.jsx";
 
 // ===================== Authentication Handlers =====================
@@ -21,26 +21,29 @@ const RoleRoute = ({ allowedRoles, children, redirectPath = '/dashboard' }) => {
     if (!allowedRoles.includes(currentUser?.role)) return <Navigate to={redirectPath} replace />;
     return children;
 };
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-      <Router>
-          <LanguageProvider>
-              <ThemeProvider>
-                  <AuthProvider>
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/" element={<AuthRedirect />} />
-                      {/* Your content here */}
-                  </AuthProvider>
-              </ThemeProvider>
-          </LanguageProvider>
-      </Router>
-  )
+function App() {
+    const [count, setCount] = useState(0)
+
+    return (
+        <Router>
+            <LanguageProvider>
+                <ThemeProvider>
+                    <AuthProvider>
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/" element={<AuthRedirect />} />
+                            {/* Your other routes here */}
+                        </Routes>
+                    </AuthProvider>
+                </ThemeProvider>
+            </LanguageProvider>
+        </Router>
+    )
 }
 
 function LoadingSpinner() {
-    return <div></div>;
+    return <div>Loading...</div>;
 }
 
 export default App
