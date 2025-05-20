@@ -4,24 +4,8 @@ import './App.css'
 import {LanguageProvider} from "./contexts/LanguageContext.jsx";
 import {ThemeProvider} from "./contexts/ThemeContext.jsx";
 import {AuthProvider, useAuth} from "./contexts/AuthContext.jsx";
+import Login from "./pages/login/Login.jsx";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-      <Router>
-          <LanguageProvider>
-              <ThemeProvider>
-                  <AuthProvider>
-                      <Route path="/login" element={<LoginPage />} />
-                      <Route path="/" element={<AuthRedirect />} />
-                      {/* Your content here */}
-                  </AuthProvider>
-              </ThemeProvider>
-          </LanguageProvider>
-      </Router>
-  )
-}
 // ===================== Authentication Handlers =====================
 const AuthRedirect = () => {
     const { currentUser, isAuthenticated, loading } = useAuth();
@@ -37,4 +21,26 @@ const RoleRoute = ({ allowedRoles, children, redirectPath = '/dashboard' }) => {
     if (!allowedRoles.includes(currentUser?.role)) return <Navigate to={redirectPath} replace />;
     return children;
 };
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+      <Router>
+          <LanguageProvider>
+              <ThemeProvider>
+                  <AuthProvider>
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/" element={<AuthRedirect />} />
+                      {/* Your content here */}
+                  </AuthProvider>
+              </ThemeProvider>
+          </LanguageProvider>
+      </Router>
+  )
+}
+
+function LoadingSpinner() {
+    return <div></div>;
+}
+
 export default App
