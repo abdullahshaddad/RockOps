@@ -3,12 +3,14 @@ package com.example.backend.models;
 public enum Role
 {
     USER,
-    SITEADMIN,
+    SITE_ADMIN,
     PROCUREMENT,
-    WAREHOUSEMANAGER,
-    SECERTARY,
-    EQUIPMENTMANAGER,
-    HRMANAGER,
-    HREMPLOYEE,
+    WAREHOUSE_MANAGER,
+    SECRETARY,
+    EQUIPMENT_MANAGER,
+    HR_MANAGER,
+    HR_EMPLOYEE,
+    FINANCE_MANAGER,
+    FINANCE_EMPLOYEE,
     ADMIN;
 }
