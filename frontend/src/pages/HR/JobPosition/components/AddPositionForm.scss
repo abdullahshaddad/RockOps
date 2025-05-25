@@ -1,0 +1,176 @@
+// AddPositionForm.scss
+
+.position-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    &-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    &-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+
+        h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+    }
+
+    &-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+        padding: 0.5rem;
+        line-height: 1;
+        transition: color 0.2s;
+
+        &:hover {
+            color: #333;
+        }
+    }
+}
+
+.position-form {
+    &-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    &-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+
+            &:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+            &:disabled {
+                background-color: #f5f5f5;
+                cursor: not-allowed;
+            }
+        }
+    }
+
+    &-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+}
+
+.position {
+    &-submit-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: #0056b3;
+        }
+
+        &:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    }
+
+    &-cancel-button {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: #5a6268;
+        }
+    }
+
+    &-loading {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+    }
+
+    &-error {
+        color: #dc3545;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #dc3545;
+        border-radius: 4px;
+        background-color: #f8d7da;
+    }
+}
+
+.position-select-wrapper {
+    position: relative;
+
+    select {
+        width: 100%;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1em;
+        padding-right: 2.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .position-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .position-modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+}

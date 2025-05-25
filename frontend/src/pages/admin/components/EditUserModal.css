@@ -1,0 +1,282 @@
+/* EditUserModal.css - Styles for the Edit User Modal component */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+    background-color: var(--section-background-color);
+    border-radius: var(--radius-md);
+    width: 500px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-md);
+    animation: modalSlideIn 0.3s ease-out;
+    border: 1px solid var(--border-color);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    color: var(--head-title-color);
+    margin: 0;
+    font-weight: var(--bold-font-weight);
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    line-height: 1;
+    padding: 0.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.close-button:hover {
+    background-color: var(--color-surface-hover);
+    color: var(--color-primary);
+}
+
+/* Form styles */
+.edit-form {
+    padding: 1.5rem;
+}
+
+.edit-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.edit-form label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--label-color);
+    margin-bottom: 0.5rem;
+}
+
+.edit-form input,
+.edit-form select,
+.edit-form textarea,
+.edit-form input[type="date"],
+.edit-form input[type="time"],
+.edit-form input[list] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.938rem;
+    color: var(--text-color);
+    background-color: var(--section-background-color);
+    transition: all var(--transition-fast);
+}
+
+/* Ensure inputs stand out from their background with proper contrast */
+.edit-form input::placeholder,
+.edit-form select::placeholder,
+.edit-form textarea::placeholder {
+    color: var(--color-text-tertiary);
+}
+
+/* Add slightly different shade for inputs to distinguish them from background */
+[data-theme="light"] .edit-form input,
+[data-theme="light"] .edit-form select,
+[data-theme="light"] .edit-form textarea,
+[data-theme="light"] .edit-form input[type="date"],
+[data-theme="light"] .edit-form input[type="time"],
+[data-theme="light"] .edit-form input[list] {
+    background-color: var(--color-surface);
+}
+
+/* Style for dropdown arrow in select elements */
+[data-theme="light"] .edit-form select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23363740' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.5rem;
+    appearance: none;
+}
+
+[data-theme="dark"] .edit-form input,
+[data-theme="dark"] .edit-form select,
+[data-theme="dark"] .edit-form textarea,
+[data-theme="dark"] .edit-form input[type="date"],
+[data-theme="dark"] .edit-form input[type="time"],
+[data-theme="dark"] .edit-form input[list] {
+    background-color: #232323;
+    color: var(--text-color);
+    border-color: #3a3a3a;
+}
+
+/* Style for dropdown arrow in select elements for dark theme */
+[data-theme="dark"] .edit-form select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e0e0e0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.5rem;
+    appearance: none;
+}
+
+/* Datalist popup styling */
+input::-webkit-calendar-picker-indicator {
+    filter: var(--calendar-icon-filter);
+}
+
+[data-theme="light"] {
+    --calendar-icon-filter: invert(0);
+}
+
+[data-theme="dark"] {
+    --calendar-icon-filter: invert(1);
+}
+
+.edit-form input:focus,
+.edit-form select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(74, 123, 247, 0.15);
+}
+
+/* User info display in edit mode */
+.user-info-display {
+    background-color: var(--section-background-color);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.info-row {
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+
+.info-label {
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-secondary);
+    flex: 0 0 30%;
+}
+
+.info-value {
+    flex: 1;
+    color: var(--text-color);
+}
+
+.form-note {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--border-color);
+    font-size: 0.813rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+/* Form action buttons */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.75rem;
+}
+
+.save-button {
+    background-color: var(--color-success);
+    color: var(--text-hover);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.938rem;
+    font-weight: 500;
+    flex: 1;
+    transition: all var(--transition-fast);
+}
+
+.save-button:hover {
+    background-color: var(--color-success);
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.cancel-button {
+    background-color: var(--color-text-secondary);
+    color: var(--text-hover);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.938rem;
+    font-weight: 500;
+    flex: 1;
+    transition: all var(--transition-fast);
+}
+
+.cancel-button:hover {
+    background-color: var(--color-text-secondary);
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* RTL support */
+[dir="rtl"] .modal-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .info-row {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .form-actions {
+    flex-direction: row-reverse;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+
+    [dir="rtl"] .form-actions {
+        flex-direction: column;
+    }
+}

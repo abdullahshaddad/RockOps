@@ -1,0 +1,214 @@
+/* VacancyModals.scss */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(3px);
+}
+
+.vacancy-modal {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  width: 90%;
+  max-width: 800px;
+  max-height: 92vh;
+  overflow: hidden;
+  position: relative;
+  animation: modalFadeIn 0.3s ease-out;
+
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: var(--bold-font-weight);
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--color-text-inverse);
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background-color var(--transition-fast);
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    max-height: calc(90vh - 150px);
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+
+      .form-group {
+        &.full-width {
+          grid-column: span 2;
+        }
+
+        label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 500;
+          color: var(--label-color);
+          font-size: 0.95rem;
+        }
+
+        input, select, textarea {
+          width: 100%;
+          padding: 10px 12px;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-sm);
+          font-size: 0.95rem;
+          background-color: var(--color-surface);
+          color: var(--color-text-primary);
+          transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
+          &:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.2);
+          }
+
+          &.error {
+            border-color: var(--color-danger);
+          }
+        }
+
+        select {
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236a6a6a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 10px center;
+          padding-right: 30px;
+
+          option {
+            color: var(--color-text-primary);
+            background-color: var(--color-surface);
+          }
+        }
+
+        textarea {
+          resize: vertical;
+          min-height: 100px;
+        }
+
+        .error-message {
+          display: block;
+          color: var(--color-danger);
+          font-size: 0.8rem;
+          margin-top: 4px;
+        }
+      }
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+
+    .cancel-btn, .save-btn {
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 0.95rem;
+    }
+
+    .cancel-btn {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--color-text-secondary);
+
+      &:hover {
+        background-color: var(--color-surface);
+      }
+    }
+
+    .save-btn {
+      background-color: var(--color-primary);
+      border: none;
+      color: var(--color-text-inverse);
+
+      &:hover {
+        background-color: var(--color-primary-dark);
+      }
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .vacancy-modal {
+    width: 95%;
+    max-height: 95vh;
+
+    .modal-body {
+      .form-grid {
+        grid-template-columns: 1fr;
+
+        .form-group {
+          &.full-width {
+            grid-column: span 1;
+          }
+        }
+      }
+    }
+
+    .modal-footer {
+      padding: 12px;
+      flex-direction: column;
+
+      .cancel-btn, .save-btn {
+        width: 100%;
+        padding: 12px;
+      }
+    }
+  }
+}

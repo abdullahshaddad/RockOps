@@ -1,0 +1,123 @@
+/* Common Chart Styling with theme variable support */
+
+/* DepartmentSalaryChart.css */
+.chart-container {
+    background-color: var(--section-background-color);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    padding: 16px;
+    height: 100%;
+    border: 1px solid var(--border-color);
+    transition: background-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.chart-container h3 {
+    font-size: 16px;
+    font-weight: var(--bold-font-weight);
+    margin: 0 0 16px 0;
+    color: var(--head-title-color);
+}
+
+.chart-wrapper {
+    height: 300px;
+}
+
+.custom-tooltip {
+    background-color: var(--section-background-color);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.tooltip-label {
+    font-weight: var(--bold-font-weight);
+    margin: 0 0 4px 0;
+    color: var(--head-title-color);
+}
+
+.tooltip-value {
+    margin: 0;
+    color: var(--color-text-secondary);
+}
+
+.no-data-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+/* MonthlySalaryChart.css */
+/* (uses the same styling as the chart-container above) */
+
+/* EmployeePositionChart.css */
+.position-chart-container {
+    background-color: var(--section-background-color);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    transition: background-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.chart-header h3 {
+    font-size: 16px;
+    font-weight: var(--bold-font-weight);
+    margin: 0;
+    color: var(--head-title-color);
+}
+
+.site-selector {
+    background-color: var(--section-background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-size: 14px;
+    color: var(--color-text-primary);
+    outline: none;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.site-selector:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.position-chart-wrapper {
+    height: 350px;
+}
+
+.position-tooltip {
+    background-color: var(--section-background-color);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.position-name {
+    font-weight: var(--bold-font-weight);
+    margin: 0 0 4px 0;
+    color: var(--head-title-color);
+}
+
+.position-count {
+    margin: 0 0 4px 0;
+    color: var(--color-text-primary);
+}
+
+.position-percent {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}

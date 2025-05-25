@@ -1,0 +1,57 @@
+package com.example.Rock4Mining.services;
+
+import com.example.Rock4Mining.models.ItemCategory;
+import com.example.Rock4Mining.models.Merchant;
+import com.example.Rock4Mining.models.MerchantType;
+import com.example.Rock4Mining.models.Site;
+import com.example.Rock4Mining.repositories.ItemCategoryRepository;
+import com.example.Rock4Mining.repositories.MerchantRepository;
+import com.example.Rock4Mining.repositories.SiteRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+@Service
+@RequiredArgsConstructor
+public class MerchantService {
+
+    private final MerchantRepository merchantRepository;
+    private final SiteRepository siteRepository;
+    private final ItemCategoryRepository itemCategoryRepository;
+
+
+    public List<Merchant> getAllMerchants() {
+        try {
+            List<Merchant> merchants = merchantRepository.findAll();
+            merchants.forEach(m -> {
+                System.out.println("Merchant ID: " + m.getId());
+                System.out.println("Name: " + m.getName());
+                System.out.println("Contact Email: " + m.getContactEmail());
+                System.out.println("Contact Phone: " + m.getContactPhone());
+                System.out.println("Address: " + m.getAddress());
+                System.out.println("Merchant Type: " + m.getMerchantType());
+                System.out.println("Notes: " + m.getNotes());
+                if (m.getSite() != null) {
+                    System.out.println("Site: " + m.getSite().getName());
+                }
+                System.out.println("Item Categories: " + m.getItemCategories().size());
+                m.getItemCategories().forEach(itemCategory -> {
+                    System.out.println("\t- " + itemCategory.getName());
+                });
+            });
+            return merchants;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch merchants: " + e.getMessage(), e);
+        }
+    }
+
+
+
+    public Merchant getMerchantById(UUID id) {
+        return merchantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Merchant not found with id: " + id));
+    }
+
+
+}

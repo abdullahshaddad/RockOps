@@ -1,5 +1,7 @@
 package com.example.backend.models;
 
+import com.example.backend.models.hr.Candidate;
+import com.example.backend.models.hr.JobPosition;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

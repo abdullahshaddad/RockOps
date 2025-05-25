@@ -1,5 +1,7 @@
 package com.example.backend.models;
 
+import com.example.backend.models.hr.Employee;
+import com.example.backend.models.site.Site;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -27,6 +29,8 @@ public class Warehouse {
     @Column(length = 500)
     private String photoUrl;
 
+    private int capacity;
+
     @ManyToOne
     @JoinColumn(name = "site_id", referencedColumnName = "id")
     private Site site;
@@ -39,5 +43,5 @@ public class Warehouse {
     @JsonBackReference // prevents infinite recursion in serialization
     private List<Item> items = new ArrayList<>();
 
-    // New relation to WarehouseTransaction
+
 }
