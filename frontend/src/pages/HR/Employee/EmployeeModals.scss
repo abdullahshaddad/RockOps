@@ -1,0 +1,383 @@
+/* EmployeeModals.scss */
+
+// Modal overlay and container
+.r4m-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    backdrop-filter: blur(3px);
+}
+
+.r4m-employee-modal {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    width: 90%;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow: hidden;
+    position: relative;
+    animation: r4m-modal-fade-in 0.3s ease-out;
+
+    @keyframes r4m-modal-fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+// Modal header
+   .r4m-modal-header {
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+       padding: 16px 24px;
+       border-bottom: 1px solid var(--border-color);
+       background-color: var(--color-primary);
+       color: var(--color-text-inverse);
+
+       h2 {
+           margin: 0;
+           font-size: 1.5rem;
+           font-weight: var(--bold-font-weight);
+       }
+   }
+
+.r4m-close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--color-text-inverse);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color var(--transition-fast);
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+// Candidate conversion banner
+   .r4m-candidate-banner {
+       background-color: rgba(72, 128, 255, 0.1);
+       color: var(--color-primary);
+       border-bottom: 1px solid rgba(72, 128, 255, 0.3);
+       padding: 12px 24px;
+       display: flex;
+       align-items: center;
+       gap: 12px;
+
+       i {
+           font-size: 1.2rem;
+           color: var(--color-success);
+       }
+
+       span {
+           font-size: 0.95rem;
+           font-weight: 500;
+       }
+   }
+
+// Modal body
+   .r4m-modal-body {
+       padding: 24px;
+       overflow-y: auto;
+       max-height: calc(90vh - 150px);
+   }
+
+// Form layout
+   .r4m-form-columns {
+       display: flex;
+       flex-wrap: wrap;
+       gap: 24px;
+       margin-bottom: 20px;
+   }
+
+.r4m-form-column {
+    flex: 1;
+    min-width: 300px;
+
+    h3 {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 1.1rem;
+        color: var(--color-primary);
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+    }
+}
+
+// Form elements
+   .r4m-form-group {
+       margin-bottom: 16px;
+
+       label {
+           display: block;
+           margin-bottom: 6px;
+           font-weight: 500;
+           font-size: 0.9rem;
+           color: var(--label-color);
+       }
+
+       input,
+       select,
+       textarea {
+           width: 100%;
+           padding: 10px 12px;
+           border: 1px solid var(--border-color);
+           border-radius: var(--radius-sm);
+           font-size: 0.95rem;
+           transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+           background-color: var(--color-surface);
+           color: var(--color-text-primary);
+
+           &:focus {
+               outline: none;
+               border-color: var(--color-primary);
+               box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.2);
+           }
+
+           &.error {
+               border-color: var(--color-danger);
+           }
+       }
+   }
+
+.r4m-error-message {
+    color: var(--color-danger);
+    font-size: 0.8rem;
+    margin-top: 4px;
+    display: block;
+}
+
+// Modal footer
+   .r4m-modal-footer {
+       display: flex;
+       justify-content: flex-end;
+       padding: 16px 24px;
+       border-top: 1px solid var(--border-color);
+       gap: 12px;
+   }
+
+.r4m-cancel-btn,
+.r4m-save-btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.r4m-cancel-btn {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--color-text-secondary);
+
+    &:hover {
+        background-color: var(--color-surface-hover);
+    }
+}
+
+.r4m-save-btn {
+    background-color: var(--color-primary);
+    border: none;
+    color: var(--color-text-inverse);
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
+}
+
+// Photo upload section
+   .r4m-photo-section {
+       display: flex;
+       gap: 16px;
+       margin-bottom: 20px;
+   }
+
+.r4m-photo-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-surface-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.r4m-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-tertiary);
+}
+
+.r4m-file-inputs {
+    flex: 1;
+
+    .r4m-form-group {
+        margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+        padding: 6px;
+        font-size: 0.85rem;
+    }
+}
+
+// Job position details
+   .r4m-job-details {
+       background-color: var(--color-surface-hover);
+       padding: 15px;
+       border-radius: var(--radius-sm);
+       margin: 15px 0 20px;
+       box-shadow: var(--shadow-sm);
+       border-left: 4px solid var(--color-primary);
+
+       h4 {
+           margin-top: 0;
+           margin-bottom: 12px;
+           font-size: 1.1rem;
+           font-weight: var(--bold-font-weight);
+           color: var(--color-primary);
+           border-bottom: 1px solid var(--border-color);
+           padding-bottom: 8px;
+       }
+
+       p {
+           margin: 8px 0;
+           font-size: 0.95rem;
+           line-height: 1.5;
+           color: var(--color-text-secondary);
+           display: flex;
+           justify-content: space-between;
+
+           strong {
+               font-weight: var(--bold-font-weight);
+               min-width: 120px;
+               color: var(--color-text-primary);
+           }
+       }
+   }
+
+// Previous employment section
+   .r4m-prev-employment {
+       background-color: var(--color-surface-hover);
+       padding: 12px;
+       border-radius: var(--radius-sm);
+       margin-bottom: 16px;
+       border-left: 3px solid var(--color-info);
+
+       h4 {
+           margin-top: 0;
+           margin-bottom: 8px;
+           font-size: 1rem;
+           color: var(--color-text-primary);
+       }
+
+       p {
+           margin: 4px 0;
+           font-size: 0.9rem;
+           color: var(--color-text-secondary);
+       }
+   }
+
+// Calculated salary info
+   .r4m-salary-info {
+       background-color: rgba(72, 128, 255, 0.1);
+       padding: 12px;
+       border-radius: var(--radius-sm);
+       margin-top: 16px;
+
+       p {
+           margin: 6px 0;
+           font-size: 0.95rem;
+           color: var(--color-text-primary);
+
+           strong {
+               font-weight: var(--bold-font-weight);
+               color: var(--color-primary-dark);
+           }
+       }
+   }
+
+// Responsive adjustments
+@media (max-width: 992px) {
+    .r4m-form-column {
+        min-width: 45%;
+    }
+}
+
+@media (max-width: 768px) {
+    .r4m-employee-modal {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .r4m-form-column {
+        flex: 100%;
+    }
+
+    .r4m-photo-section {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .r4m-job-details p,
+    .r4m-prev-employment p {
+        flex-direction: column;
+    }
+
+    .r4m-job-details p strong {
+        margin-bottom: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .r4m-modal-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .r4m-modal-body {
+        padding: 16px;
+    }
+
+    .r4m-form-columns {
+        gap: 16px;
+    }
+
+    .r4m-cancel-btn,
+    .r4m-save-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}

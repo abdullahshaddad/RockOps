@@ -1,0 +1,81 @@
+/* AdminPage.css - Main styles for the Admin Page component */
+
+
+
+
+/* Main container */
+.admin-container {
+
+    background-color: var(--main-background-color);
+}
+
+/* Admin content area */
+.admin-content {
+
+}
+
+.admin-main {
+    width: 100%;
+}
+
+
+
+/* Error message */
+.error-message {
+    background-color: rgba(224, 82, 82, 0.1);
+    color: var(--color-danger);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--color-danger);
+    font-size: 0.938rem;
+}
+
+/* Summary cards section */
+.summary-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.75rem;
+    margin-bottom: 3vh;
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RTL support */
+.rtl {
+    direction: rtl;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .summary-section {
+        flex-direction: column;
+    }
+
+    .main-content {
+        padding: 3vh 1rem;
+    }
+}
+
+@media print {
+    .navbar-right,
+    .action-buttons,
+    .add-user-button {
+        display: none !important;
+    }
+}

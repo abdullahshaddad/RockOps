@@ -1,5 +1,6 @@
 package com.example.backend.models;
 
+import com.example.backend.models.equipment.InSiteMaintenance;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

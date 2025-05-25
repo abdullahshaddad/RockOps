@@ -1,5 +1,6 @@
 package com.example.backend.models;
 
+import com.example.backend.models.site.Site;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

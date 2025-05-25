@@ -1,5 +1,6 @@
 package com.example.backend.models;
 
+import com.example.backend.models.site.SitePartner;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

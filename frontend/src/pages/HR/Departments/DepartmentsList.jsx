@@ -1,0 +1,434 @@
+import React, { useEffect, useState } from 'react';
+import { FiPlus, FiEdit, FiTrash2, FiCheck, FiX } from 'react-icons/fi';
+import './DepartmentsList.scss';
+
+const DepartmentsList = () => {
+    const [departments, setDepartments] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+    const [currentDepartment, setCurrentDepartment] = useState(null);
+    const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+    const [formData, setFormData] = useState({ name: '', description: '' });
+    const [editFormData, setEditFormData] = useState({ name: '', description: '' });
+
+    // Fetch departments
+    const fetchDepartments = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const token = localStorage.getItem('token');
+            console.log('Fetching departments with token:', token ? 'Present' : 'Missing');
+
+            const response = await fetch('http://localhost:8080/api/v1/departments', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log('Fetch response status:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to fetch departments: ${response.status} - ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log('Fetched departments:', data);
+            setDepartments(data);
+        } catch (err) {
+            console.error('Error fetching departments:', err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDepartments();
+    }, []);
+
+    const handleOpenForm = () => {
+        setFormData({ name: '', description: '' });
+        setIsFormOpen(true);
+    };
+
+    const handleCloseForm = () => {
+        setIsFormOpen(false);
+        setFormData({ name: '', description: '' });
+        setError(null);
+    };
+
+    const handleOpenEditForm = (department) => {
+        setCurrentDepartment(department);
+        setEditFormData({
+            name: department.name || '',
+            description: department.description || ''
+        });
+        setIsEditFormOpen(true);
+    };
+
+    const handleCloseEditForm = () => {
+        setIsEditFormOpen(false);
+        setCurrentDepartment(null);
+        setEditFormData({ name: '', description: '' });
+        setError(null);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleEditInputChange = (e) => {
+        const { name, value } = e.target;
+        setEditFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleSubmitForm = async (e) => {
+        e.preventDefault();
+
+        if (!formData.name.trim()) {
+            setError('Department name is required');
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const token = localStorage.getItem('token');
+            console.log('Creating department with data:', formData);
+
+            const response = await fetch('http://localhost:8080/api/v1/departments', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: formData.name.trim(),
+                    description: formData.description.trim() || null
+                })
+            });
+
+            console.log('Create response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
+            }
+
+            const newDepartment = await response.json();
+            console.log('Created department:', newDepartment);
+
+            await fetchDepartments(); // Refresh the list
+            handleCloseForm();
+        } catch (err) {
+            console.error('Error creating department:', err);
+            setError(err.message || 'Failed to create department');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmitEditForm = async (e) => {
+        e.preventDefault();
+
+        if (!editFormData.name.trim()) {
+            setError('Department name is required');
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const token = localStorage.getItem('token');
+            console.log('Updating department with data:', editFormData);
+
+            const response = await fetch(`http://localhost:8080/api/v1/departments/${currentDepartment.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: editFormData.name.trim(),
+                    description: editFormData.description.trim() || null
+                })
+            });
+
+            console.log('Update response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
+            }
+
+            await fetchDepartments(); // Refresh the list
+            handleCloseEditForm();
+        } catch (err) {
+            console.error('Error updating department:', err);
+            setError(err.message || 'Failed to update department');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDeleteDepartment = async (id) => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const token = localStorage.getItem('token');
+            console.log('Deleting department with id:', id);
+
+            const response = await fetch(`http://localhost:8080/api/v1/departments/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log('Delete response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
+            }
+
+            await fetchDepartments(); // Refresh the list
+            setDeleteConfirmId(null);
+        } catch (err) {
+            console.error('Error deleting department:', err);
+            setError(err.message || 'Failed to delete department');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading && departments.length === 0) {
+        return (
+            <div className="departments-loading">
+                <div className="loader"></div>
+                <p>Loading departments...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="departments-list-container">
+            <div className="departments-header">
+                <h1>Departments</h1>
+                <button
+                    className="departments-add-button"
+                    onClick={handleOpenForm}
+                    disabled={loading}
+                >
+                    <FiPlus /> Add Department
+                </button>
+            </div>
+
+            {error && !isFormOpen && !isEditFormOpen && (
+                <div className="departments-error">
+                    {error}
+                    <button onClick={fetchDepartments} className="retry-button">
+                        Try Again
+                    </button>
+                </div>
+            )}
+
+            <div className="departments-table-container">
+                <table className="departments-table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {departments.length === 0 ? (
+                        <tr>
+                            <td colSpan="3" className="no-data">
+                                No departments found. Create your first department!
+                            </td>
+                        </tr>
+                    ) : (
+                        departments.map((department) => (
+                            <tr key={department.id}>
+                                <td>{department.name}</td>
+                                <td>{department.description || 'No description'}</td>
+                                <td className="departments-actions">
+                                    <button
+                                        className="departments-edit-button"
+                                        onClick={() => handleOpenEditForm(department)}
+                                        disabled={loading}
+                                    >
+                                        <FiEdit />
+                                    </button>
+                                    {deleteConfirmId === department.id ? (
+                                        <>
+                                            <button
+                                                className="departments-confirm-button"
+                                                onClick={() => handleDeleteDepartment(department.id)}
+                                                disabled={loading}
+                                            >
+                                                <FiCheck />
+                                            </button>
+                                            <button
+                                                className="departments-cancel-button"
+                                                onClick={() => setDeleteConfirmId(null)}
+                                                disabled={loading}
+                                            >
+                                                <FiX />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button
+                                            className="departments-delete-button"
+                                            onClick={() => setDeleteConfirmId(department.id)}
+                                            disabled={loading}
+                                        >
+                                            <FiTrash2 />
+                                        </button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Add Department Modal */}
+            {isFormOpen && (
+                <div className="departments-modal">
+                    <div className="departments-modal-content">
+                        <h2>Add Department</h2>
+                        {error && (
+                            <div className="form-error">
+                                {error}
+                            </div>
+                        )}
+                        <form onSubmit={handleSubmitForm}>
+                            <div className="departments-form-group">
+                                <label htmlFor="name">Name *</label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    required
+                                    disabled={loading}
+                                    placeholder="Enter department name"
+                                />
+                            </div>
+                            <div className="departments-form-group">
+                                <label htmlFor="description">Description</label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    rows="4"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    disabled={loading}
+                                    placeholder="Enter department description (optional)"
+                                />
+                            </div>
+                            <div className="departments-form-actions">
+                                <button
+                                    type="submit"
+                                    className="departments-submit-button"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Adding...' : 'Add Department'}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="departments-cancel-button"
+                                    onClick={handleCloseForm}
+                                    disabled={loading}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Department Modal */}
+            {isEditFormOpen && currentDepartment && (
+                <div className="departments-modal">
+                    <div className="departments-modal-content">
+                        <h2>Edit Department</h2>
+                        {error && (
+                            <div className="form-error">
+                                {error}
+                            </div>
+                        )}
+                        <form onSubmit={handleSubmitEditForm}>
+                            <div className="departments-form-group">
+                                <label htmlFor="edit-name">Name *</label>
+                                <input
+                                    type="text"
+                                    id="edit-name"
+                                    name="name"
+                                    value={editFormData.name}
+                                    onChange={handleEditInputChange}
+                                    required
+                                    disabled={loading}
+                                    placeholder="Enter department name"
+                                />
+                            </div>
+                            <div className="departments-form-group">
+                                <label htmlFor="edit-description">Description</label>
+                                <textarea
+                                    id="edit-description"
+                                    name="description"
+                                    rows="4"
+                                    value={editFormData.description}
+                                    onChange={handleEditInputChange}
+                                    disabled={loading}
+                                    placeholder="Enter department description (optional)"
+                                />
+                            </div>
+                            <div className="departments-form-actions">
+                                <button
+                                    type="submit"
+                                    className="departments-submit-button"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Updating...' : 'Update Department'}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="departments-cancel-button"
+                                    onClick={handleCloseEditForm}
+                                    disabled={loading}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default DepartmentsList;

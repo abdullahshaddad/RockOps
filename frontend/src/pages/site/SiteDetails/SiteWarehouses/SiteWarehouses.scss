@@ -1,0 +1,564 @@
+//@import "../../../../Global";
+
+.siteWarehouseContainer {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+
+  // Left Sidebar
+  .siteSidebar {
+    //width: 20%;
+    min-width: 200px;
+    //background: var(--section-background-color);
+    //padding: 1rem;
+    //border-right: 1px solid var(--border-color);
+  }
+
+  // Right Content Section
+  .siteWarehouseContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+  }
+
+  .dataCount {
+    background: var(--section-background-color);
+    padding: 1rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+
+    h1 {
+      color: var(--head-title-color);
+    }
+
+    .SiteWarehouseCardsContainer {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+
+      &::-webkit-scrollbar {
+        width: 0px;
+      }
+
+      .SiteWarehouseCard {
+        color: var(--text-color);
+        min-width: 9.5rem;
+        min-height: 8rem;
+        background: transparent;
+        border-radius: 10px;
+        font-size: 1.5rem;
+        font-weight: 600;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+      }
+    }
+  }
+
+  .siteWarehouseTable {
+    background: var(--section-background-color);
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--section-background-color);
+    }
+  }
+
+  // Error message styling
+  .error-container {
+    color: red;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  // Loading state
+  .loading-container {
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 2rem;
+  }
+
+  .assignWarehouseButton {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .assignWarehouseButton:hover {
+    background-color: #2563eb;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    position: relative;
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #888;
+      &:hover {
+        color: #333;
+      }
+    }
+
+    .warehouse-list {
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      margin-top: 10px;
+
+      .warehouse-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+
+        span {
+          flex: 1;
+          text-align: left;
+        }
+
+        .assign-btn {
+          background-color: #007bff;
+          color: #fff;
+          border: none;
+          padding: 5px 10px;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: 0.3s;
+
+          &:hover {
+            background-color: #0056b3;
+          }
+        }
+      }
+    }
+  }
+
+  .warehouse-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  .warehouse-table th, .warehouse-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .warehouse-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+
+  .warehouse-table td button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .warehouse-table td button:hover {
+    background-color: #0056b3;
+  }
+
+
+  /* Add these styles to your existing SiteWarehouses.scss file */
+
+  /* Header styling for the Add Warehouse button */
+  .headerSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h1 {
+      margin: 0;
+    }
+
+    .addWarehouseButton {
+      background-color: var(--color-primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: var(--color-primary-dark);
+      }
+    }
+  }
+
+  /* Modal overlay and container */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+
+    .warehouse-modal {
+      width: 90%;
+      max-width: 720px;
+      position: relative;
+
+      /* Close button */
+      .close-modal {
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: var(--color-primary);
+        color: white;
+        border: none;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1001;
+
+        &:hover {
+          background-color: var(--color-primary-dark);
+        }
+      }
+
+      /* Modal title */
+      h2 {
+        display: none; /* Hide the title to match the original design */
+      }
+
+      /* Error message styling */
+      .form-error {
+        background-color: #ffe6e6;
+        color: #d80000;
+        padding: 0.75rem;
+        border-radius: var(--radius-sm);
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+      }
+
+      /* Reuse your existing warehouse form styling */
+      .warehouse-form-container {
+        background-color: var(--section-background-color);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        overflow: visible;
+        display: grid;
+        grid-template-columns: 250px 1fr;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+        }
+
+        .profile-section {
+          background-color: #4066e0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+
+          .image-upload-label {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 2rem 0;
+          }
+
+          .warehouse-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+          }
+
+          .image-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 1rem;
+
+            &:before {
+              content: '+';
+              font-size: 2rem;
+              margin-bottom: 0.5rem;
+            }
+          }
+
+          .upload-text {
+            color: white;
+            font-size: 0.9rem;
+          }
+        }
+
+        .add-warehouse-form {
+          padding: 1.5rem;
+
+          form {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+          }
+
+          .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+
+            @media (max-width: 768px) {
+              grid-template-columns: 1fr;
+            }
+
+            > div {
+              display: flex;
+              flex-direction: column;
+              margin-bottom: 0.75rem;
+            }
+
+            label {
+              color: var(--color-text-secondary);
+              font-size: 0.85rem;
+              margin-bottom: 0.5rem;
+            }
+
+            input, select {
+              height: 40px;
+              padding: 0.5rem;
+              border: 1px solid var(--border-color);
+              border-radius: var(--radius-sm);
+              background-color: var(--color-surface);
+              color: var(--color-text-primary);
+              font-size: 1rem;
+
+              &:focus {
+                border-color: var(--color-primary);
+                outline: none;
+              }
+            }
+          }
+
+          .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: auto;
+
+            button {
+              height: 40px;
+              border-radius: var(--radius-sm);
+              font-size: 1rem;
+              font-weight: 500;
+              cursor: pointer;
+              transition: all 0.2s ease;
+
+              &.add-button {
+                background-color: var(--color-primary);
+                color: white;
+                border: none;
+
+                &:hover {
+                  background-color: var(--color-primary-dark);
+                }
+
+                &:disabled {
+                  opacity: 0.7;
+                  cursor: not-allowed;
+                }
+              }
+
+              &.cancel-button {
+                background-color: transparent;
+                color: var(--color-text-secondary);
+                border: 1px solid var(--border-color);
+
+                &:hover {
+                  background-color: var(--color-surface-hover);
+                }
+
+                &:disabled {
+                  opacity: 0.7;
+                  cursor: not-allowed;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .workers-dropdown {
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .dropdown-header:hover {
+    border-color: var(--color-primary);
+  }
+
+  .dropdown-icon {
+    transition: transform 0.2s ease;
+  }
+
+  .dropdown-icon.open {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--color-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .dropdown-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .dropdown-item:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  .workers-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .worker-chip {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: var(--color-primary-light);
+    /*color: var(--color-primary);*/
+    color: white;
+    border-radius: 20px;
+    font-size: 14px;
+  }
+
+  .remove-worker {
+    margin-left: 6px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--color-primary-dark);
+    transition: all 0.2s ease;
+  }
+
+  .remove-worker:hover {
+    color: var(--color-danger);
+    transform: scale(1.1);
+  }
+
+}
