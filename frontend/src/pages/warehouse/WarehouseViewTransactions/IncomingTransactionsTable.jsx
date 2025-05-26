@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import DataTable from "../../../components/common/DataTable/DataTable.jsx";
+import { FaCheck, FaTimes } from 'react-icons/fa';
 import "./WarehouseViewTransactions.scss";
 import "./AcceptRejectModal.scss";
 
@@ -284,6 +286,77 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         }
     };
 
+    // Function to reject transaction
+    const handleRejectTransaction = async (e) => {
+        e.preventDefault();
+        setProcessingAction(true);
+        setRejectError("");
+
+        if (!rejectionReason.trim()) {
+            setRejectError("Please provide a rejection reason");
+            setProcessingAction(false);
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+
+            let username = "system"; // Default fallback
+            const userInfoString = localStorage.getItem('userInfo');
+
+            if (userInfoString) {
+                try {
+                    const userInfo = JSON.parse(userInfoString);
+                    if (userInfo.username) {
+                        username = userInfo.username;
+                    }
+                } catch (error) {
+                    console.error("Error parsing user info:", error);
+                }
+            }
+
+            const response = await fetch(`http://localhost:8080/api/v1/transactions/${selectedTransaction.id}/reject`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    username: username,
+                    rejectionReason: rejectionReason
+                }),
+            });
+
+            if (response.ok) {
+                // Successfully rejected transaction
+                fetchPendingTransactions(); // Refresh data
+                setIsRejectModalOpen(false);
+                setShowRejectNotification(true);
+
+                // Show notification for 3 seconds
+                setTimeout(() => {
+                    setShowRejectNotification(false);
+                }, 3000);
+            } else {
+                // Try to get error details from the response
+                let errorMessage = "Failed to reject transaction";
+                try {
+                    const errorData = await response.text();
+                    errorMessage = errorData || errorMessage;
+                } catch (e) {
+                    console.error("Error parsing error response:", e);
+                }
+                setRejectError(errorMessage);
+                console.error("Failed to reject transaction:", errorMessage);
+            }
+        } catch (error) {
+            setRejectError("Network error. Please try again.");
+            console.error("Error rejecting transaction:", error);
+        } finally {
+            setProcessingAction(false);
+        }
+    };
+
     // Helper function to format entity name for display
     const getEntityDisplayName = (entity, entityType) => {
         if (!entity) return "N/A";
@@ -291,6 +364,70 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         // Return formatted name based on entity type
         return entity.name || "N/A";
     };
+
+    // Define columns for DataTable
+    const columns = [
+        {
+            header: 'Items',
+            accessor: 'items.length',
+            sortable: true,
+            render: (row) => row.items?.length || 0
+        },
+        {
+            header: 'Sender',
+            accessor: 'sender.name',
+            sortable: true,
+            render: (row) => getEntityDisplayName(row.sender, row.senderType)
+        },
+        {
+            header: 'Receiver',
+            accessor: 'receiver.name',
+            sortable: true,
+            render: (row) => getEntityDisplayName(row.receiver, row.receiverType)
+        },
+        {
+            header: 'Batch Number',
+            accessor: 'batchNumber',
+            sortable: true,
+            render: (row) => row.batchNumber || "N/A"
+        },
+        {
+            header: 'Transaction Date',
+            accessor: 'transactionDate',
+            sortable: true,
+            render: (row) => row.transactionDate ? new Date(row.transactionDate).toLocaleDateString('en-GB') : "N/A"
+        },
+        {
+            header: 'Created At',
+            accessor: 'createdAt',
+            sortable: true,
+            render: (row) => row.createdAt ? new Date(row.createdAt).toLocaleString('en-GB', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            }) : "N/A"
+        },
+        {
+            header: 'Added By',
+            accessor: 'addedBy',
+            sortable: true
+        }
+    ];
+
+    // Action configuration for DataTable
+    const getActions = (row) => [
+        {
+            label: 'Accept transaction',
+            icon: <FaCheck />,
+            onClick: (row) => openAcceptModal(row),
+            className: 'success'
+        },
+        {
+            label: 'Reject transaction',
+            icon: <FaTimes />,
+            onClick: (row) => openRejectModal(row),
+            className: 'danger'
+        }
+    ];
 
     return (
         <div className="transaction-table-pending">
@@ -300,102 +437,18 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
             </div>
             <div className="section-description">(Transactions waiting for your approval)</div>
 
-            {/* Search input for this table only */}
-            <div className="right-section3">
-                <div className="table-search-container-pending">
-                    <input
-                        type="text"
-                        placeholder="Search incoming transactions..."
-                        className="search-input3"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="M21 21l-4.35-4.35"/>
-                    </svg>
-                </div>
-            </div>
-
-            <div
-                className="table-card3"
-                style={{
-                    minHeight: filteredTransactions.length === 0 ? '300px' : 'auto',
-                }}
-            >
-                {loading ? (
-                    <div className="loading-container3">
-                        <div className="loading-spinner3"></div>
-                        <p>Loading transaction data...</p>
-                    </div>
-                ) : (
-                    <>
-                        <div className="table-header-row3">
-                            <div className="table-header-cell item-type-cell3">Items</div>
-                            <div className="table-header-cell sender-cell3">Sender</div>
-                            <div className="table-header-cell receiver-cell3">Receiver</div>
-                            <div className="table-header-cell quantity-cell3">Batch Number</div>
-                            <div className="table-header-cell date-cell3">Transaction Date</div>
-                            <div className="table-header-cell created-at-cell3">Created At</div>
-                            <div className="table-header-cell added-by-cell3">Added By</div>
-                            <div className="table-header-cell status-cell3">Status</div>
-                            <div className="table-header-cell actions-cell3">Actions</div>
-                        </div>
-
-                        <div className="table-body3">
-                            {filteredTransactions.length > 0 ? (
-                                filteredTransactions.map((item, index) => (
-                                    <div className="table-row3" key={index}>
-                                        <div className="table-cell item-type-cell3">{item.items?.length || 0}</div>
-                                        <div className="table-cell sender-cell3">
-                                            {getEntityDisplayName(item.sender, item.senderType)}
-                                        </div>
-                                        <div className="table-cell receiver-cell3">
-                                            {getEntityDisplayName(item.receiver, item.receiverType)}
-                                        </div>
-                                        <div className="table-cell quantity-cell3">{item.batchNumber}</div>
-
-                                        <div className="table-cell date-cell3">
-                                            {item.transactionDate ? new Date(item.transactionDate).toLocaleDateString('en-GB') : "N/A"}
-                                        </div>
-                                        <div className="table-cell created-at-cell3">
-                                            {item.createdAt ? new Date(item.createdAt).toLocaleString('en-GB', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                                second: '2-digit',
-                                            }) : "N/A"}
-                                        </div>
-                                        <div className="table-cell added-by-cell3">
-                                            {item.addedBy}
-                                        </div>
-                                        <div className="table-cell status-cell3">{item.status}</div>
-                                        <div className="table-cell actions-cell3">
-                                            <button className="accept-button3" onClick={() => openAcceptModal(item)}>
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="empty-state3">
-                                    <div className="empty-icon3">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                            <path d="M20 6L9 17l-5-5"/>
-                                        </svg>
-                                    </div>
-                                    <h3>No incoming transactions</h3>
-                                    <p>There are no transactions waiting for your approval</p>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                )}
-            </div>
+            <DataTable
+                data={pendingTransactions}
+                columns={columns}
+                loading={loading}
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={columns.filter(col => col.sortable)}
+                itemsPerPageOptions={[10, 25, 50]}
+                defaultItemsPerPage={10}
+                actions={getActions}
+                className="incoming-transactions-table"
+            />
 
             {/* Modal for accepting transaction with multiple items */}
             {isAcceptModalOpen && selectedTransaction && (
@@ -587,6 +640,105 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                     </div>
                 </div>
             )}
+
+            {/* Modal for rejecting transaction */}
+            {isRejectModalOpen && selectedTransaction && (
+                <div className="modal-backdrop">
+                    <div className="flat-modal">
+                        {/* Header */}
+                        <div className="flat-modal-header">
+                            <h2>Reject Transaction</h2>
+                            <button
+                                className="close-modal-btn"
+                                onClick={() => setIsRejectModalOpen(false)}
+                                disabled={processingAction}
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M18 6L6 18M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flat-modal-content">
+                            {/* Transaction Info */}
+                            <div className="transaction-info-section">
+                                <div className="info-row">
+                                    <div className="info-col">
+                                        <div className="info-label">Batch Number</div>
+                                        <div className="info-value">{selectedTransaction.batchNumber || "N/A"}</div>
+                                    </div>
+                                    <div className="info-col">
+                                        <div className="info-label">Transaction Date</div>
+                                        <div className="info-value">
+                                            {selectedTransaction.transactionDate
+                                                ? new Date(selectedTransaction.transactionDate).toLocaleDateString("en-GB")
+                                                : "N/A"}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="info-row">
+                                    <div className="info-col">
+                                        <div className="info-label">Sender</div>
+                                        <div className="info-value">{getEntityDisplayName(selectedTransaction.sender, selectedTransaction.senderType)}</div>
+                                    </div>
+                                    <div className="info-col">
+                                        <div className="info-label">Receiver</div>
+                                        <div className="info-value">{getEntityDisplayName(selectedTransaction.receiver, selectedTransaction.receiverType)}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Rejection Reason */}
+                            <div className="rejection-section">
+                                <div className="rejection-label">
+                                    Rejection Reason <span className="required-mark">*</span>
+                                </div>
+                                <textarea
+                                    value={rejectionReason}
+                                    onChange={(e) => setRejectionReason(e.target.value)}
+                                    placeholder="Please provide a reason for rejecting this transaction..."
+                                    required
+                                    disabled={processingAction}
+                                />
+                            </div>
+
+                            {/* Error message */}
+                            {rejectError && (
+                                <div className="error-message">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="8" x2="12" y2="12" />
+                                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                                    </svg>
+                                    <span>{rejectError}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="reject-button"
+                                onClick={handleRejectTransaction}
+                                disabled={processingAction || !rejectionReason.trim()}
+                            >
+                                {processingAction ? "Processing..." : (
+                                    <>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M18 6L6 18M6 6l12 12" />
+                                        </svg>
+                                        Reject Transaction
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Notifications */}
             {showAcceptNotification && (
                 <div className="notification3 success-notification3">
@@ -598,7 +750,14 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                 </div>
             )}
 
-            {/* Add Reject Modal and Reject Notification here if needed */}
+            {showRejectNotification && (
+                <div className="notification3 reject-notification3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                    <span>Transaction Rejected Successfully</span>
+                </div>
+            )}
         </div>
     );
 };

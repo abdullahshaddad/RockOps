@@ -1,11 +1,11 @@
 .warehouse-request-orders-container {
   position: relative;
   padding: 20px;
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #1a2b42;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
   margin-bottom: 20px;
   min-height: 200px;
   display: flex;
@@ -24,8 +24,8 @@
 
 .request-orders-title {
   font-size: 28px;
-  font-weight: 700;
-  color: #1a2b42;
+  font-weight: var(--bold-font-weight);
+  color: var(--color-text-primary);
   margin: 0;
 }
 
@@ -45,21 +45,21 @@
 
 .request-section-title {
   font-size: 22px;
-  font-weight: 600;
-  color: #1e293b;
+  font-weight: var(--bold-font-weight);
+  color: var(--color-text-primary);
   margin-bottom: 8px;
 }
 
 .request-section-description {
   font-size: 14px;
-  color: #64748b;
+  color: var(--color-text-secondary);
   margin-bottom: 20px;
 }
 
 /* Table Card Styles */
 .request-orders-table-card {
-  background-color: white;
-  border-radius: 16px;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
   width: 100%;
   position: relative;
   overflow-x: auto;
@@ -75,23 +75,24 @@
   text-transform: capitalize;
 
   &.priority-low {
-    background: #e8f5e8;
-    color: #2e7d32;
+    background: var(--color-success);
+    color: var(--color-text-inverse);
+    opacity: 0.8;
   }
 
   &.priority-normal {
-    background: #e3f2fd;
-    color: #1976d2;
+    background: var(--color-info);
+    color: var(--color-text-inverse);
   }
 
   &.priority-high {
-    background: #fff3e0;
-    color: #f57c00;
+    background: var(--color-warning);
+    color: var(--color-text-inverse);
   }
 
   &.priority-urgent {
-    background: #ffebee;
-    color: #d32f2f;
+    background: var(--color-danger);
+    color: var(--color-text-inverse);
   }
 }
 
@@ -109,28 +110,28 @@
   border: none;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   margin-left: 3px;
 }
 
 .request-approve-button {
-  color: #2e7d32;
+  color: var(--color-success);
 
   &:hover {
-    background-color: #e8f5e8;
+    background-color: var(--color-surface-hover);
   }
 }
 
 .request-reject-button {
-  color: #d32f2f;
+  color: var(--color-danger);
 
   &:hover {
-    background-color: #ffebee;
+    background-color: var(--color-surface-hover);
   }
 }
 
@@ -148,20 +149,20 @@
   width: 60px;
   height: 60px;
   border-radius: 30px;
-  background-color: #4f85e5;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   cursor: pointer;
-  box-shadow: 0 10px 25px rgba(79, 133, 229, 0.4);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
   z-index: 100;
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(79, 133, 229, 0.5);
+    box-shadow: var(--shadow-md);
   }
 }
 
@@ -182,11 +183,12 @@
 .request-orders-loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(79, 133, 229, 0.2);
+  border: 3px solid var(--color-primary);
   border-radius: 50%;
-  border-top-color: #4f85e5;
+  border-top-color: var(--color-primary-light);
   animation: request-orders-spin 1s linear infinite;
   margin-bottom: 16px;
+  opacity: 0.3;
 }
 
 @keyframes request-orders-spin {
@@ -205,7 +207,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #6b7280;
+  color: var(--color-text-secondary);
   z-index: 10;
   width: 100%;
   height: auto;
@@ -214,7 +216,7 @@
 .request-orders-empty-state .request-orders-empty-icon {
   width: 60px;
   height: 60px;
-  background-color: #f3f4f6;
+  background-color: var(--color-surface-hover);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -225,18 +227,19 @@
 .request-orders-empty-state svg {
   width: 30px;
   height: 30px;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
 }
 
 .request-orders-empty-state h3 {
   font-size: 18px;
   margin: 0 0 8px 0;
-  color: #4b5563;
+  color: var(--color-text-primary);
 }
 
 .request-orders-empty-state p {
   font-size: 14px;
   margin: 0;
+  color: var(--color-text-secondary);
 }
 
 /* Responsive Styles */
@@ -274,17 +277,13 @@
 
 // Warehouse Request Modal Styles
 // Modal backdrop
-// Warehouse Request Modal Styles
-// Modal backdrop
-// Warehouse Request Modal Styles
-// Modal backdrop
 .warehouse-request-modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--adv-table-filter);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -296,9 +295,9 @@
 .warehouse-request-modal {
   width: 100%;
   max-width: 700px;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   max-height: 90vh;
@@ -310,13 +309,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
 
   h2 {
     margin: 0;
     font-size: 20px;
-    font-weight: 600;
-    color: #1f2937;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-primary);
   }
 }
 
@@ -362,20 +361,20 @@
 }
 
 .request-edit-button {
-  background-color: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  background-color: rgba(72, 128, 255, 0.1);
+  color: var(--color-primary);
 
   &:hover {
-    background-color: rgba(59, 130, 246, 0.2);
+    background-color: rgba(72, 128, 255, 0.2);
   }
 }
 
 .request-delete-button {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--color-danger);
 
   &:hover {
-    background-color: rgba(239, 68, 68, 0.2);
+    background-color: rgba(244, 67, 54, 0.2);
   }
 }
 
@@ -713,19 +712,19 @@
 }
 
 .request-edit-button {
-  background-color: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  background-color: rgba(72, 128, 255, 0.1);
+  color: var(--color-primary);
 
   &:hover {
-    background-color: rgba(59, 130, 246, 0.2);
+    background-color: rgba(72, 128, 255, 0.2);
   }
 }
 
 .request-delete-button {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--color-danger);
 
   &:hover {
-    background-color: rgba(239, 68, 68, 0.2);
+    background-color: rgba(244, 67, 54, 0.2);
   }
 }
