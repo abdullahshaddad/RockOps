@@ -63,14 +63,15 @@ export const FINANCE_ENDPOINTS = {
 export const EMPLOYEE_ENDPOINTS = {
     BASE: '/api/v1/employees',
     BY_ID: (id) => `/api/v1/employees/${id}`,
+    UNASSIGNED: '/api/v1/site/unassigned-employees',  // Updated to match backend endpoint
     DRIVERS: '/api/v1/employees/drivers',
     WAREHOUSE_WORKERS: '/api/v1/employees/warehouse-workers',
     WAREHOUSE_MANAGERS: '/api/v1/employees/warehouse-managers',
     TECHNICIANS: '/api/v1/employees/technicians',
     ATTENDANCE: {
-        BY_EMPLOYEE: (employeeId) => `/api/v1/attendance/employee/${employeeId}`,
-        MONTHLY: (employeeId) => `/api/v1/attendance/employee/${employeeId}/monthly`,
-        GENERATE_MONTHLY: '/api/v1/attendance/generate-monthly'
+        BY_EMPLOYEE: (employeeId) => `/api/v1/employees/${employeeId}/attendance`,
+        MONTHLY: (employeeId) => `/api/v1/employees/${employeeId}/attendance/monthly`,
+        GENERATE_MONTHLY: '/api/v1/employees/attendance/generate-monthly'
     }
 };
 
