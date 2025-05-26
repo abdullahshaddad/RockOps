@@ -15,6 +15,7 @@ export const EQUIPMENT_ENDPOINTS = {
     CREATE_DTO: '/api/equipment/dto',
     UPDATE_DTO: (id) => `/api/equipment/dto/${id}`,
     ELIGIBLE_DRIVERS: (typeId) => `/api/equipment/type/${typeId}/eligible-drivers`,
+    SARKY_DRIVERS: (typeId) => `/api/equipment/type/${typeId}/sarky-drivers`,
     CHECK_DRIVER_COMPATIBILITY: (equipmentId, employeeId) =>
         `/api/equipment/${equipmentId}/check-driver-compatibility/${employeeId}`,
     BRANDS: '/api/equipment/brands',
@@ -131,6 +132,7 @@ export const MERCHANT_ENDPOINTS = {
 // Work Type module endpoints
 export const WORK_TYPE_ENDPOINTS = {
     BASE: '/api/v1/worktypes',
+    MANAGEMENT: '/api/v1/worktypes/management',
     BY_ID: (id) => `/api/v1/worktypes/${id}`,
     CREATE: '/api/v1/worktypes',
     UPDATE: (id) => `/api/v1/worktypes/${id}`,

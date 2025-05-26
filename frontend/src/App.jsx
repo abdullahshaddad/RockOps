@@ -25,6 +25,7 @@ import EquipmentMain from "./pages/equipment/EquipmentMain/EquipmentMain.jsx";
 import {SnackbarProvider} from "./contexts/SnackbarContext.jsx";
 import EquipmentBrandManagement from "./pages/equipment/EquipmentManagement/EquipmentBrandManagement.jsx";
 import EquipmentTypeManagement from "./pages/equipment/EquipmentManagement/EquipmentTypeManagement.jsx";
+import WorkTypeManagement from "./pages/equipment/EquipmentManagement/WorkTypeManagement.jsx";
 import ViewEquipmentData from "./pages/equipment/EquipmentInfo/ViewEquipmentData.jsx";
 import EquipmentDetails from "./pages/equipment/EquipmentDetails/EquipmentDetails.jsx";
 
@@ -117,6 +118,7 @@ function App() {
                                         <Route index element={<RoleRoute allowedRoles={allRoles}><EquipmentMain/></RoleRoute>}/>
                                         <Route path="brand-management"  element={<RoleRoute allowedRoles={allRoles}><EquipmentBrandManagement/></RoleRoute>}/>
                                         <Route path="type-management"  element={<RoleRoute allowedRoles={allRoles}><EquipmentTypeManagement/></RoleRoute>}/>
+                                        <Route path="work-type-management"  element={<RoleRoute allowedRoles={allRoles}><WorkTypeManagement/></RoleRoute>}/>
                                         <Route path="info/:EquipmentID" element={<RoleRoute allowedRoles={allRoles}><ViewEquipmentData /></RoleRoute>} />
                                         <Route path=":EquipmentID" element={<RoleRoute allowedRoles={allRoles}><EquipmentDetails /></RoleRoute>} />
 

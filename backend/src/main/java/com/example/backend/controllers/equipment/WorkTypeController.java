@@ -22,6 +22,11 @@ public class WorkTypeController {
         return ResponseEntity.ok(workTypeService.getAllWorkTypes());
     }
 
+    @GetMapping("/worktypes/management")
+    public ResponseEntity<List<WorkTypeDTO>> getAllWorkTypesForManagement() {
+        return ResponseEntity.ok(workTypeService.getAllWorkTypesForManagement());
+    }
+
     @GetMapping("/worktypes/{id}")
     public ResponseEntity<WorkTypeDTO> getWorkTypeById(@PathVariable UUID id) {
         return ResponseEntity.ok(workTypeService.getWorkTypeById(id));
