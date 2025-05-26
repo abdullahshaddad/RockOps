@@ -1,5 +1,5 @@
 import React from 'react';
-import Snackbar from '../../../../Components/Snackbar/Snackbar'; // Adjust path as needed
+import Snackbar from '../../../../components/common/Snackbar2/Snackbar2.jsx'
 
 import "../ProcurementOffers.scss"
 import "./SubmittedOffers.scss"

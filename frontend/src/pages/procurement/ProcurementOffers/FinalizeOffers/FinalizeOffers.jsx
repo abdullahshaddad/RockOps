@@ -3,7 +3,7 @@ import {
     FiPackage, FiCheck, FiClock, FiCheckCircle, FiX, FiFileText, FiList,
     FiUser, FiCalendar, FiFlag  // Added these icons for Request Order Information
 } from 'react-icons/fi';
-import Snackbar from '../../../../Components/Snackbar/Snackbar'; // Import Snackbar
+import Snackbar from "../../../../components/common/Snackbar2/Snackbar2.jsx"
 import "../ProcurementOffers.scss";
 import "./FinalizeOffers.scss";
 

@@ -10,7 +10,7 @@ import {
     FiTag,
     FiFlag
 } from 'react-icons/fi';
-import Snackbar from '../../../../Components/Snackbar/Snackbar'; // Import your Snackbar component
+import Snackbar from '../../../../components/common/Snackbar2/Snackbar2.jsx'
 import "../ProcurementOffers.scss"
 import "./UnstartedOffers.scss"
 

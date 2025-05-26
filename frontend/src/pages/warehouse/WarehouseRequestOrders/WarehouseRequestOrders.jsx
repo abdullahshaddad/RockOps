@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Table from '../../../../OurTable/Table';
-import Snackbar from '../../../../Snackbar/Snackbar';
+import Table from "../../../components/common/OurTable/Table.jsx";
+import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx"
 import { useNavigate } from 'react-router-dom';
 import './WarehouseRequestOrders.scss';
 
@@ -552,7 +552,7 @@ const WarehouseRequestOrders = ({ warehouseId }) => {
             </div>
 
             {/* Add Button - Only show for warehouse managers */}
-            {userRole === "WAREHOUSEMANAGER" && (
+            {userRole === "WAREHOUSE_MANAGER" && (
                 <button
                     className="request-orders-add-button"
                     title="Create New Request"

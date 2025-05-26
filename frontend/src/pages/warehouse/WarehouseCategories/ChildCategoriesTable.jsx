@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Table from "../../../../OurTable/Table.jsx"; // Adjust the import path as needed
+import Table from "../../../components/common/OurTable/Table.jsx"; // Adjust the import path as needed
 import "./WarehouseViewItemCategories.scss";
 
 const ChildCategoriesTable = ({

@@ -7,7 +7,7 @@ import {
 
 import "../ProcurementOffers.scss"
 import "./InprogressOffers.scss"
-import Snackbar from "../../../../Components/Snackbar/Snackbar"
+import Snackbar from "../../../../components/common/Snackbar2/Snackbar2.jsx"
 
 const InProgressOffers = ({
                               offers,

@@ -618,7 +618,7 @@ const WarehouseViewTransactionsTable = ({warehouseId}) => {
           />
 
           {/* Add Transaction Button */}
-          {userRole === "WAREHOUSEMANAGER" && (
+          {userRole === "WAREHOUSE_MANAGER" && (
           <div className="add-button-container">
             <button className="add-button3" onClick={() => setIsCreateModalOpen(true)}>
               <svg className="plus-icon3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

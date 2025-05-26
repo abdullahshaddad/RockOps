@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Table from '../../../../Components/OurTable/Table';
-import Snackbar from '../../../../Components/Snackbar/Snackbar';
+import Table from '../../../../components/common/OurTable/Table.jsx';
+import Snackbar from '../../../../components/common/Snackbar2/Snackbar2.jsx'
 import './ApprovedRequestOrders.scss';
 
 const ApprovedRequestOrders = ({ onDataChange }) => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./WarehousesList.scss";
-import warehouseImg from "../../../Resources/Images/warehouse1.jpg"; // Default warehouse image
+import warehouseImg from "../../../assets/imgs/warehouse1.jpg"; // Default warehouse image
 import { FaWarehouse, FaTimes } from 'react-icons/fa'; // Added FaTimes for remove icons
 import { useAuth } from "../../../Contexts/AuthContext";
 

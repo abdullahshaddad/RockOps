@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import Table from "../../../../OurTable/Table"; // Adjust the import path as needed
+import Table from "../../../components/common/OurTable/Table.jsx";
+import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx";
 import "./WarehouseViewItemTypesTable.scss";
 
 const WarehouseViewItemTypesTable = () => {
@@ -18,9 +19,12 @@ const WarehouseViewItemTypesTable = () => {
         comment: "" // New field for comments (added)
     });
     const [categories, setCategories] = useState([]);
-    // Success notification state
+
+    // Snackbar notification states
     const [showNotification, setShowNotification] = useState(false);
-    const [showNotification2, setShowNotification2] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
+    const [notificationType, setNotificationType] = useState('success');
+
     const [userRole, setUserRole] = useState("");
 
     // Fetch item types - updated to use global endpoint
@@ -106,6 +110,13 @@ const WarehouseViewItemTypesTable = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [isModalOpen]);
+
+    // Helper function to show notifications
+    const showSnackbar = (message, type = 'success') => {
+        setNotificationMessage(message);
+        setNotificationType(type);
+        setShowNotification(true);
+    };
 
     // Define table columns
     const columns = [
@@ -244,7 +255,7 @@ const WarehouseViewItemTypesTable = () => {
             !newItemType.measuringUnit ||
             !newItemType.serialNumber
         ) {
-            alert("Please fill in all the required fields.");
+            showSnackbar("Please fill in all the required fields.", "error");
             return; // Stop the form submission
         }
 
@@ -285,10 +296,7 @@ const WarehouseViewItemTypesTable = () => {
                 const newItem = await response.json();
                 setTableData((prevData) => [...prevData, newItem]);
 
-                setShowNotification(true);
-                setTimeout(() => {
-                    setShowNotification(false);
-                }, 3000);
+                showSnackbar("Item type successfully added!", "success");
 
                 setIsModalOpen(false);
 
@@ -303,7 +311,7 @@ const WarehouseViewItemTypesTable = () => {
                 });
             } catch (error) {
                 console.error('Error adding item type:', error);
-                alert('Failed to add item type. Error: ' + error.message);
+                showSnackbar(`Failed to add item type: ${error.message}`, "error");
             }
         }
     };
@@ -352,14 +360,10 @@ const WarehouseViewItemTypesTable = () => {
             // Remove the item from the table data without refetching the entire table
             setTableData(prevData => prevData.filter(item => item.id !== id));
 
-            setShowNotification2(true); // Show delete notification
-
-            setTimeout(() => {
-                setShowNotification2(false); // Hide notification after 3 seconds
-            }, 3000);
+            showSnackbar("Item type successfully deleted!", "success");
         } catch (error) {
             console.error("Error deleting item type:", error);
-            alert("Failed to delete item type. Error: " + error.message);
+            showSnackbar(`Failed to delete item type: ${error.message}`, "error");
         }
     };
 
@@ -394,11 +398,7 @@ const WarehouseViewItemTypesTable = () => {
                 )
             );
 
-            // Show success notification
-            setShowNotification(true);
-            setTimeout(() => {
-                setShowNotification(false);
-            }, 3000);
+            showSnackbar("Item type successfully updated!", "success");
 
             // Close modal and reset form
             setIsModalOpen(false);
@@ -413,7 +413,7 @@ const WarehouseViewItemTypesTable = () => {
             });
         } catch (error) {
             console.error('Error updating item type:', error);
-            alert('Failed to update item type. Error: ' + error.message);
+            showSnackbar(`Failed to update item type: ${error.message}`, "error");
         }
     };
 
@@ -442,7 +442,7 @@ const WarehouseViewItemTypesTable = () => {
             />
 
             {/* Add button */}
-            {userRole === "WAREHOUSEMANAGER" && (
+            {userRole === "WAREHOUSE_MANAGER" && (
                 <button className="add-button" onClick={() => openItemModal()}>
                     <svg className="plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M12 5v14M5 12h14" />
@@ -581,26 +581,14 @@ const WarehouseViewItemTypesTable = () => {
                 </div>
             )}
 
-            {/* Success notification */}
-            {showNotification && (
-                <div className="notification success-notification">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                        <path d="M22 4L12 14.01l-3-3" />
-                    </svg>
-                    <span>Item successfully {selectedItem ? 'updated' : 'added'}</span>
-                </div>
-            )}
-
-            {showNotification2 && (
-                <div className="notification delete-notification">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                        <path d="M22 4L12 14.01l-3-3" />
-                    </svg>
-                    <span>Item successfully deleted</span>
-                </div>
-            )}
+            {/* Snackbar Notification */}
+            <Snackbar
+                type={notificationType}
+                text={notificationMessage}
+                isVisible={showNotification}
+                onClose={() => setShowNotification(false)}
+                duration={3000}
+            />
         </div>
     );
 };
