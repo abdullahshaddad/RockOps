@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AllSites.css';
-import { useAuth } from "../../../Contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useTranslation } from 'react-i18next';
 import { FaBuilding } from 'react-icons/fa';
 import { siteService } from "../../../services/siteService.js";
@@ -17,7 +17,7 @@ const AllSites = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const { currentUser } = useAuth();
-    const { showError, showSuccess } = useSnackbar();
+    const { showError, showSuccess, showWarning } = useSnackbar();
 
     // Modal states and data
     const [showAddModal, setShowAddModal] = useState(false);
@@ -41,6 +41,7 @@ const AllSites = () => {
     const isSiteAdmin = currentUser?.role === "SITE_ADMIN";
 
     useEffect(() => {
+        console.log("AllSites component mounted");
         fetchSites();
     }, []);
 
@@ -117,7 +118,9 @@ const AllSites = () => {
             setSites(response.data);
             setError(null);
         } catch (err) {
-            setError(t('common.error') + ': ' + err.message);
+            const errorMessage = t('common.error') + ': ' + err.message;
+            setError(errorMessage);
+            showError("Failed to fetch sites. Please try again.");
             console.error("Error fetching sites:", err);
         } finally {
             setLoading(false);
@@ -129,6 +132,7 @@ const AllSites = () => {
             const response = await siteService.getAllPartners();
             setPartners(response.data);
         } catch (error) {
+            showError("Failed to fetch partners.");
             console.error("Error fetching partners:", error);
         }
     };
@@ -223,6 +227,7 @@ const AllSites = () => {
                 // Add the partners to the site data
                 siteData.partners = partnersResponse.data;
             } catch (partnerErr) {
+                showWarning("Could not fetch site partners separately");
                 console.warn("Could not fetch site partners separately:", partnerErr.message);
                 // Continue with the basic site data even if partners fetch fails
             }
@@ -252,8 +257,8 @@ const AllSites = () => {
             setEditingSite(siteDetails);
             setShowEditModal(true);
         } catch (err) {
+            showError("Error fetching site details. Using basic site data.");
             console.error("Error fetching site details:", err.message);
-            showError("Failed to load site details. Using basic site data.");
             // Fall back to using the basic site data if detailed fetch fails
             setEditingSite(site);
             setShowEditModal(true);
