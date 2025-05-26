@@ -22,8 +22,14 @@ public class VacancyController {
     // Create a new vacancy
     @PostMapping
     public ResponseEntity<Vacancy> createVacancy(@RequestBody Map<String, Object> vacancyData) {
-        Vacancy createdVacancy = vacancyService.createVacancy(vacancyData);
-        return ResponseEntity.ok(createdVacancy);
+        try {
+            Vacancy createdVacancy = vacancyService.createVacancy(vacancyData);
+            return ResponseEntity.ok(createdVacancy);
+        } catch (Exception e) {
+            System.err.println("Error in VacancyController.createVacancy: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
 
     // Get all vacancies
