@@ -2,7 +2,7 @@ package com.example.backend.controllers.hr;
 
 import com.example.backend.models.hr.Vacancy;
 import com.example.backend.models.hr.Candidate;
-import com.example.backend.services.VacancyService;
+import com.example.backend.services.hr.VacancyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +22,14 @@ public class VacancyController {
     // Create a new vacancy
     @PostMapping
     public ResponseEntity<Vacancy> createVacancy(@RequestBody Map<String, Object> vacancyData) {
-        Vacancy createdVacancy = vacancyService.createVacancy(vacancyData);
-        return ResponseEntity.ok(createdVacancy);
+        try {
+            Vacancy createdVacancy = vacancyService.createVacancy(vacancyData);
+            return ResponseEntity.ok(createdVacancy);
+        } catch (Exception e) {
+            System.err.println("Error in VacancyController.createVacancy: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
 
     // Get all vacancies

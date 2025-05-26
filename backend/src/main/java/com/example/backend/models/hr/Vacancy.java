@@ -51,7 +51,7 @@ public class Vacancy {
     private List<Candidate> candidates = new ArrayList<>();
 
     // New field to track hired candidates count
-    @Column(name = "hired_count", nullable = false)
+    @Column(name = "hired_count", nullable = true)
     @Builder.Default
     private Integer hiredCount = 0;
 
@@ -97,5 +97,10 @@ public class Vacancy {
         int totalPositions = numberOfPositions != null ? numberOfPositions : 1;
         int hired = hiredCount != null ? hiredCount : 0;
         return totalPositions > 0 ? (double) hired / totalPositions * 100 : 0;
+    }
+
+    // Add getter for hiredCount with null safety
+    public Integer getHiredCount() {
+        return hiredCount != null ? hiredCount : 0;
     }
 }
