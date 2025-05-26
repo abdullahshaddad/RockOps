@@ -6,7 +6,7 @@ const AddCandidateModal = ({ onClose, onSave, vacancyId }) => {
     const [currentStep, setCurrentStep] = useState(1);
     const totalSteps = 3;
 
-    // State for form data
+    // State for form data - ensure all values are strings to prevent controlled/uncontrolled issues
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -17,13 +17,13 @@ const AddCandidateModal = ({ onClose, onSave, vacancyId }) => {
         currentCompany: '',
         notes: '',
         applicationDate: new Date().toISOString().split('T')[0],
-        vacancyId: vacancyId
+        vacancyId: vacancyId || ''
     });
 
     // State for file uploads
     const [resumeFile, setResumeFile] = useState(null);
 
-    // State for validation errors
+    // State for validation errors - use empty string instead of null
     const [errors, setErrors] = useState({});
 
     // Handle form input changes
@@ -31,14 +31,14 @@ const AddCandidateModal = ({ onClose, onSave, vacancyId }) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: value
+            [name]: value || '' // Ensure value is always a string
         });
 
-        // Clear error for this field
+        // Clear error for this field - use empty string instead of null
         if (errors[name]) {
             setErrors({
                 ...errors,
-                [name]: null
+                [name]: '' // Use empty string instead of null
             });
         }
     };
@@ -56,9 +56,9 @@ const AddCandidateModal = ({ onClose, onSave, vacancyId }) => {
 
         switch (currentStep) {
             case 1: // Personal Information
-                if (!formData.firstName) newErrors.firstName = 'First name is required';
-                if (!formData.lastName) newErrors.lastName = 'Last name is required';
-                if (!formData.email) newErrors.email = 'Email is required';
+                if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
+                if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
+                if (!formData.email.trim()) newErrors.email = 'Email is required';
                 if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
                     newErrors.email = 'Email is invalid';
                 }
