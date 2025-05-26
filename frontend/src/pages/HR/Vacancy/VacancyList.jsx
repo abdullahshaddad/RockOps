@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './VacancyList.scss';
 import AddVacancyModal from './AddVacancyModal';
 import EditVacancyModal from './EditVacancyModal';
-import {FaEdit, FaTrashAlt} from "react-icons/fa";
+import DataTable from '../../../components/common/DataTable/DataTable';
+import {FaEdit, FaTrashAlt, FaEye} from "react-icons/fa";
 import { useSnackbar } from '../../../contexts/SnackbarContext';
 import { vacancyService } from '../../../services/vacancyService';
 import { jobPositionService } from '../../../services/jobPositionService';
@@ -12,16 +13,14 @@ const VacancyList = () => {
     const navigate = useNavigate();
     const { showSuccess, showError } = useSnackbar();
     const [vacancies, setVacancies] = useState([]);
-    const [filteredVacancies, setFilteredVacancies] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
-    const [priorityFilter, setPriorityFilter] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedVacancy, setSelectedVacancy] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [jobPositions, setJobPositions] = useState([]);
+    const [statusFilter, setStatusFilter] = useState('');
+    const [priorityFilter, setPriorityFilter] = useState('');
 
     // Fetch vacancies data from the API
     const fetchVacancies = async () => {
@@ -30,7 +29,6 @@ const VacancyList = () => {
             const response = await vacancyService.getAll();
             const data = response.data;
             setVacancies(data);
-            setFilteredVacancies(data);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching vacancies:', error);
@@ -58,36 +56,11 @@ const VacancyList = () => {
         fetchJobPositions();
     }, []);
 
-    // Filter vacancies based on search term and filters
-    useEffect(() => {
-        let result = vacancies;
-
-        if (searchTerm) {
-            const lowerSearchTerm = searchTerm.toLowerCase();
-            result = result.filter(
-                vacancy =>
-                    (vacancy.title && vacancy.title.toLowerCase().includes(lowerSearchTerm)) ||
-                    (vacancy.description && vacancy.description.toLowerCase().includes(lowerSearchTerm)) ||
-                    (vacancy.jobPosition && vacancy.jobPosition.positionName &&
-                        vacancy.jobPosition.positionName.toLowerCase().includes(lowerSearchTerm))
-            );
-        }
-
-        if (statusFilter) {
-            result = result.filter(vacancy => vacancy.status === statusFilter);
-        }
-
-        if (priorityFilter) {
-            result = result.filter(vacancy => vacancy.priority === priorityFilter);
-        }
-
-        setFilteredVacancies(result);
-    }, [searchTerm, statusFilter, priorityFilter, vacancies]);
-
     // Handle adding a new vacancy
     const handleAddVacancy = async (newVacancy) => {
         try {
             setLoading(true);
+            console.log('Sending vacancy data:', newVacancy); // Debug log
             const response = await vacancyService.create(newVacancy);
 
             // Refresh the vacancy list
@@ -97,6 +70,7 @@ const VacancyList = () => {
 
         } catch (error) {
             console.error('Error adding vacancy:', error);
+            console.error('Error response:', error.response); // Additional debug info
             const errorMessage = error.response?.data?.message || error.message || 'Failed to create vacancy';
             setError(errorMessage);
             showError('Failed to create vacancy. Please try again.');
@@ -128,9 +102,7 @@ const VacancyList = () => {
     };
 
     // Delete a vacancy
-    const handleDeleteVacancy = async (vacancyId, e) => {
-        e.stopPropagation();
-
+    const handleDeleteVacancy = async (vacancyId) => {
         if (!window.confirm('Are you sure you want to delete this vacancy?')) {
             return;
         }
@@ -154,10 +126,14 @@ const VacancyList = () => {
     };
 
     // Open edit modal with vacancy data
-    const handleEditClick = (vacancy, e) => {
-        e.stopPropagation();
+    const handleEditClick = (vacancy) => {
         setSelectedVacancy(vacancy);
         setShowEditModal(true);
+    };
+
+    // Navigate to vacancy details page
+    const handleRowClick = (vacancy) => {
+        navigate(`/hr/vacancies/${vacancy.id}`);
     };
 
     // Format date for display (YYYY-MM-DD to DD/MM/YYYY)
@@ -195,10 +171,149 @@ const VacancyList = () => {
         }
     };
 
-    // Navigate to vacancy details page
-    const handleRowClick = (vacancyId) => {
-        navigate(`/hr/vacancies/${vacancyId}`);
-    };
+    // Define columns for DataTable
+    const columns = [
+        {
+            header: 'Title',
+            accessor: 'title',
+            render: (row) => (
+                <div className="title-cell">
+                    <strong>{row.title}</strong>
+                </div>
+            )
+        },
+        {
+            header: 'Position',
+            accessor: 'jobPosition.positionName',
+            render: (row) => row.jobPosition ? row.jobPosition.positionName : 'N/A'
+        },
+        {
+            header: 'Department',
+            accessor: 'jobPosition.department.name',
+            render: (row) => {
+                if (row.jobPosition && row.jobPosition.department) {
+                    return row.jobPosition.department.name || 'N/A';
+                }
+                return 'N/A';
+            }
+        },
+        {
+            header: 'Status',
+            accessor: 'status',
+            render: (row) => (
+                <span className={`status-badge ${getStatusBadgeClass(row.status)}`}>
+                    {row.status}
+                </span>
+            )
+        },
+        {
+            header: 'Priority',
+            accessor: 'priority',
+            render: (row) => (
+                <span className={`priority-badge ${getPriorityBadgeClass(row.priority)}`}>
+                    {row.priority || 'MEDIUM'}
+                </span>
+            )
+        },
+        {
+            header: 'Posted',
+            accessor: 'postingDate',
+            render: (row) => formatDate(row.postingDate)
+        },
+        {
+            header: 'Closing',
+            accessor: 'closingDate',
+            render: (row) => formatDate(row.closingDate)
+        },
+        {
+            header: 'Positions',
+            accessor: 'numberOfPositions',
+            render: (row) => (
+                <div className="center-text">
+                    {row.numberOfPositions || 1}
+                </div>
+            )
+        }
+    ];
+
+    // Define actions for DataTable
+    const actions = [
+        {
+            label: 'View',
+            icon: <FaEye />,
+            onClick: (row) => handleRowClick(row),
+            className: 'table-action-button table-view-button'
+        },
+        {
+            label: 'Edit',
+            icon: <FaEdit />,
+            onClick: (row) => handleEditClick(row),
+            className: 'table-action-button table-edit-button'
+        },
+        {
+            label: 'Delete',
+            icon: <FaTrashAlt />,
+            onClick: (row) => handleDeleteVacancy(row.id),
+            className: 'table-action-button positions-delete-button'
+        }
+    ];
+
+    // Define filterable columns
+    const filterableColumns = [
+        { header: 'Title', accessor: 'title' },
+        { header: 'Position', accessor: 'jobPosition.positionName' },
+        { header: 'Department', accessor: 'jobPosition.department.name' }
+    ];
+
+    // Custom filters for status and priority
+    const customFilters = [
+        {
+            label: 'Status',
+            component: (
+                <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="">All Statuses</option>
+                    <option value="OPEN">Open</option>
+                    <option value="CLOSED">Closed</option>
+                    <option value="FILLED">Filled</option>
+                </select>
+            )
+        },
+        {
+            label: 'Priority',
+            component: (
+                <select
+                    value={priorityFilter}
+                    onChange={(e) => setPriorityFilter(e.target.value)}
+                >
+                    <option value="">All Priorities</option>
+                    <option value="HIGH">High</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="LOW">Low</option>
+                </select>
+            )
+        }
+    ];
+
+    // Filter data based on custom filters
+    const filteredVacancies = vacancies.filter(vacancy => {
+        const statusMatch = !statusFilter || vacancy.status === statusFilter;
+        const priorityMatch = !priorityFilter || vacancy.priority === priorityFilter;
+        return statusMatch && priorityMatch;
+    });
+
+    if (error) {
+        return (
+            <div className="vacancy-container">
+                <div className="error-container">
+                    <p>Error: {error}</p>
+                    <button onClick={fetchVacancies}>Try Again</button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="vacancy-container">
@@ -212,119 +327,21 @@ const VacancyList = () => {
                 </button>
             </div>
 
-            <div className="filters-container">
-                <div className="search-container">
-                    <input
-                        type="text"
-                        placeholder="Search vacancies..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-
-                <div className="filter-selects">
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option value="">All Statuses</option>
-                        <option value="OPEN">Open</option>
-                        <option value="CLOSED">Closed</option>
-                        <option value="FILLED">Filled</option>
-                    </select>
-
-                    <select
-                        value={priorityFilter}
-                        onChange={(e) => setPriorityFilter(e.target.value)}
-                    >
-                        <option value="">All Priorities</option>
-                        <option value="HIGH">High</option>
-                        <option value="MEDIUM">Medium</option>
-                        <option value="LOW">Low</option>
-                    </select>
-                </div>
-            </div>
-
-            {loading ? (
-                <div className="loading-container">
-                    <div className="loader"></div>
-                    <p>Loading vacancies...</p>
-                </div>
-            ) : error ? (
-                <div className="error-container">
-                    <p>Error: {error}</p>
-                    <button onClick={fetchVacancies}>Try Again</button>
-                </div>
-            ) : (
-                <>
-                    {filteredVacancies.length > 0 ? (
-                        <div className="table-container">
-                            <table className="vacancies-table">
-                                <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Position</th>
-                                    <th>Department</th>
-                                    <th>Status</th>
-                                    <th>Priority</th>
-                                    <th>Posted</th>
-                                    <th>Closing</th>
-                                    <th>Positions</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {filteredVacancies.map(vacancy => (
-                                    <tr
-                                        key={vacancy.id}
-                                        onClick={() => handleRowClick(vacancy.id)}
-                                        className="clickable-row"
-                                    >
-                                        <td className="title-cell">{vacancy.title}</td>
-                                        <td>{vacancy.jobPosition ? vacancy.jobPosition.positionName : 'N/A'}</td>
-                                        <td>{vacancy.jobPosition ? vacancy.jobPosition.department : 'N/A'}</td>
-                                        <td>
-                                                <span className={`status-badge ${getStatusBadgeClass(vacancy.status)}`}>
-                                                    {vacancy.status}
-                                                </span>
-                                        </td>
-                                        <td>
-                                                <span className={`priority-badge ${getPriorityBadgeClass(vacancy.priority)}`}>
-                                                    {vacancy.priority || 'MEDIUM'}
-                                                </span>
-                                        </td>
-                                        <td>{formatDate(vacancy.postingDate)}</td>
-                                        <td>{formatDate(vacancy.closingDate)}</td>
-                                        <td className="center-text">{vacancy.numberOfPositions || 1}</td>
-                                        <td className="action-buttons">
-
-                                            <button
-                                                className="table-action-button table-edit-button"
-                                                title="Edit vacancy"
-                                                onClick={(e) => handleEditClick(vacancy, e)}
-                                            >
-                                                <FaEdit />
-                                            </button>
-                                            <button
-                                                className="table-action-button positions-delete-button"
-                                                title="Delete vacancy"
-                                                onClick={(e) => handleDeleteVacancy(vacancy.id, e)}
-                                            >
-                                                <FaTrashAlt />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <div className="no-results">
-                            <p>No vacancies found matching your search criteria.</p>
-                        </div>
-                    )}
-                </>
-            )}
+            <DataTable
+                data={filteredVacancies}
+                columns={columns}
+                actions={actions}
+                loading={loading}
+                tableTitle=""
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={filterableColumns}
+                customFilters={customFilters}
+                onRowClick={handleRowClick}
+                defaultItemsPerPage={10}
+                itemsPerPageOptions={[10, 25, 50]}
+                className="vacancy-data-table"
+            />
 
             {showAddModal && (
                 <AddVacancyModal
