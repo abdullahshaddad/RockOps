@@ -187,7 +187,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
                     <form onSubmit={handleSubmit}>
                         <div className="position-form-row">
                             <div className="position-form-group">
-                                <label htmlFor="positionName">Position Name *</label>
+                                <label htmlFor="positionName">Position Name </label>
                                 <input
                                     type="text"
                                     id="positionName"
@@ -200,7 +200,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
                             </div>
 
                             <div className="position-form-group">
-                                <label htmlFor="department">Department *</label>
+                                <label htmlFor="department">Department </label>
                                 <div className="position-select-wrapper">
                                     <select
                                         id="department"
@@ -244,7 +244,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
                             </div>
 
                             <div className="position-form-group">
-                                <label htmlFor="baseSalary">Base Salary *</label>
+                                <label htmlFor="baseSalary">Base Salary </label>
                                 <input
                                     type="number"
                                     id="baseSalary"
@@ -274,7 +274,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
                             </div>
 
                             <div className="position-form-group">
-                                <label htmlFor="type">Employment Type *</label>
+                                <label htmlFor="type">Employment Type </label>
                                 <div className="position-select-wrapper">
                                     <select
                                         id="type"
@@ -296,7 +296,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
 
                         <div className="position-form-row">
                             <div className="position-form-group">
-                                <label htmlFor="workingDays">Working Days per Week *</label>
+                                <label htmlFor="workingDays">Working Days per Week </label>
                                 <input
                                     type="number"
                                     id="workingDays"
@@ -310,7 +310,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
                             </div>
 
                             <div className="position-form-group">
-                                <label htmlFor="experienceLevel">Experience Level *</label>
+                                <label htmlFor="experienceLevel">Experience Level </label>
                                 <div className="position-select-wrapper">
                                     <select
                                         id="experienceLevel"
@@ -332,7 +332,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
 
                         <div className="position-form-row">
                             <div className="position-form-group">
-                                <label htmlFor="shifts">Shifts *</label>
+                                <label htmlFor="shifts">Shifts </label>
                                 <div className="position-select-wrapper">
                                     <select
                                         id="shifts"
@@ -352,7 +352,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
                             </div>
 
                             <div className="position-form-group">
-                                <label htmlFor="workingHours">Working Hours per Day *</label>
+                                <label htmlFor="workingHours">Working Hours per Day </label>
                                 <input
                                     type="number"
                                     id="workingHours"
@@ -368,7 +368,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
 
                         <div className="position-form-row">
                             <div className="position-form-group">
-                                <label htmlFor="vacations">Vacation Policy *</label>
+                                <label htmlFor="vacations">Vacation Policy </label>
                                 <div className="position-select-wrapper">
                                     <select
                                         id="vacations"
@@ -389,7 +389,7 @@ const AddPositionForm = ({ isOpen, onClose, onSubmit }) => {
 
                             {formData.vacations === 'Custom' && (
                                 <div className="position-form-group">
-                                    <label htmlFor="customVacationDays">Custom Vacation Days *</label>
+                                    <label htmlFor="customVacationDays">Custom Vacation Days </label>
                                     <input
                                         type="number"
                                         id="customVacationDays"

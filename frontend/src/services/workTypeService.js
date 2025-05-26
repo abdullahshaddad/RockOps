@@ -7,6 +7,10 @@ export const workTypeService = {
         return apiClient.get(WORK_TYPE_ENDPOINTS.BASE);
     },
 
+    getAllForManagement: () => {
+        return apiClient.get(WORK_TYPE_ENDPOINTS.MANAGEMENT);
+    },
+
     getById: (id) => {
         return apiClient.get(WORK_TYPE_ENDPOINTS.BY_ID(id));
     },

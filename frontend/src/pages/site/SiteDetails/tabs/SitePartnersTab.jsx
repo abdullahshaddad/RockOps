@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import DataTable from "../../../../components/common/DataTable/DataTable.jsx";
 import {useTranslation} from 'react-i18next';
 import {useAuth} from "../../../../contexts/AuthContext.jsx";
+import { FaTrash, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 
 const SitePartnersTab = ({siteId}) => {
     const {t} = useTranslation();
@@ -12,6 +13,8 @@ const SitePartnersTab = ({siteId}) => {
     const [availablePartners, setAvailablePartners] = useState([]);
     const [partnerPercentages, setPartnerPercentages] = useState({});
     const {currentUser} = useAuth();
+    const [editingPartner, setEditingPartner] = useState(null);
+    const [editPercentage, setEditPercentage] = useState("");
 
     const isSiteAdmin = currentUser?.role === "SITE_ADMIN";
 
@@ -40,7 +43,72 @@ const SitePartnersTab = ({siteId}) => {
         {
             header: 'Percentage',
             accessor: 'partnerPercentage',
-            sortable: true
+            sortable: true,
+            render: (row) => (
+                editingPartner === row.partnerID ? (
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <input
+                            type="number"
+                            className="assign-partner-percentage-input"
+                            value={editPercentage}
+                            onChange={(e) => setEditPercentage(e.target.value)}
+                            placeholder="0"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                            style={{ width: '80px' }}
+                        />
+                        <button
+                            className="icon-button success"
+                            onClick={() => handleUpdatePartner(row.partnerID, editPercentage)}
+                            disabled={!editPercentage || parseFloat(editPercentage) < 0 || parseFloat(editPercentage) > 100}
+                            title="Save"
+                        >
+                            <FaSave />
+                        </button>
+                        <button
+                            className="icon-button cancel"
+                            onClick={() => {
+                                setEditingPartner(null);
+                                setEditPercentage("");
+                            }}
+                            title="Cancel"
+                        >
+                            <FaTimes />
+                        </button>
+                    </div>
+                ) : (
+                    row.partnerPercentage
+                )
+            )
+        },
+        {
+            header: 'Actions',
+            accessor: 'actions',
+            sortable: false,
+            render: (row) => (
+                isSiteAdmin && (
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                            className="icon-button primary"
+                            onClick={() => {
+                                setEditingPartner(row.partnerID);
+                                setEditPercentage(row.partnerPercentage.replace('%', ''));
+                            }}
+                            title="Edit Percentage"
+                        >
+                            <FaEdit />
+                        </button>
+                        <button
+                            className="icon-button danger"
+                            onClick={() => handleRemovePartner(row.partnerID)}
+                            title="Remove Partner"
+                        >
+                            <FaTrash />
+                        </button>
+                    </div>
+                )
+            )
         }
     ];
 
@@ -77,7 +145,7 @@ const SitePartnersTab = ({siteId}) => {
                     partnerFirstName: item.firstName,
                     partnerLastName: item.lastName,
                     partnerName: `${item.firstName} ${item.lastName}`,
-                    partnerPercentage: `${parseFloat(item.percentage)}%`,
+                    partnerPercentage: `${parseFloat(item.percentage).toFixed(2)}%`,
                 }));
 
                 setPartnersData(transformedData);
@@ -151,6 +219,47 @@ const SitePartnersTab = ({siteId}) => {
         }
     };
 
+    const handleUpdatePartner = async (partnerId, newPercentage) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:8080/siteadmin/${siteId}/update-partner-percentage/${partnerId}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ percentage: parseFloat(newPercentage) }),
+            });
+
+            if (!response.ok) throw new Error("Failed to update partner percentage.");
+            await fetchPartners(); // Refresh the partners list
+            setEditingPartner(null);
+            setEditPercentage("");
+        } catch (err) {
+            console.error("Error updating partner percentage:", err);
+            alert("Failed to update partner percentage. Please try again.");
+        }
+    };
+
+    const handleRemovePartner = async (partnerId) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:8080/siteadmin/${siteId}/remove-partner/${partnerId}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) throw new Error("Failed to remove partner.");
+            await fetchPartners(); // Refresh the partners list
+        } catch (err) {
+            console.error("Error removing partner:", err);
+            alert("Failed to remove partner. Please try again.");
+        }
+    };
+
     if (loading) return <div className="loading-container">Loading Partners...</div>;
 
     return (
@@ -166,53 +275,93 @@ const SitePartnersTab = ({siteId}) => {
                 )}
             </div>
 
+            {/* Updated Assign Partner Modal JSX - Replace the existing modal section in your component */}
             {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal">
-                        <h2>Assign Partner</h2>
-                        <button className="close-modal" onClick={handleCloseModal}>×</button>
-                        <div className="partner-list">
+                <div className="assign-partner-modal-overlay">
+                    <div className="assign-partner-modal-content">
+                        <div className="assign-partner-modal-header">
+                            <h2>Assign Partner</h2>
+                            <button
+                                className="assign-partner-modal-close-button"
+                                onClick={handleCloseModal}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="assign-partner-modal-body">
                             {availablePartners.length === 0 ? (
-                                <p>No Partners Available</p>
+                                <div className="assign-partner-no-partners">
+                                    <p>No Partners Available</p>
+                                </div>
                             ) : (
-                                <table className="partner-table">
-                                    <thead>
-                                    <tr>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Percentage</th>
-                                        <th>{t('common.action')}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {availablePartners.map((eq) => (
-                                        <tr key={eq.id}>
-                                            <td>{eq.firstName}</td>
-                                            <td>{eq.lastName}</td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    value={partnerPercentages[eq.id] || ""}
-                                                    onChange={(e) =>
-                                                        setPartnerPercentages(prev => ({
-                                                            ...prev,
-                                                            [eq.id]: e.target.value
-                                                        }))
-                                                    }
-                                                />
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className="assign-btn"
-                                                    onClick={() => handleAssignPartner(eq.id)}
-                                                >
-                                                    {t('site.assign')}
-                                                </button>
-                                            </td>
+                                <div className="assign-partner-table-container">
+                                    <table className="assign-partner-table">
+                                        <thead>
+                                        <tr>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Percentage (%)</th>
+                                            <th>{t('common.action')}</th>
                                         </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                        {availablePartners.map((partner) => {
+                                            const currentPercentage = partnerPercentages[partner.id] || "";
+                                            const isValidPercentage = currentPercentage &&
+                                                parseFloat(currentPercentage) >= 0 &&
+                                                parseFloat(currentPercentage) <= 100;
+
+                                            return (
+                                                <tr key={partner.id}>
+                                                    <td
+                                                        className="assign-partner-first-name"
+                                                        data-label="First Name"
+                                                    >
+                                                        {partner.firstName}
+                                                    </td>
+                                                    <td
+                                                        className="assign-partner-last-name"
+                                                        data-label="Last Name"
+                                                    >
+                                                        {partner.lastName}
+                                                    </td>
+                                                    <td data-label="Percentage">
+                                                        <div className="assign-partner-percentage-label">
+                                                            <input
+                                                                type="number"
+                                                                className="assign-partner-percentage-input"
+                                                                value={currentPercentage}
+                                                                onChange={(e) => handlePercentageChange(partner.id, e.target.value)}
+                                                                placeholder="0"
+                                                                min="0"
+                                                                max="100"
+                                                                step="0.01"
+                                                            />
+                                                        </div>
+                                                        <div
+                                                            className={`assign-partner-validation-message ${
+                                                                currentPercentage && !isValidPercentage ? 'show' : ''
+                                                            }`}
+                                                        >
+                                                            Please enter a value between 0 and 100
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Action">
+                                                        <button
+                                                            className="assign-partner-btn"
+                                                            onClick={() => handleAssignPartner(partner.id)}
+                                                            disabled={!isValidPercentage}
+                                                        >
+                                                            {t('site.assign')}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                        </tbody>
+                                    </table>
+                                </div>
                             )}
                         </div>
                     </div>

@@ -137,6 +137,14 @@ public class EquipmentController {
     }
 
     /**
+     * Get all drivers who can operate a specific equipment type for sarky logs (includes already assigned drivers)
+     */
+    @GetMapping("/type/{typeId}/sarky-drivers")
+    public ResponseEntity<List<EmployeeSummaryDTO>> getDriversForSarkyByEquipmentType(@PathVariable UUID typeId) {
+        return ResponseEntity.ok(equipmentService.getDriversForSarkyByEquipmentType(typeId));
+    }
+
+    /**
      * Check if an employee can be assigned as a driver for a specific equipment
      */
     @GetMapping("/{equipmentId}/check-driver-compatibility/{employeeId}")

@@ -9,17 +9,18 @@ import './Snackbar.scss';
  * @param {boolean} props.show - Whether to show the Snackbar
  * @param {function} props.onClose - Function to call when Snackbar should close
  * @param {number} props.duration - Duration to show Snackbar in ms (default: 3000)
+ * @param {boolean} props.persistent - Whether the snackbar should stay open until manually closed
  */
-const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000 }) => {
+const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000, persistent = false }) => {
     useEffect(() => {
-        if (show) {
+        if (show && !persistent) {
             const timer = setTimeout(() => {
                 if (onClose) onClose();
             }, duration);
 
             return () => clearTimeout(timer);
         }
-    }, [show, onClose, duration]);
+    }, [show, onClose, duration, persistent]);
 
     if (!show) return null;
 
@@ -63,9 +64,11 @@ const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000 })
     };
 
     return (
-        <div className={`global-Snackbar ${type}-Snackbar`}>
-            {getIcon()}
-            <span>{message}</span>
+        <div className={`global-notification ${type}-notification`}>
+            <div>
+                {getIcon()}
+                <span>{message}</span>
+            </div>
         </div>
     );
 };

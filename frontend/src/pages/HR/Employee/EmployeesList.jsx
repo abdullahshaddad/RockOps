@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { FaUserPlus, FaEdit, FaTrash,  FaUser } from 'react-icons/fa';
-import './EmployeesList.css';
+import './EmployeesList.scss';
 import DataTable from '../../../components/common/DataTable/DataTable';
 import AddEmployeeModal from './AddEmployeeModal';
 import EditEmployeeModal from './EditEmployeeModal';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
+import { employeeService } from '../../../services/employeeService';
+import { hrEmployeeService } from '../../../services/hrEmployeeService';
+import { departmentService } from '../../../services/departmentService';
+import { jobPositionService } from '../../../services/jobPositionService';
 
 const EmployeesList = () => {
+    const { showSuccess, showError } = useSnackbar();
     const [employees, setEmployees] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -29,20 +35,16 @@ const EmployeesList = () => {
     const fetchEmployees = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/api/v1/employees`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await employeeService.getAll();
+            const data = response.data;
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+            // DEBUG: Log the first employee to see what status values we're getting
+            if (data && data.length > 0) {
+                console.log('First employee data:', data[0]);
+                console.log('Status field:', data[0].status);
+                console.log('Status type:', typeof data[0].status);
             }
 
-            const data = await response.json();
             setEmployees(data);
             setFilteredEmployees(data);
             setLoading(false);
@@ -62,289 +64,19 @@ const EmployeesList = () => {
 
         } catch (error) {
             console.error('Error fetching employees:', error);
-            setError(error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to load employees';
+            setError(errorMessage);
+            showError('Failed to load employees. Please try again.');
             setLoading(false);
         }
     };
 
-    // Fetch job positions for the dropdown
-    const fetchJobPositions = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/api/v1/job-positions`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+    // ... (keep all other functions the same until getStatusBadge)
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setJobPositions(data);
-        } catch (error) {
-            console.error('Error fetching job positions:', error);
-        }
-    };
-
-    // Fetch sites for the dropdown
-    const fetchSites = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8080/api/v1/site', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setSites(data);
-        } catch (error) {
-            console.error('Error fetching sites:', error);
-        }
-    };
-
-    // Load all necessary data when component mounts
-    useEffect(() => {
-        fetchEmployees();
-        fetchJobPositions();
-        fetchSites();
-    }, []);
-
-    // Filter employees based on search term and filters
-    useEffect(() => {
-        let result = employees;
-
-        if (searchTerm) {
-            const lowerSearchTerm = searchTerm.toLowerCase();
-            result = result.filter(
-                employee =>
-                    (employee.firstName && employee.firstName.toLowerCase().includes(lowerSearchTerm)) ||
-                    (employee.lastName && employee.lastName.toLowerCase().includes(lowerSearchTerm)) ||
-                    (employee.email && employee.email.toLowerCase().includes(lowerSearchTerm)) ||
-                    (employee.fullName && employee.fullName.toLowerCase().includes(lowerSearchTerm))
-            );
-        }
-
-        if (departmentFilter) {
-            result = result.filter(employee => {
-                // Handle department as object or string
-                const empDept = employee.jobPositionDepartment;
-                if (empDept && typeof empDept === 'object') {
-                    return empDept.name === departmentFilter;
-                }
-                return empDept === departmentFilter;
-            });
-        }
-
-        if (positionFilter) {
-            result = result.filter(employee =>
-                employee.position === positionFilter ||
-                employee.jobPositionName === positionFilter
-            );
-        }
-
-        if (statusFilter) {
-            result = result.filter(employee => employee.status === statusFilter);
-        }
-
-        if (typeFilter) {
-            result = result.filter(employee => employee.contractType === typeFilter);
-        }
-
-        setFilteredEmployees(result);
-    }, [searchTerm, departmentFilter, positionFilter, statusFilter, typeFilter, employees]);
-
-    // Handle adding a new employee
-    const handleAddEmployee = async (employeeData, photoFile, idFrontFile, idBackFile) => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem('token');
-
-            console.log("Employee data being sent:", employeeData);
-
-            // Create FormData for multipart/form-data request
-            const formData = new FormData();
-
-            // Add employee data as a JSON string
-            formData.append("employeeData", new Blob([JSON.stringify(employeeData)], {
-                type: "application/json"
-            }));
-
-            // Add image files if provided
-            if (photoFile) {
-                formData.append('photo', photoFile);
-                console.log('Added photo file:', photoFile.name);
-            }
-
-            if (idFrontFile) {
-                formData.append('idFrontImage', idFrontFile);
-                console.log('Added ID front file:', idFrontFile.name);
-            }
-
-            if (idBackFile) {
-                formData.append('idBackImage', idBackFile);
-                console.log('Added ID back file:', idBackFile.name);
-            }
-
-            // Debug FormData contents (can't directly console.log FormData)
-            for (let pair of formData.entries()) {
-                console.log(pair[0], pair[1] instanceof Blob ? `Blob: ${pair[1].type}, size: ${pair[1].size}` : pair[1]);
-            }
-
-            // Make API request
-            const response = await fetch('http://localhost:8080/api/v1/hr/employee', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                    // Don't manually set Content-Type for FormData
-                },
-                body: formData
-            });
-
-            console.log('Response status:', response.status);
-
-            // Handle response
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Full error response:', errorText);
-                throw new Error(errorText || response.statusText);
-            }
-
-            const result = await response.json();
-            console.log('Employee added successfully:', result);
-
-            // Refresh the employee list
-            await fetchEmployees();
-            setShowAddModal(false);
-
-            // Show success message
-            alert('Employee added successfully!');
-
-        } catch (error) {
-            console.error('Error adding employee:', error);
-            setError(`Failed to add employee: ${error.message}`);
-            alert(`Failed to add employee. Please try again.`);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Handle editing an employee
-    const handleEditEmployee = async (updatedEmployee, photoFile, idFrontFile, idBackFile) => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem('token');
-
-            // Create FormData for multipart/form-data request
-            const formData = new FormData();
-
-            // Add employee JSON data
-            formData.append('employeeData', JSON.stringify(updatedEmployee));
-
-            // Add image files if provided
-            if (photoFile) formData.append('photo', photoFile);
-            if (idFrontFile) formData.append('idFrontImage', idFrontFile);
-            if (idBackFile) formData.append('idBackImage', idBackFile);
-
-            // Fixed the URL by removing the $ symbol
-            const response = await fetch(`http://localhost:8080/api/v1/hr/employee/${selectedEmployee.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                    // No Content-Type header with FormData, browser sets it automatically with boundary
-                },
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            // Refresh the employee list
-            await fetchEmployees();
-            setShowEditModal(false);
-            setSelectedEmployee(null);
-
-        } catch (error) {
-            console.error('Error updating employee:', error);
-            setError(error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Delete an employee
-    const handleDeleteEmployee = async (employeeId) => {
-        if (!window.confirm('Are you sure you want to delete this employee?')) {
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const token = localStorage.getItem('token');
-
-            const response = await fetch(`http://localhost:8080/api/v1/hr/employee/${employeeId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            // Refresh the employee list
-            await fetchEmployees();
-
-        } catch (error) {
-            console.error('Error deleting employee:', error);
-            setError(error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Navigate to employee details
-    const handleRowClick = (employee) => {
-        // Navigate to employee details page
-        window.location.href = `/hr/employee-details/${employee.id}`;
-    };
-
-    // Open edit modal with employee data
-    const handleEditClick = (employee) => {
-        setSelectedEmployee(employee);
-        setShowEditModal(true);
-    };
-
-    // Format currency for display
-    const formatCurrency = (amount) => {
-        if (!amount) return '-';
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD'
-        }).format(amount);
-    };
-
-    // Format date for display
-    const formatDate = (dateString) => {
-        if (!dateString) return '-';
-        return new Date(dateString).toLocaleDateString();
-    };
-
-    // Get status badge styling
+    // Get status badge styling - IMPROVED
     const getStatusBadge = (status) => {
+        console.log('getStatusBadge called with:', status, 'Type:', typeof status); // DEBUG
+
         const statusColors = {
             'ACTIVE': 'success',
             'INACTIVE': 'secondary',
@@ -354,9 +86,13 @@ const EmployeesList = () => {
             'TERMINATED': 'danger'
         };
 
+        // Handle null, undefined, or empty status
+        const displayStatus = status || 'ACTIVE'; // Default to ACTIVE if no status
+        const colorClass = statusColors[displayStatus] || 'secondary';
+
         return (
-            <span className={`status-badge status-badge--${statusColors[status] || 'secondary'}`}>
-                {status || 'N/A'}
+            <span className={`status-badge status-badge--${colorClass}`}>
+                {displayStatus}
             </span>
         );
     };
@@ -438,7 +174,10 @@ const EmployeesList = () => {
         {
             header: 'Status',
             accessor: 'status',
-            render: (employee) => getStatusBadge(employee.status)
+            render: (employee) => {
+                console.log('Rendering status for employee:', employee.firstName, 'Status:', employee.status); // DEBUG
+                return getStatusBadge(employee.status);
+            }
         },
         {
             header: 'Type',
@@ -472,6 +211,244 @@ const EmployeesList = () => {
             render: (employee) => formatDate(employee.hireDate)
         }
     ];
+
+    // ... (rest of the functions remain the same)
+
+    // Fetch job positions for the dropdown
+    const fetchJobPositions = async () => {
+        try {
+            const response = await jobPositionService.getAll();
+            setJobPositions(response.data);
+        } catch (error) {
+            console.error('Error fetching job positions:', error);
+            showError('Failed to load job positions');
+        }
+    };
+
+    // Fetch sites for the dropdown
+    const fetchSites = async () => {
+        try {
+            // Note: You'll need to create a site service or use the appropriate endpoint
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:8080/api/v1/site', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setSites(data);
+        } catch (error) {
+            console.error('Error fetching sites:', error);
+            showError('Failed to load sites');
+        }
+    };
+
+    // Load all necessary data when component mounts
+    useEffect(() => {
+        fetchEmployees();
+        fetchJobPositions();
+        fetchSites();
+    }, []);
+
+    // Filter employees based on search term and filters
+    useEffect(() => {
+        let result = employees;
+
+        if (searchTerm) {
+            const lowerSearchTerm = searchTerm.toLowerCase();
+            result = result.filter(
+                employee =>
+                    (employee.firstName && employee.firstName.toLowerCase().includes(lowerSearchTerm)) ||
+                    (employee.lastName && employee.lastName.toLowerCase().includes(lowerSearchTerm)) ||
+                    (employee.email && employee.email.toLowerCase().includes(lowerSearchTerm)) ||
+                    (employee.fullName && employee.fullName.toLowerCase().includes(lowerSearchTerm))
+            );
+        }
+
+        if (departmentFilter) {
+            result = result.filter(employee => {
+                // Handle department as object or string
+                const empDept = employee.jobPositionDepartment;
+                if (empDept && typeof empDept === 'object') {
+                    return empDept.name === departmentFilter;
+                }
+                return empDept === departmentFilter;
+            });
+        }
+
+        if (positionFilter) {
+            result = result.filter(employee =>
+                employee.position === positionFilter ||
+                employee.jobPositionName === positionFilter
+            );
+        }
+
+        if (statusFilter) {
+            result = result.filter(employee => employee.status === statusFilter);
+        }
+
+        if (typeFilter) {
+            result = result.filter(employee => employee.contractType === typeFilter);
+        }
+
+        setFilteredEmployees(result);
+    }, [searchTerm, departmentFilter, positionFilter, statusFilter, typeFilter, employees]);
+
+    // Handle adding a new employee
+    const handleAddEmployee = async (employeeData, photoFile, idFrontFile, idBackFile) => {
+        try {
+            setLoading(true);
+
+            console.log("Employee data being sent:", employeeData);
+
+            // Create FormData for multipart/form-data request
+            const formData = new FormData();
+
+            // Add employee data as a JSON string
+            formData.append("employeeData", new Blob([JSON.stringify(employeeData)], {
+                type: "application/json"
+            }));
+
+            // Add image files if provided
+            if (photoFile) {
+                formData.append('photo', photoFile);
+                console.log('Added photo file:', photoFile.name);
+            }
+
+            if (idFrontFile) {
+                formData.append('idFrontImage', idFrontFile);
+                console.log('Added ID front file:', idFrontFile.name);
+            }
+
+            if (idBackFile) {
+                formData.append('idBackImage', idBackFile);
+                console.log('Added ID back file:', idBackFile.name);
+            }
+
+            // Debug FormData contents (can't directly console.log FormData)
+            for (let pair of formData.entries()) {
+                console.log(pair[0], pair[1] instanceof Blob ? `Blob: ${pair[1].type}, size: ${pair[1].size}` : pair[1]);
+            }
+
+            // Make API request using HR employee service
+            const response = await hrEmployeeService.employee.create(formData);
+            console.log('Employee added successfully:', response.data);
+
+            // Refresh the employee list
+            await fetchEmployees();
+            setShowAddModal(false);
+
+            // Show success message
+            showSuccess('Employee added successfully!');
+
+        } catch (error) {
+            console.error('Error adding employee:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to add employee';
+            setError(`Failed to add employee: ${errorMessage}`);
+            showError('Failed to add employee. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Handle editing an employee
+    const handleEditEmployee = async (updatedEmployee, photoFile, idFrontFile, idBackFile) => {
+        try {
+            setLoading(true);
+
+            // Create FormData for multipart/form-data request
+            const formData = new FormData();
+
+            // Add employee JSON data
+            formData.append('employeeData', JSON.stringify(updatedEmployee));
+
+            // Add image files if provided
+            if (photoFile) formData.append('photo', photoFile);
+            if (idFrontFile) formData.append('idFrontImage', idFrontFile);
+            if (idBackFile) formData.append('idBackImage', idBackFile);
+
+            // Use HR employee service for update
+            const response = await hrEmployeeService.employee.update(selectedEmployee.id, formData);
+
+            // Refresh the employee list
+            await fetchEmployees();
+            setShowEditModal(false);
+            setSelectedEmployee(null);
+
+            // Show success message
+            showSuccess('Employee updated successfully!');
+
+        } catch (error) {
+            console.error('Error updating employee:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to update employee';
+            setError(`Failed to update employee: ${errorMessage}`);
+            showError('Failed to update employee. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Handle deleting an employee
+    const handleDeleteEmployee = async (employeeId) => {
+        if (!window.confirm('Are you sure you want to delete this employee?')) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            // Use HR employee service for delete
+            await hrEmployeeService.employee.delete(employeeId);
+
+            // Refresh the employee list
+            await fetchEmployees();
+
+            // Show success message
+            showSuccess('Employee deleted successfully!');
+
+        } catch (error) {
+            console.error('Error deleting employee:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to delete employee';
+            setError(`Failed to delete employee: ${errorMessage}`);
+            showError('Failed to delete employee. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Navigate to employee details
+    const handleRowClick = (employee) => {
+        // Navigate to employee details page
+        window.location.href = `/hr/employee-details/${employee.id}`;
+    };
+
+    // Open edit modal with employee data
+    const handleEditClick = (employee) => {
+        setSelectedEmployee(employee);
+        setShowEditModal(true);
+    };
+
+    // Format currency for display
+    const formatCurrency = (amount) => {
+        if (!amount) return '-';
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(amount);
+    };
+
+    // Format date for display
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        return new Date(dateString).toLocaleDateString();
+    };
 
     // Define filterable columns
     const filterableColumns = [
@@ -564,7 +541,7 @@ const EmployeesList = () => {
 
     return (
         <div className="employees-container">
-            <div className="employees-header">
+            <div className="departments-header">
                 <div className="employees-header__content">
                     <h1 className="employees-header__title">Employees Directory</h1>
                     <p className="employees-header__subtitle">

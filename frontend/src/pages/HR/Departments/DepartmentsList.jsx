@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FiPlus, FiEdit, FiTrash2, FiCheck, FiX } from 'react-icons/fi';
 import DataTable from '../../../components/common/DataTable/DataTable';
 import { useSnackbar } from '../../../contexts/SnackbarContext';
+import { departmentService } from '../../../services/departmentService';
 import './DepartmentsList.scss';
 
 const DepartmentsList = () => {
@@ -21,30 +22,13 @@ const DepartmentsList = () => {
         setLoading(true);
         setError(null);
         try {
-            const token = localStorage.getItem('token');
-            console.log('Fetching departments with token:', token ? 'Present' : 'Missing');
-
-            const response = await fetch('http://localhost:8080/api/v1/departments', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            console.log('Fetch response status:', response.status);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to fetch departments: ${response.status} - ${errorText}`);
-            }
-
-            const data = await response.json();
-            console.log('Fetched departments:', data);
-            setDepartments(data);
+            const response = await departmentService.getAll();
+            console.log('Fetched departments:', response.data);
+            setDepartments(response.data);
         } catch (err) {
             console.error('Error fetching departments:', err);
-            setError(err.message);
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to load departments';
+            setError(errorMessage);
             showError('Failed to load departments. Please try again.');
         } finally {
             setLoading(false);
@@ -111,38 +95,23 @@ const DepartmentsList = () => {
         setError(null);
 
         try {
-            const token = localStorage.getItem('token');
-            console.log('Creating department with data:', formData);
-
-            const response = await fetch('http://localhost:8080/api/v1/departments', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: formData.name.trim(),
-                    description: formData.description.trim() || null
-                })
-            });
-
-            console.log('Create response status:', response.status);
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
-            }
-
-            const newDepartment = await response.json();
-            console.log('Created department:', newDepartment);
+            const departmentData = {
+                name: formData.name.trim(),
+                description: formData.description.trim() || null
+            };
+            
+            console.log('Creating department with data:', departmentData);
+            const response = await departmentService.create(departmentData);
+            console.log('Created department:', response.data);
 
             await fetchDepartments(); // Refresh the list
             handleCloseForm();
             showSuccess('Department created successfully');
         } catch (err) {
             console.error('Error creating department:', err);
-            setError(err.message || 'Failed to create department');
-            showError(err.message || 'Failed to create department');
+            const errorMessage = err.response?.data?.error || err.message || 'Failed to create department';
+            setError(errorMessage);
+            showError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -161,35 +130,22 @@ const DepartmentsList = () => {
         setError(null);
 
         try {
-            const token = localStorage.getItem('token');
-            console.log('Updating department with data:', editFormData);
-
-            const response = await fetch(`http://localhost:8080/api/v1/departments/${currentDepartment.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: editFormData.name.trim(),
-                    description: editFormData.description.trim() || null
-                })
-            });
-
-            console.log('Update response status:', response.status);
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
-            }
+            const departmentData = {
+                name: editFormData.name.trim(),
+                description: editFormData.description.trim() || null
+            };
+            
+            console.log('Updating department with data:', departmentData);
+            const response = await departmentService.update(currentDepartment.id, departmentData);
 
             await fetchDepartments(); // Refresh the list
             handleCloseEditForm();
             showSuccess('Department updated successfully');
         } catch (err) {
             console.error('Error updating department:', err);
-            setError(err.message || 'Failed to update department');
-            showError(err.message || 'Failed to update department');
+            const errorMessage = err.response?.data?.error || err.message || 'Failed to update department';
+            setError(errorMessage);
+            showError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -200,31 +156,17 @@ const DepartmentsList = () => {
         setError(null);
 
         try {
-            const token = localStorage.getItem('token');
             console.log('Deleting department with id:', id);
-
-            const response = await fetch(`http://localhost:8080/api/v1/departments/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            console.log('Delete response status:', response.status);
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
-            }
+            await departmentService.delete(id);
 
             await fetchDepartments(); // Refresh the list
             setDeleteConfirmId(null);
             showSuccess('Department deleted successfully');
         } catch (err) {
             console.error('Error deleting department:', err);
-            setError(err.message || 'Failed to delete department');
-            showError(err.message || 'Failed to delete department');
+            const errorMessage = err.response?.data?.error || err.message || 'Failed to delete department';
+            setError(errorMessage);
+            showError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -250,13 +192,13 @@ const DepartmentsList = () => {
             label: 'Edit',
             icon: <FiEdit />,
             onClick: (row) => handleOpenEditForm(row),
-            className: 'departments-edit-button'
+            className: 'primary'
         },
         {
             label: 'Delete',
             icon: <FiTrash2 />,
             onClick: (row) => setDeleteConfirmId(row.id),
-            className: 'departments-delete-button'
+            className: 'danger'
         }
     ];
 
@@ -341,13 +283,7 @@ const DepartmentsList = () => {
                                 />
                             </div>
                             <div className="departments-form-actions">
-                                <button
-                                    type="submit"
-                                    className="departments-submit-button"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Adding...' : 'Add Department'}
-                                </button>
+
                                 <button
                                     type="button"
                                     className="departments-cancel-button"
@@ -355,6 +291,13 @@ const DepartmentsList = () => {
                                     disabled={loading}
                                 >
                                     Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="departments-submit-button"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Adding...' : 'Add Department'}
                                 </button>
                             </div>
                         </form>
@@ -399,13 +342,7 @@ const DepartmentsList = () => {
                                 />
                             </div>
                             <div className="departments-form-actions">
-                                <button
-                                    type="submit"
-                                    className="departments-submit-button"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Updating...' : 'Update Department'}
-                                </button>
+
                                 <button
                                     type="button"
                                     className="departments-cancel-button"
@@ -413,6 +350,13 @@ const DepartmentsList = () => {
                                     disabled={loading}
                                 >
                                     Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="departments-submit-button"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Updating...' : 'Update Department'}
                                 </button>
                             </div>
                         </form>
@@ -427,19 +371,20 @@ const DepartmentsList = () => {
                         <h2>Confirm Delete</h2>
                         <p>Are you sure you want to delete this department?</p>
                         <div className="departments-form-actions">
-                            <button
-                                className="departments-confirm-button"
-                                onClick={() => handleDeleteDepartment(deleteConfirmId)}
-                                disabled={loading}
-                            >
-                                <FiCheck /> Confirm
-                            </button>
+
                             <button
                                 className="departments-cancel-button"
                                 onClick={() => setDeleteConfirmId(null)}
                                 disabled={loading}
                             >
                                 <FiX /> Cancel
+                            </button>
+                            <button
+                                className="departments-confirm-button"
+                                onClick={() => handleDeleteDepartment(deleteConfirmId)}
+                                disabled={loading}
+                            >
+                                <FiCheck /> Confirm
                             </button>
                         </div>
                     </div>

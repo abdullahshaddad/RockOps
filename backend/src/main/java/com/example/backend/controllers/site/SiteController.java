@@ -119,6 +119,10 @@ public class SiteController
         return ResponseEntity.ok(partnersList != null ? partnersList : Collections.emptyList());
     }
 
-
+    @GetMapping("/unassigned-employees")
+    public ResponseEntity<?> getUnassignedEmployees() {
+            List<Employee> unassignedEmployees = siteService.getUnassignedEmployees();
+        return ResponseEntity.ok(unassignedEmployees != null ? unassignedEmployees : Collections.emptyList());
+    }
 
 }
