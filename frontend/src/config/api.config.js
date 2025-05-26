@@ -19,6 +19,9 @@ export const EQUIPMENT_ENDPOINTS = {
         `/api/equipment/${equipmentId}/check-driver-compatibility/${employeeId}`,
     BRANDS: '/api/equipment/brands',
     BRAND_BY_ID: (id) => `/api/equipment/brands/${id}`,
+    // Transaction endpoints
+    SEND_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/send-transaction`,
+    RECEIVE_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/receive-transaction`,
 };
 
 // Sarky module endpoints
@@ -71,6 +74,24 @@ export const EMPLOYEE_ENDPOINTS = {
     }
 };
 
+// HR module endpoints
+export const HR_ENDPOINTS = {
+    // HR Employee Management
+    EMPLOYEE: {
+        BASE: '/api/v1/hr/employee',
+        BY_ID: (id) => `/api/v1/hr/employee/${id}`,
+        CREATE: '/api/v1/hr/employee',
+        UPDATE: (id) => `/api/v1/hr/employee/${id}`,
+        DELETE: (id) => `/api/v1/hr/employee/${id}`
+    },
+    
+    // HR Dashboard
+    DASHBOARD: {
+        SALARY_STATISTICS: '/api/v1/hr/dashboard/salary-statistics',
+        EMPLOYEE_DISTRIBUTION: '/api/v1/hr/dashboard/employee-distribution'
+    }
+};
+
 // Site module endpoints
 export const SITE_ENDPOINTS = {
     BASE: '/api/v1/site',
@@ -119,8 +140,13 @@ export const WORK_TYPE_ENDPOINTS = {
 export const JOB_POSITION_ENDPOINTS = {
     BASE: '/api/v1/job-positions',
     CREATE_DTO: '/api/v1/job-positions/dto',
-    BY_ID: (id) => `/api/v1/job-positions/dto/${id}`,
-    UPDATE_DTO: (id) => `/api/v1/job-positions/dto/${id}`
+    BY_ID: (id) => `/api/v1/job-positions/${id}`,
+    DTO_BY_ID: (id) => `/api/v1/job-positions/dto/${id}`,
+    UPDATE_DTO: (id) => `/api/v1/job-positions/dto/${id}`,
+    DELETE: (id) => `/api/v1/job-positions/${id}`,
+    EMPLOYEES: (id) => `/api/v1/job-positions/${id}/employees`,
+    CREATE: '/api/v1/job-positions',
+    UPDATE: (id) => `/api/v1/job-positions/${id}`
 };
 
 // Document module endpoints
@@ -172,7 +198,11 @@ export const OFFER_ENDPOINTS = {
 export const CANDIDATE_ENDPOINTS = {
     BASE: '/api/v1/candidates',
     BY_ID: (id) => `/api/v1/candidates/${id}`,
-    BY_VACANCY: (vacancyId) => `/api/v1/candidates/vacancy/${vacancyId}`
+    BY_VACANCY: (vacancyId) => `/api/v1/candidates/vacancy/${vacancyId}`,
+    CREATE: '/api/v1/candidates',
+    UPDATE: (id) => `/api/v1/candidates/${id}`,
+    DELETE: (id) => `/api/v1/candidates/${id}`,
+    TO_EMPLOYEE: (id) => `/api/v1/candidates/${id}/to-employee`
 };
 
 // Vacancy module endpoints
@@ -182,4 +212,57 @@ export const VACANCY_ENDPOINTS = {
     CREATE: '/api/v1/vacancies',
     UPDATE: (id) => `/api/v1/vacancies/${id}`,
     DELETE: (id) => `/api/v1/vacancies/${id}`
+};
+
+// Department module endpoints
+export const DEPARTMENT_ENDPOINTS = {
+    BASE: '/api/v1/departments',
+    BY_ID: (id) => `/api/v1/departments/${id}`,
+    CREATE: '/api/v1/departments',
+    UPDATE: (id) => `/api/v1/departments/${id}`,
+    DELETE: (id) => `/api/v1/departments/${id}`,
+    TEST: '/api/v1/departments/test'
+};
+
+// Attendance module endpoints
+export const ATTENDANCE_ENDPOINTS = {
+    BASE: '/api/v1/attendance',
+    BY_EMPLOYEE: (employeeId) => `/api/v1/attendance/employee/${employeeId}`,
+    MONTHLY: (employeeId) => `/api/v1/attendance/employee/${employeeId}/monthly`,
+    GENERATE_MONTHLY: '/api/v1/attendance/generate-monthly',
+    HOURLY: '/api/v1/attendance/hourly',
+    DAILY: '/api/v1/attendance/daily',
+    UPDATE_STATUS: (attendanceId) => `/api/v1/attendance/${attendanceId}/status`,
+    MARK_PRESENT: '/api/v1/attendance/mark-present',
+    DAILY_SUMMARY: '/api/v1/attendance/daily-summary'
+};
+
+// Transaction module endpoints
+export const TRANSACTION_ENDPOINTS = {
+    BASE: '/api/v1/transactions',
+    CREATE: '/api/v1/transactions/create',
+    BY_BATCH: (batchNumber) => `/api/v1/transactions/batch/${batchNumber}`,
+    ACCEPT: (transactionId) => `/api/v1/transactions/${transactionId}/accept`,
+    REJECT: (transactionId) => `/api/v1/transactions/${transactionId}/reject`,
+    UPDATE: (transactionId) => `/api/v1/transactions/${transactionId}/update`
+};
+
+// Item Type module endpoints
+export const ITEM_TYPE_ENDPOINTS = {
+    BASE: '/api/v1/itemTypes',
+    BY_ID: (id) => `/api/v1/itemTypes/${id}`,
+    CREATE: '/api/v1/itemTypes',
+    UPDATE: (id) => `/api/v1/itemTypes/${id}`,
+    DELETE: (id) => `/api/v1/itemTypes/${id}`
+};
+
+// Warehouse module endpoints
+export const WAREHOUSE_ENDPOINTS = {
+    BASE: '/api/v1/warehouses',
+    BY_ID: (id) => `/api/v1/warehouses/${id}`,
+    BY_SITE: (siteId) => `/api/v1/site/${siteId}/warehouses`,
+    ITEMS: (warehouseId) => `/api/v1/items/warehouse/${warehouseId}`,
+    CREATE: '/api/v1/warehouses',
+    UPDATE: (id) => `/api/v1/warehouses/${id}`,
+    DELETE: (id) => `/api/v1/warehouses/${id}`
 };

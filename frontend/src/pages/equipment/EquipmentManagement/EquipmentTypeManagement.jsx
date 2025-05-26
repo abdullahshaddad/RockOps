@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { equipmentService } from '../../../services/equipmentService';
 import { useSnackbar } from '../../../contexts/SnackbarContext';
@@ -16,7 +16,6 @@ const EquipmentTypeManagement = () => {
         description: ''
     });
     const [deletingType, setDeletingType] = useState(null);
-    const confirmTimeoutRef = useRef(null);
 
     // Use the snackbar context
     const { showSuccess, showError, showInfo, showWarning, showSnackbar, hideSnackbar } = useSnackbar();
@@ -38,13 +37,6 @@ const EquipmentTypeManagement = () => {
 
     useEffect(() => {
         fetchTypes();
-
-        // Clear any lingering timeouts when component unmounts
-        return () => {
-            if (confirmTimeoutRef.current) {
-                clearTimeout(confirmTimeoutRef.current);
-            }
-        };
     }, []);
 
     const handleOpenModal = (type = null) => {
@@ -99,12 +91,12 @@ const EquipmentTypeManagement = () => {
         // Custom message with buttons
         const message = `Are you sure you want to delete "${typeName}"?`;
 
-        // Show confirmation warning
-        showWarning(message, 5000);
+        // Show persistent confirmation warning that won't auto-hide
+        showWarning(message, 0, true);
 
         // Create action buttons in the DOM
         setTimeout(() => {
-            const snackbar = document.querySelector('.global-snackbar');
+            const snackbar = document.querySelector('.global-notification');
             if (snackbar) {
                 // Create and append action buttons container
                 const actionContainer = document.createElement('div');
@@ -133,11 +125,6 @@ const EquipmentTypeManagement = () => {
                 snackbar.appendChild(actionContainer);
             }
         }, 100);
-
-        // Set a timeout to clear the deletingType state after the snackbar duration
-        confirmTimeoutRef.current = setTimeout(() => {
-            setDeletingType(null);
-        }, 5500);
     };
 
     const performDelete = async (typeId, typeName) => {
@@ -150,12 +137,6 @@ const EquipmentTypeManagement = () => {
             showError(`Failed to delete equipment type: ${err.response?.data?.message || err.message}`);
         } finally {
             setDeletingType(null);
-
-            // Clear the timeout since we've handled the action
-            if (confirmTimeoutRef.current) {
-                clearTimeout(confirmTimeoutRef.current);
-                confirmTimeoutRef.current = null;
-            }
         }
     };
 

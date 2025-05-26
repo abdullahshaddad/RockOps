@@ -12,15 +12,17 @@ export const SnackbarProvider = ({ children }) => {
         show: false,
         message: '',
         type: 'success',
-        duration: 3000
+        duration: 3000,
+        persistent: false
     });
 
-    const showSnackbar = useCallback((message, type = 'success', duration = 3000) => {
+    const showSnackbar = useCallback((message, type = 'success', duration = 3000, persistent = false) => {
         setSnackbar({
             show: true,
             message,
             type,
-            duration
+            duration,
+            persistent
         });
     }, []);
 
@@ -41,8 +43,8 @@ export const SnackbarProvider = ({ children }) => {
     const showInfo = useCallback((message, duration) =>
         showSnackbar(message, 'info', duration), [showSnackbar]);
 
-    const showWarning = useCallback((message, duration) =>
-        showSnackbar(message, 'warning', duration), [showSnackbar]);
+    const showWarning = useCallback((message, duration, persistent = false) =>
+        showSnackbar(message, 'warning', duration, persistent), [showSnackbar]);
 
     return (
         <SnackbarContext.Provider
@@ -61,6 +63,7 @@ export const SnackbarProvider = ({ children }) => {
                 message={snackbarState.message}
                 type={snackbarState.type}
                 duration={snackbarState.duration}
+                persistent={snackbarState.persistent}
                 onClose={hideSnackbar}
             />
         </SnackbarContext.Provider>

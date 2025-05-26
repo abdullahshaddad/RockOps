@@ -328,6 +328,52 @@
       to { transform: rotate(360deg); }
     }
   }
+
+  // Resolution info card styles
+  .resolution-info-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    margin: 16px;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    border-left: 4px solid #f39c12;
+
+    .resolution-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        width: 24px;
+        height: 24px;
+        color: #f39c12;
+      }
+    }
+
+    .resolution-info-content {
+      flex: 1;
+
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #856404;
+      }
+
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: #856404;
+        line-height: 1.4;
+      }
+    }
+  }
 }
 
 // Make it responsive
