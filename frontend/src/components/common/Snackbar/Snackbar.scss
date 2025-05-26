@@ -1,4 +1,3 @@
-
 .global-notification {
   position: fixed;
   top: 20px;
@@ -8,11 +7,19 @@
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 10px;
   font-size: 14px;
   z-index: 2000;
   animation: slideDownFade 0.3s ease, slideUpFade 0.3s ease 2.7s;
+  min-width: 300px;
+  max-width: 500px;
+}
+
+.global-notification > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 @keyframes slideDownFade {
@@ -83,4 +90,49 @@
   color: #f59e0b;
   width: 20px;
   height: 20px;
+}
+
+// Styles for action buttons in confirmation snackbars
+.snackbar-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.snackbar-action-button {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.confirm {
+    background-color: #dc2626;
+    color: white;
+
+    &:hover {
+      background-color: #b91c1c;
+      transform: translateY(-1px);
+    }
+  }
+
+  &.cancel {
+    background-color: #6b7280;
+    color: white;
+
+    &:hover {
+      background-color: #4b5563;
+      transform: translateY(-1px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
