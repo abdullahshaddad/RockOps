@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { BsPrinter } from "react-icons/bs";
 import { IoDocumentOutline } from "react-icons/io5";
-import warehouseimg1 from "../../../Resources/Images/warehouse1.jpg";
+import warehouseimg1 from "../../../assets/imgs/warehouse1.jpg";
 import "./WarehouseInformation.scss";
 
 const WarehouseInformation = () => {

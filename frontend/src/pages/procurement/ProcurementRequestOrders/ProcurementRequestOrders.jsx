@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./ProcurementRequestOrder.scss";
 import procurementImage from "../../../Assets/imgs/pro_icon.png";
-import Snackbar from "../../../Components/Snackbar/Snackbar";
+import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx"
 import IncomingRequestOrders from './IncomingRequests/IncomingRequestOrders';
 import ApprovedRequestOrders from './ApprovedRequests/ApprovedRequestOrders';
 

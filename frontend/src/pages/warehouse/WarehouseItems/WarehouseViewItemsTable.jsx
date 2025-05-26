@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./WarehouseViewItems.scss";
 import { useParams } from 'react-router-dom';
-import Table from "../../../../OurTable/Table";
+import Table from "../../../components/common/OurTable/Table.jsx";
 
 const WarehouseViewItemsTable = ({ warehouseId }) => {
   const [tableData, setTableData] = useState([]);

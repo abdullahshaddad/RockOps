@@ -1,13 +1,13 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { FaInfoCircle } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
-import warehouseimg1 from "../../../Resources/Images/warehouse1.jpg";
-import WarehouseViewItemsTable from "../../../Components/AdvancedTables/WarehousesView/WarehouseDetailsAdvancedTable/WarehouseItems/WarehouseViewItemsTable";
-import WarehouseViewItemTypesTable from "../../../Components/AdvancedTables/WarehousesView/WarehouseDetailsAdvancedTable/WarehouseItemTypes/WarehouseViewItemTypesTable";
-import WarehouseViewItemsCategoriesTable from "../../../Components/AdvancedTables/WarehousesView/WarehouseDetailsAdvancedTable/WarehouseCategories/WarehouseViewItemsCategoriesTable";
-import WarehouseViewTransactionsTable from "../../../Components/AdvancedTables/WarehousesView/WarehouseDetailsAdvancedTable/WarehouseViewTransactions/WarehouseViewTransactionsTable";
+import warehouseimg1 from "../../../assets/imgs/warehouse1.jpg";
+import WarehouseViewItemsTable from "../../warehouse/WarehouseItems/WarehouseViewItemsTable";
+import WarehouseViewItemTypesTable from "../../warehouse/WarehouseItemTypes/WarehouseViewItemTypesTable";
+import WarehouseViewItemsCategoriesTable from "../../warehouse/WarehouseCategories/WarehouseViewItemsCategoriesTable";
+import WarehouseViewTransactionsTable from "../../warehouse/WarehouseViewTransactions/WarehouseViewTransactionsTable";
 // Add import for the new Request Orders table component
- import WarehouseRequestOrders from "../../../Components/AdvancedTables/WarehousesView/WarehouseDetailsAdvancedTable/WarehouseRequestOrders/WarehouseRequestOrders";
+ import WarehouseRequestOrders from "../../warehouse/WarehouseRequestOrders/WarehouseRequestOrders";
 import "./WarehouseDetails.scss";
 
 const WarehouseDetails = () => {
@@ -119,7 +119,7 @@ const WarehouseDetails = () => {
               </button>
 
 
-              {userRole === 'WAREHOUSEMANAGER' && (
+              {userRole === 'WAREHOUSE_MANAGER' && (
                   <button
                       className={`new-tab-button ${activeTab === "transactions" ? "active" : ""}`}
                       onClick={() => setActiveTab("transactions")}

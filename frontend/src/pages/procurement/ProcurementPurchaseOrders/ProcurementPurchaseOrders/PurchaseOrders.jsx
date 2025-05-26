@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiChevronRight, FiSearch, FiCheckCircle } from 'react-icons/fi';
 import "./PurchaseOrders.scss";
-import offersImage from "../../../../Assets/imgs/pro_icon.png";
+import offersImage from "../../../../assets/imgs/pro_icon.png";
 
 const PurchaseOrders = () => {
     const [purchaseOrders, setPurchaseOrders] = useState([]);
@@ -13,7 +13,7 @@ const PurchaseOrders = () => {
     const navigate = useNavigate();
 
     // Define your API URL based on your project setup
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api/v1';
+    const API_URL =  'http://localhost:8080/api/v1';
 
     useEffect(() => {
         fetchPurchaseOrders();

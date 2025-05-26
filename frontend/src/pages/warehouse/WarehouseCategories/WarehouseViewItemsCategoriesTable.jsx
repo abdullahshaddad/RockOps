@@ -286,7 +286,7 @@ const WarehouseViewItemCategoriesTable = () => {
         />
 
         {/* Add button */}
-        {userRole === "WAREHOUSEMANAGER" && (
+        {userRole === "WAREHOUSE_MANAGER" && (
             <button className="add-button2" onClick={() => openCategoryModal()}>
               <svg className="plus-icon2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 5v14M5 12h14"/>
