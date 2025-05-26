@@ -17,7 +17,7 @@ const SiteEmployeesTab = ({ siteId }) => {
     const [assigningEmployee, setAssigningEmployee] = useState(null);
     const { currentUser } = useAuth();
 
-    const isSiteAdmin = currentUser?.role === "SITE_ADMIN";
+    const isSiteAdmin = currentUser?.role === "SITE_ADMIN" || currentUser?.role === "ADMIN";
 
     const handleRowClick = (row) => {
         navigate(`/hr/employee-details/${row.employeeID}`);
@@ -55,19 +55,21 @@ const SiteEmployeesTab = ({ siteId }) => {
             sortable: true
         },
         {
-            header: 'Action',
-            accessor: 'action',
+            header: 'Actions',
+            accessor: 'actions',
             sortable: false,
             render: (row) => (
-                <button
-                    className="btn-danger"
-                    onClick={(e) => {
-                        e.stopPropagation(); // Prevent row click when clicking the button
-                        handleUnassignEmployee(row.employeeID);
-                    }}
-                >
-                    Unassign
-                </button>
+                isSiteAdmin && (
+                    <button
+                        className="btn-danger"
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            handleUnassignEmployee(row.employeeID);
+                        }}
+                    >
+                        Unassign
+                    </button>
+                )
             )
         }
     ];
