@@ -1,10 +1,10 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.finance;
 
-import com.example.backend.dto.AccountingPeriodRequestDTO;
-import com.example.backend.dto.AccountingPeriodResponseDTO;
+import com.example.backend.dto.finance.AccountingPeriodRequestDTO;
+import com.example.backend.dto.finance.AccountingPeriodResponseDTO;
 import com.example.backend.models.User;
 import com.example.backend.repositories.UserRepository;
-import com.example.backend.services.AccountingPeriodService;
+import com.example.backend.services.finance.AccountingPeriodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

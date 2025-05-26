@@ -423,7 +423,7 @@ const AllSites = () => {
             <div className="sites-grid">
                 {sites.length > 0 ? (
                     sites.map((site) => (
-                        <div key={site.id} className="site-card" onClick={() => navigate(`/sites/sitedetails/${site.id}`)} style={{ cursor: "pointer" }}>
+                        <div key={site.id} className="site-card" onClick={() => navigate(`/sites/details/${site.id}`)} style={{ cursor: "pointer" }}>
                             <div className="site-image">
                                 <img src={site?.photoUrl ?? siteimg} alt="Site" />
                             </div>
@@ -462,7 +462,7 @@ const AllSites = () => {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate(`/sites/sitedetails/equipment/${site.id}`);
+                                            navigate(`/sites/details/${site.id}`);
                                         }}
                                         className="view-button"
                                     >

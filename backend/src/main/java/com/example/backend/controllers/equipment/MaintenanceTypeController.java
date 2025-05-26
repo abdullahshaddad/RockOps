@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.equipment;
 
-import com.example.backend.models.MaintenanceType;
-import com.example.backend.services.MaintenanceTypeService;
+import com.example.backend.models.equipment.MaintenanceType;
+import com.example.backend.services.equipment.MaintenanceTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

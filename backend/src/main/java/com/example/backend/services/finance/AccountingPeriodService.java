@@ -2,11 +2,11 @@ package com.example.backend.services.finance;
 
 import com.example.backend.dto.finance.AccountingPeriodRequestDTO;
 import com.example.backend.dto.finance.AccountingPeriodResponseDTO;
-import com.example.backend.services.finance.equipment.finance.models.finance.AccountingPeriod;
-import com.example.backend.services.finance.equipment.finance.models.finance.AuditAction;
-import com.example.backend.services.finance.equipment.finance.models.finance.PeriodStatus;
-import com.example.backend.services.finance.equipment.finance.models.User;
-import com.example.backend.services.finance.equipment.finance.AccountingPeriodRepository;
+import com.example.backend.models.finance.AccountingPeriod;
+import com.example.backend.models.finance.AuditAction;
+import com.example.backend.models.finance.PeriodStatus;
+import com.example.backend.models.User;
+import com.example.backend.repositories.finance.AccountingPeriodRepository;
 import com.example.backend.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

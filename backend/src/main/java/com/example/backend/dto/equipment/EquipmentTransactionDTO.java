@@ -1,4 +1,4 @@
-package com.example.backend.dto;
+package com.example.backend.dto.equipment;
 
 import com.example.backend.models.TransactionStatus;
 import com.example.backend.models.TransactionType;

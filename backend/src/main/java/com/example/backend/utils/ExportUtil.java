@@ -1,6 +1,6 @@
-package com.example.Rock4Mining.utils;
+package com.example.backend.utils;
 
-import com.example.Rock4Mining.dto.AuditLogResponseDTO;
+import com.example.backend.dto.finance.AuditLogResponseDTO;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;

@@ -1,6 +1,6 @@
-package com.example.backend.repositories.hr;
+package com.example.backend.repositories;
 
-import com.example.backend.models.JobPosition;
+import com.example.backend.models.hr.JobPosition;
 import com.example.backend.models.Vacancy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

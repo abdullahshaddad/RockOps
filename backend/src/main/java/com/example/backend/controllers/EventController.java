@@ -1,7 +1,7 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.models.Event;
-import com.example.Rock4Mining.services.EventService;
+import com.example.backend.models.Event;
+import com.example.backend.services.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

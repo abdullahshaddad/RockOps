@@ -1,0 +1,357 @@
+/* EquipmentCard.scss */
+/* Enhanced styling with more prominent hover effects and larger image */
+
+.equipment-card {
+  border: none;
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface, white);
+  transition: all var(--transition-normal, 0.3s ease);
+  position: relative;
+  width: 380px;
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 460px; /* Increased height */
+  cursor: pointer; /* Add pointer cursor to show it's clickable */
+}
+
+.equipment-card:hover {
+  transform: translateY(-8px); /* Increased lift effect */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+  border: 1px solid var(--color-primary, #4066e0); /* Highlight border on hover */
+}
+
+.equipment-card:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 0 0 5px rgba(64, 102, 224, 0); /* Invisible outline initially */
+  transition: box-shadow 0.3s ease;
+  pointer-events: none; /* Don't block clicks */
+}
+
+.equipment-card:hover:after {
+  box-shadow: 0 0 0 3px rgba(64, 102, 224, 0.3); /* Visible outline on hover */
+}
+
+.equipment-image-container {
+  height: 280px; /* Significantly larger image area */
+  overflow: hidden;
+  position: relative;
+  background-color: #f0f2f5;
+}
+
+.equipment-image-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.9), transparent);
+  z-index: 1;
+}
+
+.equipment-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.equipment-card:hover .equipment-image {
+  transform: scale(1.08); /* More pronounced image zoom */
+}
+
+.equipment-details {
+  padding: 16px 20px; /* Slightly reduced padding */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.equipment-name {
+  font-size: 20px; /* Slightly smaller to fit */
+  font-weight: var(--bold-font-weight, 600);
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 14px;
+  color: var(--color-text-primary, #333);
+  position: relative;
+  padding-bottom: 10px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  transition: color 0.3s ease;
+}
+
+.equipment-card:hover .equipment-name {
+  color: var(--color-primary, #4066e0); /* Highlight name on hover */
+}
+
+.equipment-name::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background-color: var(--color-primary, #4066e0);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.equipment-card:hover .equipment-name::after {
+  width: 80px; /* Expand underline on hover */
+}
+
+/* Stats Styles - more compact */
+.equipment-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background-color: var(--color-surface-hover, #f8f9fc);
+  border-radius: var(--radius-md, 8px);
+  flex-grow: 1;
+  transition: background-color 0.3s ease;
+}
+
+.equipment-card:hover .equipment-specs {
+  background-color: rgba(64, 102, 224, 0.05); /* Subtle background change on hover */
+}
+
+.spec-row {
+  display: contents;
+}
+
+.spec-item {
+  margin: 0;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.spec-label {
+  color: var(--color-text-secondary, #666);
+  font-size: 13px;
+  margin-bottom: 3px;
+  font-weight: 500;
+  display: block;
+}
+
+.spec-value {
+  font-weight: var(--bold-font-weight, 600);
+  color: var(--color-primary, #4066e0);
+  font-size: 15px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Action Buttons */
+.equipment-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.btn-view-details, .btn-edit-equipment {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 8px);
+  font-size: 14px;
+  font-weight: var(--bold-font-weight, 600);
+  cursor: pointer;
+  transition: all var(--transition-normal, 0.3s ease);
+  text-align: center;
+  border: none;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10; /* Ensure buttons stay above card for clicks */
+  position: relative; /* Enable z-index */
+}
+
+.btn-edit-equipment {
+  background-color: var(--color-surface-hover, #f8f9fc);
+  color: var(--color-primary, #4066e0);
+  border: 1px solid var(--color-primary, #4066e0);
+}
+
+.btn-edit-equipment:hover {
+  background-color: var(--color-primary-light, #e6ecfd);
+  color: var(--color-primary-dark, #3452b6);
+}
+
+.btn-view-details {
+  background-color: var(--color-primary, #4066e0);
+  color: white;
+  box-shadow: 0 2px 6px rgba(64, 102, 224, 0.3);
+}
+
+.btn-view-details:hover {
+  background-color: var(--color-primary-dark, #3452b6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(64, 102, 224, 0.4);
+}
+
+.btn-view-details:active, .btn-edit-equipment:active {
+  transform: translateY(0);
+}
+
+/* Add a subtle highlight effect to the buttons when card is hovered */
+.equipment-card:hover .btn-view-details {
+  box-shadow: 0 4px 12px rgba(64, 102, 224, 0.4);
+}
+
+.equipment-card:hover .btn-edit-equipment {
+  border-color: var(--color-primary-dark, #3452b6);
+}
+.btn-custom-action {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 8px);
+  font-size: 14px;
+  font-weight: var(--bold-font-weight, 600);
+  cursor: pointer;
+  transition: all var(--transition-normal, 0.3s ease);
+  text-align: center;
+  border: none;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10; /* Ensure buttons stay above card for clicks */
+  position: relative; /* Enable z-index */
+}
+
+/* Edit button styling */
+.btn-edit {
+  background-color: var(--color-surface-hover, #f8f9fc);
+  color: var(--color-primary, #4066e0);
+  border: 1px solid var(--color-primary, #4066e0);
+}
+
+.btn-edit:hover {
+  background-color: var(--color-primary-light, #e6ecfd);
+  color: var(--color-primary-dark, #3452b6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(64, 102, 224, 0.2);
+}
+
+.btn-edit:active {
+  transform: translateY(0);
+}
+
+.equipment-card:hover .btn-edit {
+  border-color: var(--color-primary-dark, #3452b6);
+}
+
+/* Style for the icon inside the button */
+.action-icon {
+  display: inline-flex;
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+/* Status Indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: auto;
+}
+
+.status-available {
+  background-color: rgba(46, 204, 113, 0.15);
+  color: #27ae60;
+}
+
+.status-in-use {
+  background-color: rgba(52, 152, 219, 0.15);
+  color: #2980b9;
+}
+
+.status-maintenance {
+  background-color: rgba(241, 196, 15, 0.15);
+  color: #f39c12;
+}
+
+.status-unavailable {
+  background-color: rgba(231, 76, 60, 0.15);
+  color: #c0392b;
+}
+
+.status-indicator::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.status-available::before {
+  background-color: #27ae60;
+}
+
+.status-in-use::before {
+  background-color: #2980b9;
+}
+
+.status-maintenance::before {
+  background-color: #f39c12;
+}
+
+.status-unavailable::before {
+  background-color: #c0392b;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .equipment-card {
+    width: 100%;
+    margin: 16px 0;
+  }
+
+  .equipment-actions {
+    flex-direction: column;
+  }
+
+  .btn-view-details, .btn-edit-equipment {
+    width: 100%;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .equipment-card {
+    width: 320px;
+  }
+
+  .equipment-image-container {
+    height: 240px; /* Slightly smaller on medium screens */
+  }
+}

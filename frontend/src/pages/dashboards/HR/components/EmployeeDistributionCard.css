@@ -79,18 +79,18 @@
 }
 
 .tab-button {
-    background: none;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    padding: 6px 12px;
-    font-size: 13px;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all var(--transition-fast);
+    /*background: none;*/
+    /*border: 1px solid var(--border-color);*/
+    /*border-radius: var(--radius-sm);*/
+    /*padding: 6px 12px;*/
+    /*font-size: 13px;*/
+    /*color: var(--color-text-secondary);*/
+    /*cursor: pointer;*/
+    /*white-space: nowrap;*/
+    /*display: flex;*/
+    /*align-items: center;*/
+    /*gap: 6px;*/
+    /*transition: all var(--transition-fast);*/
 }
 
 .tab-button:hover {

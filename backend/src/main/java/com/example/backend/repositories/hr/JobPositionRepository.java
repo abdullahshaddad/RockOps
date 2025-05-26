@@ -1,6 +1,6 @@
-package com.example.backend.repositories;
+package com.example.backend.repositories.hr;
 
-import com.example.backend.repositories.finance.models.hr.JobPosition;
+import com.example.backend.models.hr.JobPosition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

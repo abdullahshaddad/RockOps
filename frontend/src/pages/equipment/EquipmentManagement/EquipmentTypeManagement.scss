@@ -1,0 +1,513 @@
+// EquipmentTypeManagement.scss
+
+// Global rule to prevent text selection on interface elements
+.equipment-types-container,
+.equipment-types-header,
+.equipment-types-header h1,
+.equipment-types-list-header,
+.equipment-type-item,
+.type-actions,
+.modal-header,
+.modal-actions,
+button {
+  user-select: none;
+  cursor: default;
+}
+
+// Add this new rule to the top of the file after the global rules
+input, textarea,
+.modal-overlay,
+form .form-group label {
+  cursor: auto; // Reset cursor to appropriate state for input elements
+}
+
+// Specific override for form elements where text selection makes sense
+form .form-group input,
+form .form-group textarea {
+  user-select: text; // Allow text selection in input fields
+}
+
+// Add specific override for table cells that contain text
+.type-name,
+.type-description,
+.equipment-types-empty,
+.equipment-types-loading,
+.equipment-types-error {
+  cursor: default;
+}
+
+.equipment-types-container {
+  background-color: var(--section-background-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  width: 100%;
+  max-width: 1200px;
+  transition: all var(--transition-normal);
+}
+
+.equipment-types-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+
+  h1 {
+    font-size: 1.5rem;
+    color: var(--head-title-color);
+    font-weight: var(--bold-font-weight);
+    margin: 0;
+  }
+
+  .equipment-types-add-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--color-primary) !important;
+    color: var(--color-text-inverse) !important;
+    border: none !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 0.6rem 1rem !important;
+    font-weight: var(--bold-font-weight) !important;
+    cursor: pointer !important;
+    transition: background-color var(--transition-fast) !important;
+    min-width: auto !important;
+    max-width: none !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    font-size: inherit !important;
+    line-height: normal !important;
+
+    &:hover {
+      background-color: var(--color-primary-dark) !important;
+    }
+
+    svg {
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.equipment-types-loading,
+.equipment-types-error {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+}
+
+.equipment-types-error {
+  color: var(--color-danger);
+}
+
+.equipment-types-list {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+
+  .equipment-types-list-header {
+    display: grid;
+    grid-template-columns: 2fr 4fr 1fr;
+    background-color: var(--color-primary-light);
+    color: var(--color-text-inverse);
+    padding: 0.75rem 1rem;
+    font-weight: var(--bold-font-weight);
+    border-bottom: 1px solid var(--border-color);
+    pointer-events: none;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr 2fr 80px;
+    }
+
+    @media (max-width: 480px) {
+      display: none; // Hide header on very small screens
+    }
+  }
+
+  .equipment-types-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  .equipment-type-item {
+    display: grid;
+    grid-template-columns: 2fr 4fr 1fr;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--color-surface);
+    transition: background-color var(--transition-fast);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr 2fr 80px;
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+      padding: 1rem;
+
+      .type-name {
+        font-weight: var(--bold-font-weight);
+      }
+
+      .type-description {
+        font-size: 0.9rem;
+        color: var(--color-text-secondary);
+      }
+
+      .type-actions {
+        display: flex;
+        /* Removed justify-content: flex-start */
+        margin-top: 0.5rem;
+      }
+    }
+
+    .type-name, .type-description {
+      pointer-events: none;
+    }
+
+    .type-name {
+      color: var(--color-text-primary);
+      font-weight: var(--bold-font-weight);
+    }
+
+    .type-description {
+      color: var(--color-text-secondary);
+    }
+
+    .type-actions {
+      display: flex;
+      gap: 0.5rem;
+      /* Removed justify-content: flex-end */
+
+      button {
+        /* Override any inherited styling with more specific selectors */
+        background: none !important;
+        border: none !important;
+        cursor: pointer !important;
+        padding: 0.3rem !important;
+        border-radius: var(--radius-sm) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all var(--transition-fast) !important;
+        min-width: auto !important;
+        max-width: none !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        font-size: inherit !important;
+        line-height: normal !important;
+
+        svg {
+          font-size: 1rem !important;
+        }
+
+        &.type-edit-btn {
+          color: var(--color-info) !important;
+
+          &:hover {
+            background-color: var(--color-info) !important;
+            color: var(--color-text-inverse) !important;
+          }
+        }
+
+        &.delete-button {
+          color: var(--color-danger) !important;
+
+          &:hover {
+            background-color: var(--color-danger) !important;
+            color: var(--color-text-inverse) !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Modal Styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background-color: var(--section-background-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalFadeIn 0.3s;
+
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+
+  h2 {
+    margin: 0;
+    color: var(--head-title-color);
+    font-weight: var(--bold-font-weight);
+    font-size: 1.25rem;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer !important;
+    color: var(--color-text-tertiary);
+    transition: color var(--transition-fast);
+
+    &:hover {
+      color: var(--color-danger);
+    }
+  }
+}
+
+form {
+  padding: 1.5rem;
+
+  .form-group {
+    margin-bottom: 1.25rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--label-color);
+      font-weight: var(--bold-font-weight);
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background-color: var(--color-surface);
+      color: var(--color-text-primary);
+      transition: border-color var(--transition-fast);
+
+      &:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 2px rgba(72, 128, 255, 0.2);
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  button {
+    padding: 0.6rem 1.25rem !important;
+    border-radius: var(--radius-sm) !important;
+    font-weight: var(--bold-font-weight) !important;
+    cursor: pointer !important;
+    transition: all var(--transition-fast) !important;
+    min-width: auto !important;
+    max-width: none !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    font-size: inherit !important;
+    line-height: normal !important;
+
+    &:first-child {
+      background-color: transparent !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--color-text-secondary) !important;
+
+      &:hover {
+        background-color: var(--color-surface-hover) !important;
+      }
+    }
+
+    &.save-button {
+      background-color: var(--color-primary) !important;
+      border: 1px solid var(--color-primary) !important;
+      color: var(--color-text-inverse) !important;
+
+      &:hover {
+        background-color: var(--color-primary-dark) !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .equipment-types-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+
+    .equipment-types-add-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .modal-actions {
+    button {
+      flex: 1;
+      text-align: center;
+    }
+  }
+}
+// Add to EquipmentTypeManagement.scss
+.snackbar-actions {
+  display: flex;
+  margin-left: 15px;
+  gap: 10px;
+}
+
+.snackbar-action-button {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+
+  &.confirm {
+    background-color: #dc3545;
+    color: white;
+
+    &:hover {
+      background-color: #bd2130;
+    }
+  }
+
+  &.cancel {
+    background-color: #6c757d;
+    color: white;
+
+    &:hover {
+      background-color: #5a6268;
+    }
+  }
+}
+
+// Ensure the snackbar can fit the buttons
+.global-snackbar {
+  min-width: 300px;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.delete-confirmation-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.delete-confirmation-content {
+  background-color: var(--color-background);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  width: 400px;
+  max-width: 90%;
+  
+  p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+    text-align: center;
+  }
+  
+  .confirmation-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    
+    button {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-weight: var(--bold-font-weight);
+      
+      &.confirm-button {
+        background-color: var(--color-danger);
+        color: white;
+        
+        &:hover {
+          background-color: var(--color-danger-dark);
+        }
+      }
+      
+      &.cancel-button {
+        background-color: var(--color-light);
+        color: var(--color-text-primary);
+        
+        &:hover {
+          background-color: var(--color-light-dark);
+        }
+      }
+    }
+  }
+}

@@ -1,13 +1,10 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.models.Employee;
-import com.example.Rock4Mining.models.ItemCategory;
-import com.example.Rock4Mining.models.ItemType;
-import com.example.Rock4Mining.models.Warehouse;
-import com.example.Rock4Mining.repositories.WarehouseRepository;
-import com.example.Rock4Mining.services.WarehouseService;
+import com.example.backend.models.hr.Employee;
+import com.example.backend.models.Warehouse;
+import com.example.backend.repositories.WarehouseRepository;
+import com.example.backend.services.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

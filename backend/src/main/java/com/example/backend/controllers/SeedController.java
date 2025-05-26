@@ -1,4 +1,4 @@
-//package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;//package com.example.Rock4Mining.controllers;
 //
 //import com.example.Rock4Mining.services.SeedService;
 //import org.springframework.beans.factory.annotation.Autowired;

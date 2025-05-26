@@ -1,0 +1,348 @@
+// UnifiedTransactionsView.scss - With Theme Variables
+
+.unified-transactions-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+
+  // Loading and Error States
+  .loading-state, .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+    background: var(--color-surface-hover);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top: 3px solid var(--color-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    div {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    button {
+      background: var(--color-primary);
+      color: var(--text-hover);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      transition: background-color var(--transition-fast);
+
+      &:hover {
+        background: var(--color-primary-dark);
+      }
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // Tab Navigation
+  .transaction-tabs {
+    display: flex;
+    background: var(--section-background-color);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    padding: 0.25rem;
+    gap: 0.25rem;
+    box-shadow: var(--shadow-sm);
+
+    .tab-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: none;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      transition: all var(--transition-fast);
+      position: relative;
+      white-space: nowrap;
+
+      &:hover {
+        background: var(--color-surface-hover);
+        color: var(--color-text-primary);
+      }
+
+      &.active {
+        background: var(--color-primary);
+        color: var(--text-hover);
+        box-shadow: 0 2px 4px rgba(var(--color-primary-rgb, 72, 128, 255), 0.3);
+
+        .tab-count {
+          background: rgba(255, 255, 255, 0.2);
+          color: var(--text-hover);
+        }
+      }
+
+      .tab-count {
+        background: var(--color-surface-hover);
+        color: var(--color-text-secondary);
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        min-width: 1.5rem;
+        text-align: center;
+        transition: all var(--transition-fast);
+      }
+    }
+  }
+
+  // Transaction Content
+  .transaction-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--section-background-color);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+
+    .tab-description {
+      padding: 0.75rem 1.5rem;
+      background: var(--color-surface-hover);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      font-style: italic;
+    }
+
+    // DataTable customizations for transactions
+    .transactions-table {
+      flex: 1;
+
+      .rockops-table__container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .rockops-table__wrapper {
+        flex: 1;
+        overflow: auto;
+      }
+
+      // Custom styling for transaction-specific elements
+      .items-count {
+        display: flex;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--color-text-secondary);
+        font-weight: 500;
+      }
+
+      .purpose-tag {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &.consumable {
+          background: rgba(var(--color-info-rgb, 33, 150, 243), 0.1);
+          color: var(--color-info);
+          border: 1px solid rgba(var(--color-info-rgb, 33, 150, 243), 0.2);
+        }
+
+        &.maintenance {
+          background: rgba(var(--color-warning-rgb, 255, 152, 0), 0.1);
+          color: var(--color-warning);
+          border: 1px solid rgba(var(--color-warning-rgb, 255, 152, 0), 0.2);
+        }
+
+        &.general {
+          background: rgba(var(--color-primary-rgb, 72, 128, 255), 0.1);
+          color: var(--color-primary);
+          border: 1px solid rgba(var(--color-primary-rgb, 72, 128, 255), 0.2);
+        }
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &.pending {
+          background: rgba(var(--color-warning-rgb, 255, 152, 0), 0.1);
+          color: var(--color-warning);
+          border: 1px solid rgba(var(--color-warning-rgb, 255, 152, 0), 0.2);
+        }
+
+        &.accepted {
+          background: rgba(var(--color-success-rgb, 76, 175, 80), 0.1);
+          color: var(--color-success);
+          border: 1px solid rgba(var(--color-success-rgb, 76, 175, 80), 0.2);
+        }
+
+        &.rejected {
+          background: rgba(var(--color-danger-rgb, 244, 67, 54), 0.1);
+          color: var(--color-danger);
+          border: 1px solid rgba(var(--color-danger-rgb, 244, 67, 54), 0.2);
+        }
+      }
+
+      // Action buttons styling
+      .rockops-table__action-button {
+        &.accept-action {
+          color: var(--color-success);
+
+          &:hover {
+            background-color: rgba(var(--color-success-rgb, 76, 175, 80), 0.1);
+          }
+        }
+
+        &.reject-action {
+          color: var(--color-danger);
+
+          &:hover {
+            background-color: rgba(var(--color-danger-rgb, 244, 67, 54), 0.1);
+          }
+        }
+
+        &.update-action {
+          color: var(--color-info);
+
+          &:hover {
+            background-color: rgba(var(--color-info-rgb, 33, 150, 243), 0.1);
+          }
+        }
+
+        &.info-action {
+          color: var(--color-text-secondary);
+
+          &:hover {
+            background-color: var(--color-surface-hover);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+
+            &:hover {
+              background-color: transparent;
+            }
+          }
+        }
+      }
+
+      // Action dropdown styling
+      .rockops-table__actions-dropdown {
+        .rockops-table__action-item {
+          &.accept-action {
+            color: var(--color-success);
+
+            &:hover {
+              background-color: rgba(var(--color-success-rgb, 76, 175, 80), 0.1);
+            }
+          }
+
+          &.reject-action {
+            color: var(--color-danger);
+
+            &:hover {
+              background-color: rgba(var(--color-danger-rgb, 244, 67, 54), 0.1);
+            }
+          }
+
+          &.update-action {
+            color: var(--color-info);
+
+            &:hover {
+              background-color: rgba(var(--color-info-rgb, 33, 150, 243), 0.1);
+            }
+          }
+
+          &.info-action {
+            color: var(--color-text-secondary);
+
+            &:hover {
+              background-color: var(--color-surface-hover);
+            }
+
+            &:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
+
+              &:hover {
+                background-color: transparent;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Responsive design
+  @media (max-width: 768px) {
+    .transaction-tabs {
+      flex-wrap: wrap;
+
+      .tab-button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+
+        .tab-count {
+          font-size: 0.7rem;
+          padding: 0.1rem 0.4rem;
+        }
+      }
+    }
+
+    .transaction-content {
+      .tab-description {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    gap: 1rem;
+
+    .transaction-tabs {
+      .tab-button {
+        flex: 1;
+        justify-content: center;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+
+        .tab-count {
+          font-size: 0.65rem;
+        }
+      }
+    }
+  }
+}

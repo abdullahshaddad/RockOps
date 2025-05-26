@@ -1,10 +1,10 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.finance;
 
 
 
-import com.example.backend.dto.ChartOfAccountDTO;
-import com.example.backend.models.AccountType;
-import com.example.backend.services.ChartOfAccountService;
+import com.example.backend.dto.finance.ChartOfAccountDTO;
+import com.example.backend.models.finance.AccountType;
+import com.example.backend.services.finance.ChartOfAccountService;
 //import com.example.backend.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

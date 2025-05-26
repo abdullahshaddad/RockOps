@@ -6,5 +6,6 @@ public enum ItemStatus {
     PENDING,
     STOLEN,
     OVERRECEIVED,
+    CONSUMED,
 
 }

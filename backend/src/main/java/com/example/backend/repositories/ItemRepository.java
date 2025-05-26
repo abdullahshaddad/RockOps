@@ -1,9 +1,9 @@
-package com.example.Rock4Mining.repositories;
+package com.example.backend.repositories;
 
-import com.example.Rock4Mining.models.Item;
-import com.example.Rock4Mining.models.ItemStatus;
-import com.example.Rock4Mining.models.ItemType;
-import com.example.Rock4Mining.models.Warehouse;
+import com.example.backend.models.Item;
+import com.example.backend.models.ItemStatus;
+import com.example.backend.models.ItemType;
+import com.example.backend.models.Warehouse;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

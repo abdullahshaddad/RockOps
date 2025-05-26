@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.hr;
 
-import com.example.backend.models.Employee;
-import com.example.backend.services.EmployeeService;
+import com.example.backend.models.hr.Employee;
+import com.example.backend.services.hr.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

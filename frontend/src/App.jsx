@@ -18,16 +18,15 @@ import AttendancePage from "./pages/HR/Attendance/AttendancePage.jsx";
 import VacancyDetails from "./pages/HR/Vacancy/VacancyDetails.jsx";
 import DepartmentsList from "./pages/HR/Departments/DepartmentsList.jsx";
 import AllSites from "./pages/site/AllSites/AllSites.jsx";
-import SiteEquipment from "./pages/site/SiteDetails/SiteEquipment/SiteEquipment.jsx";
-import SiteEmployees from "./pages/site/SiteDetails/SiteEmployees/SiteEmployees.jsx";
-import SiteLayout from "./pages/site/SiteDetails/SiteLayout.jsx";
-import SiteWarehouses from "./pages/site/SiteDetails/SiteWarehouses/SiteWarehouses.jsx";
-import SiteFixedAssets from "./pages/site/SiteDetails/SiteFixedAssets/SiteFixedAssets.jsx";
-import SiteMerchants from "./pages/site/SiteDetails/SiteMerchants/SiteMerchants.jsx";
-import SitePartners from "./pages/site/SiteDetails/SitePartners/SitePartners.jsx";
-import {SiTesla} from "react-icons/si";
-import SitesLayout from "./pages/site/SiteLayout.jsx";
+import SitesLayout from "./pages/site/SitesLayout.jsx";
 import Partners from "./pages/partners/Partners.jsx";
+import SiteDetails from "./pages/site/SiteDetails/SiteDetails.jsx";
+import EquipmentMain from "./pages/equipment/EquipmentMain/EquipmentMain.jsx";
+import {SnackbarProvider} from "./contexts/SnackbarContext.jsx";
+import EquipmentBrandManagement from "./pages/equipment/EquipmentManagement/EquipmentBrandManagement.jsx";
+import EquipmentTypeManagement from "./pages/equipment/EquipmentManagement/EquipmentTypeManagement.jsx";
+import ViewEquipmentData from "./pages/equipment/EquipmentInfo/ViewEquipmentData.jsx";
+import EquipmentDetails from "./pages/equipment/EquipmentDetails/EquipmentDetails.jsx";
 
 // ===================== Authentication Handlers =====================
 const AuthRedirect = () => {
@@ -45,15 +44,9 @@ const RoleRoute = ({allowedRoles, children, redirectPath = '/dashboard'}) => {
     return children;
 };
 
-const allRoles = [
-    "ADMIN", "USER", "SITE_ADMIN", "PROCUREMENT", "WAREHOUSE_MANAGER", "SECRETARY",
-    "EQUIPMENT_MANAGER", "HR_MANAGER", "HR_EMPLOYEE", "FINANCE_EMPLOYEE", "FINANCE_MANAGER"
-];
+const allRoles = ["ADMIN", "USER", "SITE_ADMIN", "PROCUREMENT", "WAREHOUSE_MANAGER", "SECRETARY", "EQUIPMENT_MANAGER", "HR_MANAGER", "HR_EMPLOYEE", "FINANCE_EMPLOYEE", "FINANCE_MANAGER"];
 
-const mostRoles = [
-    "ADMIN", "USER", "SITE_ADMIN", "PROCUREMENT", "WAREHOUSE_MANAGER", "SECRETARY",
-    "EQUIPMENT_MANAGER", "HR_MANAGER", "HR_EMPLOYEE"
-];
+const mostRoles = ["ADMIN", "USER", "SITE_ADMIN", "PROCUREMENT", "WAREHOUSE_MANAGER", "SECRETARY", "EQUIPMENT_MANAGER", "HR_MANAGER", "HR_EMPLOYEE"];
 
 
 // ===================== Layout Components =====================
@@ -70,62 +63,73 @@ const MainLayout = () => (<div className="app-container">
 function App() {
     const [count, setCount] = useState(0)
 
-    return (<Router>
-        {/*<SnackbarProvider>*/}
-        <LanguageProvider>
-            <ThemeProvider>
-                <AuthProvider>
-                    <Routes>
-                        <Route path="/login" element={<Login/>}/>
-                        <Route path="/" element={<AuthRedirect/>}/>
+    return (
+        <Router>
+            <SnackbarProvider>
+                <LanguageProvider>
+                    <ThemeProvider>
+                        <AuthProvider>
+                            <Routes>
+                                <Route path="/login" element={<Login/>}/>
+                                <Route path="/" element={<AuthRedirect/>}/>
 
-                        <Route element={<MainLayout/>}>
-                            <Route path="/admin"
-                                   element={<RoleRoute allowedRoles={['ADMIN']}><AdminPage/></RoleRoute>}/>
+                                <Route element={<MainLayout/>}>
+                                    <Route path="/admin"
+                                           element={<RoleRoute allowedRoles={['ADMIN']}><AdminPage/></RoleRoute>}/>
 
-                            <Route path="/dashboard" element={<RoleRoute
-                                allowedRoles={allRoles}>
-                                <DashboardPage/>
-                            </RoleRoute>}/>
+                                    <Route path="/dashboard" element={<RoleRoute
+                                        allowedRoles={allRoles}>
+                                        <DashboardPage/>
+                                    </RoleRoute>}/>
 
-                            <Route path="/partners" element={<RoleRoute allowedRoles={["ADMIN", "SITE_ADMIN"]}><Partners /></RoleRoute>} />
+                                    <Route path="/partners" element={<RoleRoute
+                                        allowedRoles={["ADMIN", "SITE_ADMIN"]}><Partners/></RoleRoute>}/>
 
-                            {/* Site Management Routes */}
-                            <Route path="/sites" element={<RoleRoute allowedRoles={allRoles}><SitesLayout /></RoleRoute>}>
-                                <Route index element={<RoleRoute allowedRoles={allRoles}><AllSites /></RoleRoute>} />
-                                <Route path="sitedetails/:siteId" element={<RoleRoute allowedRoles={allRoles}><SiteLayout /></RoleRoute>} />
-                                <Route path="sitedetails/equipment/:siteId" element={<RoleRoute allowedRoles={allRoles}><SiteEquipment /></RoleRoute>} />
-                                <Route path="sitedetails/employees/:siteId" element={<RoleRoute allowedRoles={allRoles}><SiteEmployees /></RoleRoute>} />
-                                <Route path="sitedetails/warehouses/:siteId" element={<RoleRoute allowedRoles={allRoles}><SiteWarehouses /></RoleRoute>} />
-                                <Route path="sitedetails/fixedassets/:siteId" element={<RoleRoute allowedRoles={allRoles}><SiteFixedAssets /></RoleRoute>} />
-                                <Route path="sitedetails/sitemerchants/:siteId" element={<RoleRoute allowedRoles={allRoles}><SiteMerchants /></RoleRoute>} />
-                                <Route path="sitedetails/sitepartners/:siteId" element={<RoleRoute allowedRoles={allRoles}><SitePartners /></RoleRoute>} />
-                                <Route path="employee-details/:id" element={<RoleRoute allowedRoles={allRoles}><EmployeeDetails /></RoleRoute>} />
-                            </Route>
-
-
-                            {/* HR Management Routes */}
-                            <Route path="/hr" element={<RoleRoute
-                                allowedRoles={["HR_MANAGER", "HR_EMPLOYEE", "ADMIN"]}><HRLayout/></RoleRoute>}>
-                                <Route path="vacancies" element={<VacancyList/>}/>
-                                <Route path="positions" element={<PositionsList/>}/>
-                                <Route path="employees" element={<EmployeesList/>}/>
-                                <Route path="employee-details/:id" element={<EmployeeDetails/>}/>
-                                <Route path="attendance" element={<AttendancePage/>}/>
-                                <Route path="vacancies/:id" element={<VacancyDetails/>}/>
-                                <Route path="departments" element={<DepartmentsList/>}/>
-                            </Route>
-                        </Route>
+                                    {/* Site Management Routes */}
+                                    <Route path="/sites"
+                                           element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
+                                        <Route index
+                                               element={<RoleRoute allowedRoles={allRoles}><AllSites/></RoleRoute>}/>
+                                        <Route path="details/:siteId"
+                                               element={<RoleRoute allowedRoles={allRoles}><SiteDetails/></RoleRoute>}/>
+                                        <Route path="employee-details/:id"
+                                               element={<RoleRoute
+                                                   allowedRoles={allRoles}><EmployeeDetails/></RoleRoute>}/>
+                                    </Route>
 
 
-                        <Route path="*" element={<Navigate to="/" replace/>}/>
-                        {/* Your other routes here */}
-                    </Routes>
-                </AuthProvider>
-            </ThemeProvider>
-        </LanguageProvider>
-        {/*</SnackbarProvider>*/}
-    </Router>)
+                                    {/* HR Management Routes */}
+                                    <Route path="/hr" element={<RoleRoute
+                                        allowedRoles={["HR_MANAGER", "HR_EMPLOYEE", "ADMIN"]}><HRLayout/></RoleRoute>}>
+                                        <Route path="vacancies" element={<VacancyList/>}/>
+                                        <Route path="positions" element={<PositionsList/>}/>
+                                        <Route path="employees" element={<EmployeesList/>}/>
+                                        <Route path="employee-details/:id" element={<EmployeeDetails/>}/>
+                                        <Route path="attendance" element={<AttendancePage/>}/>
+                                        <Route path="vacancies/:id" element={<VacancyDetails/>}/>
+                                        <Route path="departments" element={<DepartmentsList/>}/>
+                                    </Route>
+
+                                    <Route path="/equipment"
+                                           element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
+                                        <Route index element={<RoleRoute allowedRoles={allRoles}><EquipmentMain/></RoleRoute>}/>
+                                        <Route path="brand-management"  element={<RoleRoute allowedRoles={allRoles}><EquipmentBrandManagement/></RoleRoute>}/>
+                                        <Route path="type-management"  element={<RoleRoute allowedRoles={allRoles}><EquipmentTypeManagement/></RoleRoute>}/>
+                                        <Route path="info/:EquipmentID" element={<RoleRoute allowedRoles={allRoles}><ViewEquipmentData /></RoleRoute>} />
+                                        <Route path=":EquipmentID" element={<RoleRoute allowedRoles={allRoles}><EquipmentDetails /></RoleRoute>} />
+
+                                    </Route>
+                                </Route>
+
+
+                                <Route path="*" element={<Navigate to="/" replace/>}/>
+                                {/* Your other routes here */}
+                            </Routes>
+                        </AuthProvider>
+                    </ThemeProvider>
+                </LanguageProvider>
+            </SnackbarProvider>
+        </Router>)
 }
 
 function LoadingSpinner() {

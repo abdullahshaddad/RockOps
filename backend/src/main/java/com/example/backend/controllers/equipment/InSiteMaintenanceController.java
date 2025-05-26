@@ -1,9 +1,11 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.equipment;
 
 import com.example.backend.models.*;
+import com.example.backend.models.equipment.InSiteMaintenance;
+import com.example.backend.models.hr.Employee;
 import com.example.backend.repositories.ItemTypeRepository;
-import com.example.backend.services.EmployeeService;
-import com.example.backend.services.InSiteMaintenanceService;
+import com.example.backend.services.hr.EmployeeService;
+import com.example.backend.services.equipment.InSiteMaintenanceService;
 import com.example.backend.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

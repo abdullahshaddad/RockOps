@@ -1,16 +1,18 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
-import com.example.Rock4Mining.models.Employee;
-import com.example.Rock4Mining.models.ItemType;
-import com.example.Rock4Mining.models.Site;
-import com.example.Rock4Mining.models.Warehouse;
-import com.example.Rock4Mining.repositories.EmployeeRepository;
-import com.example.Rock4Mining.repositories.SiteRepository;
-import com.example.Rock4Mining.repositories.WarehouseRepository;
+import com.example.backend.models.hr.Employee;
+import com.example.backend.models.site.Site;
+import com.example.backend.models.Warehouse;
+import com.example.backend.repositories.hr.EmployeeRepository;
+import com.example.backend.repositories.site.SiteRepository;
+import com.example.backend.repositories.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class WarehouseMTService {

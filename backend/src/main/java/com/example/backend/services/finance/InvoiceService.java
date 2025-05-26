@@ -1,10 +1,10 @@
 package com.example.backend.services.finance;
 
 import com.example.backend.dto.finance.InvoiceDTO;
-import com.example.backend.services.finance.equipment.finance.models.finance.Invoice;
-import com.example.backend.services.finance.equipment.finance.models.finance.PaymentStatus;
-import com.example.backend.services.finance.equipment.finance.InvoiceRepository;
-import com.example.backend.services.finance.equipment.finance.PaymentRepository;
+import com.example.backend.models.finance.Invoice;
+import com.example.backend.models.finance.PaymentStatus;
+import com.example.backend.repositories.finance.InvoiceRepository;
+import com.example.backend.repositories.finance.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

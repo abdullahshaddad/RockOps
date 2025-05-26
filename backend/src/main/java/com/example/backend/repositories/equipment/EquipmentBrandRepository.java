@@ -1,6 +1,6 @@
 package com.example.backend.repositories.equipment;
 
-import com.example.backend.repositories.equipment.finance.models.equipment.EquipmentBrand;
+import com.example.backend.models.equipment.EquipmentBrand;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,16 +1,14 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
-import com.example.Rock4Mining.models.ItemCategory;
-import com.example.Rock4Mining.models.Merchant;
-import com.example.Rock4Mining.models.MerchantType;
-import com.example.Rock4Mining.models.Site;
-import com.example.Rock4Mining.repositories.ItemCategoryRepository;
-import com.example.Rock4Mining.repositories.MerchantRepository;
-import com.example.Rock4Mining.repositories.SiteRepository;
+import com.example.backend.models.Merchant;
+import com.example.backend.repositories.ItemCategoryRepository;
+import com.example.backend.repositories.MerchantRepository;
+import com.example.backend.repositories.site.SiteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.hr;
 
-import com.example.backend.models.AttendanceStatus;
-import com.example.backend.services.AttendanceService;
+import com.example.backend.models.hr.AttendanceStatus;
+import com.example.backend.services.hr.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
-package com.example.backend.repositories;
+package com.example.backend.repositories.hr;
 
-import com.example.backend.repositories.finance.models.hr.Department;
+import com.example.backend.models.hr.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

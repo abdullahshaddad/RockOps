@@ -1,6 +1,6 @@
 package com.example.backend.repositories.equipment;
 
-import com.example.backend.repositories.equipment.finance.models.equipment.SarkyLogRange;
+import com.example.backend.models.equipment.SarkyLogRange;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

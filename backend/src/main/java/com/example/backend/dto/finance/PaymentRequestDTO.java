@@ -1,4 +1,4 @@
-package com.example.backend.dto;
+package com.example.backend.dto.finance;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

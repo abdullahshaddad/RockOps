@@ -1,4 +1,4 @@
-package com.example.backend.repositories.equipment.finance;
+package com.example.backend.repositories.finance;
 
 import com.example.backend.models.finance.AccountingPeriod;
 import com.example.backend.models.finance.PeriodStatus;

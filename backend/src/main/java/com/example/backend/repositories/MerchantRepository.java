@@ -1,6 +1,6 @@
-package com.example.Rock4Mining.repositories;
+package com.example.backend.repositories;
 
-import com.example.Rock4Mining.models.Merchant;
+import com.example.backend.models.Merchant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

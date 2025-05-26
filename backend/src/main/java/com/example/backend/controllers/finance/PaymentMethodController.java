@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.finance;
 
-import com.example.backend.dto.PaymentMethodDTO;
-import com.example.backend.services.PaymentMethodService;
+import com.example.backend.dto.finance.PaymentMethodDTO;
+import com.example.backend.services.finance.PaymentMethodService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,14 +1,15 @@
-package com.example.backend.services;
+package com.example.backend.services.equipment;
 
 import com.example.backend.dto.equipment.*;
 import com.example.backend.exceptions.ResourceNotFoundException;
-import com.example.backend.services.finance.equipment.EquipmentRepository;
-import com.example.backend.services.finance.equipment.SarkyLogRangeRepository;
-import com.example.backend.services.finance.equipment.SarkyLogRepository;
-import com.example.backend.services.finance.equipment.WorkTypeRepository;
-import com.example.backend.services.finance.equipment.finance.models.*;
-import com.example.backend.services.finance.equipment.finance.models.equipment.*;
-import com.example.backend.services.finance.equipment.finance.models.hr.Employee;
+import com.example.backend.models.User;
+import com.example.backend.models.equipment.*;
+import com.example.backend.services.MinioService;
+import com.example.backend.repositories.equipment.EquipmentRepository;
+import com.example.backend.repositories.equipment.SarkyLogRangeRepository;
+import com.example.backend.repositories.equipment.SarkyLogRepository;
+import com.example.backend.repositories.equipment.WorkTypeRepository;
+import com.example.backend.models.hr.Employee;
 import com.example.backend.repositories.*;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

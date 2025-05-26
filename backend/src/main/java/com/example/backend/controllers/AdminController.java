@@ -1,10 +1,10 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.authentication.AuthenticationResponse;
-import com.example.Rock4Mining.authentication.RegisterRequest;
-import com.example.Rock4Mining.models.Role;
-import com.example.Rock4Mining.models.User;
-import com.example.Rock4Mining.services.AdminService;
+import com.example.backend.authentication.AuthenticationResponse;
+import com.example.backend.authentication.RegisterRequest;
+import com.example.backend.models.Role;
+import com.example.backend.models.User;
+import com.example.backend.services.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

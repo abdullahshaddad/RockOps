@@ -1,12 +1,12 @@
-package com.example.backend.services;
+package com.example.backend.services.equipment;
 
 import com.example.backend.exceptions.ResourceNotFoundException;
-import com.example.backend.services.finance.equipment.finance.models.equipment.InSiteMaintenance;
-import com.example.backend.services.finance.equipment.finance.models.ItemType;
-import com.example.backend.services.finance.equipment.finance.models.equipment.MaintenanceConsumable;
-import com.example.backend.services.finance.equipment.InSiteMaintenanceRepository;
+import com.example.backend.models.equipment.InSiteMaintenance;
+import com.example.backend.models.ItemType;
+import com.example.backend.models.equipment.MaintenanceConsumable;
+import com.example.backend.repositories.equipment.InSiteMaintenanceRepository;
 import com.example.backend.repositories.ItemTypeRepository;
-import com.example.backend.services.finance.equipment.MaintenanceConsumableRepository;
+import com.example.backend.repositories.equipment.MaintenanceConsumableRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.equipment;
 
-import com.example.backend.models.EquipmentBrand;
-import com.example.backend.services.EquipmentBrandService;
+import com.example.backend.models.equipment.EquipmentBrand;
+import com.example.backend.services.equipment.EquipmentBrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

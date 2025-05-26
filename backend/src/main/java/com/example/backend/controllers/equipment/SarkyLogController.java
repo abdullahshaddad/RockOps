@@ -1,6 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.equipment;
 
-import com.example.backend.services.SarkyLogService;
+import com.example.backend.dto.equipment.*;
+import com.example.backend.services.equipment.SarkyLogService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

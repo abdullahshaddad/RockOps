@@ -1,5 +1,6 @@
 package com.example.backend.models.hr;
 
+import com.example.backend.models.equipment.EquipmentType;
 import com.example.backend.models.site.Site;
 import com.example.backend.models.Warehouse;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -146,5 +148,83 @@ public class Employee
      */
     public BigDecimal getAnnualTotalCompensation() {
         return getBaseSalary();
+    }
+
+    public boolean canDrive(String equipmentTypeName) {
+        if (this.jobPosition == null || equipmentTypeName == null) {
+            return false;
+        }
+
+        // Generate the expected position name for this equipment type
+        String requiredPosition = equipmentTypeName + " Driver";
+        return this.jobPosition.getPositionName().equals(requiredPosition);
+    }
+
+    // Update the isDriver method to be more general
+    public boolean isDriver() {
+        if (this.jobPosition == null) {
+            return false;
+        }
+
+        // Check if the position name contains "Driver" or "Operator"
+        String positionName = this.jobPosition.getPositionName().toLowerCase();
+        return positionName.contains("driver") || positionName.contains("operator");
+    }
+
+    // Add a method to get the equipment types this employee can drive
+    public List<String> getEquipmentTypesCanDrive() {
+        if (this.jobPosition == null || !isDriver()) {
+            return Collections.emptyList();
+        }
+
+        String positionName = this.jobPosition.getPositionName();
+
+        // Handle both "X Driver" and "X Operator" patterns
+        if (positionName.endsWith(" Driver")) {
+            return Collections.singletonList(positionName.substring(0, positionName.length() - 7));
+        } else if (positionName.endsWith(" Operator")) {
+            return Collections.singletonList(positionName.substring(0, positionName.length() - 9));
+        }
+
+        return Collections.emptyList();
+    }
+
+    // Helper method to get equipment type the employee can drive (if any)
+    public String getEquipmentTypeCanDrive() {
+        if (this.jobPosition == null || !this.jobPosition.getPositionName().endsWith(" Driver")) {
+            return null;
+        }
+
+        // Extract the equipment type from the position name (remove " Driver" suffix)
+        return this.jobPosition.getPositionName().substring(0, this.jobPosition.getPositionName().length() - 7);
+    }
+
+    public boolean canDrive(EquipmentType equipmentType) {
+        if (this.jobPosition == null || equipmentType == null) {
+            return false;
+        }
+
+        // Get the employee's position
+        String employeePosition = this.jobPosition.getPositionName();
+
+        // Check if it matches the required position or any of the alternative formats
+        if (employeePosition.equalsIgnoreCase(equipmentType.getRequiredDriverPosition())) {
+            return true;
+        }
+
+        // Check alternative formats for flexibility
+        for (String alternativeFormat : equipmentType.getAlternativePositionFormats()) {
+            if (employeePosition.equalsIgnoreCase(alternativeFormat)) {
+                return true;
+            }
+        }
+
+        // For even more flexibility, check if the position contains the equipment type name
+        // and includes "driver" or "operator"
+        String positionLower = employeePosition.toLowerCase();
+        String typeLower = equipmentType.getName().toLowerCase();
+
+        return (positionLower.contains(typeLower) &&
+                (positionLower.contains("driver") || positionLower.contains("operator")));
     }
 }

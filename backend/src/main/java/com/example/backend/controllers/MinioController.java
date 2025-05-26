@@ -1,6 +1,6 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.services.MinioService;
+import com.example.backend.services.MinioService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

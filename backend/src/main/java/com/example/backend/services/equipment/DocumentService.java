@@ -1,12 +1,17 @@
-package com.example.backend.services;
+package com.example.backend.services.equipment;
 
 import com.example.backend.dto.equipment.DocumentDTO;
 import com.example.backend.exceptions.ResourceNotFoundException;
-import com.example.backend.services.finance.equipment.DocumentRepository;
-import com.example.backend.services.finance.equipment.finance.models.equipment.Document.EntityType;
+import com.example.backend.models.Warehouse;
+import com.example.backend.models.equipment.Equipment;
+import com.example.backend.models.hr.Employee;
+import com.example.backend.models.site.Site;
+import com.example.backend.services.MinioService;
+import com.example.backend.repositories.equipment.DocumentRepository;
+import com.example.backend.models.equipment.Document.EntityType;
 import com.example.backend.repositories.*;
-import com.example.backend.services.finance.equipment.finance.models.equipment.Document;
-import com.example.backend.services.finance.equipment.EquipmentRepository;
+import com.example.backend.models.equipment.Document;
+import com.example.backend.repositories.equipment.EquipmentRepository;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.site.SiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,9 @@
-package com.example.backend.services;
+package com.example.backend.services.hr;
 
-import com.example.backend.services.finance.equipment.finance.models.hr.Attendance;
-import com.example.backend.services.finance.equipment.finance.models.hr.AttendanceStatus;
-import com.example.backend.services.finance.equipment.finance.models.hr.AttendanceType;
-import com.example.backend.services.finance.equipment.finance.models.hr.Employee;
+import com.example.backend.models.hr.Attendance;
+import com.example.backend.models.hr.AttendanceStatus;
+import com.example.backend.models.hr.AttendanceType;
+import com.example.backend.models.hr.Employee;
 import com.example.backend.repositories.hr.AttendanceRepository;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;

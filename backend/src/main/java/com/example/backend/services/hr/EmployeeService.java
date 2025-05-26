@@ -1,8 +1,8 @@
-package com.example.backend.services;
+package com.example.backend.services.hr;
 
-import com.example.backend.services.finance.equipment.finance.models.hr.Employee;
+import com.example.backend.models.hr.Employee;
 import com.example.backend.repositories.hr.EmployeeRepository;
-import com.example.backend.services.finance.equipment.EquipmentRepository;
+import com.example.backend.repositories.equipment.EquipmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

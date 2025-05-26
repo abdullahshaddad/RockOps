@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaUserPlus, FaEdit, FaTrash, FaEye, FaUser } from 'react-icons/fa';
+import { FaUserPlus, FaEdit, FaTrash,  FaUser } from 'react-icons/fa';
 import './EmployeesList.css';
 import DataTable from '../../../components/common/DataTable/DataTable';
 import AddEmployeeModal from './AddEmployeeModal';
@@ -506,22 +506,17 @@ const EmployeesList = () => {
 
     // Define actions for each row
     const actions = [
-        {
-            label: 'View',
-            icon: <FaEye />,
-            className: 'action-view',
-            onClick: (employee) => handleRowClick(employee)
-        },
+
         {
             label: 'Edit',
             icon: <FaEdit />,
-            className: 'action-edit',
+            className: 'primary',
             onClick: (employee) => handleEditClick(employee)
         },
         {
             label: 'Delete',
             icon: <FaTrash />,
-            className: 'action-delete',
+            className: 'danger',
             onClick: (employee) => handleDeleteEmployee(employee.id)
         }
     ];
@@ -546,7 +541,7 @@ const EmployeesList = () => {
                     </p>
                 </div>
                 <button
-                    className="employees-header__add-btn"
+                    className="btn btn-primary"
                     onClick={() => setShowAddModal(true)}
                 >
                     <FaUserPlus />

@@ -1,7 +1,8 @@
-package com.example.backend.services;
+package com.example.backend.services.hr;
 
-import com.example.backend.services.finance.equipment.finance.models.hr.Candidate;
-import com.example.backend.services.finance.equipment.finance.models.Vacancy;
+import com.example.backend.services.MinioService;
+import com.example.backend.models.hr.Candidate;
+import com.example.backend.models.Vacancy;
 import com.example.backend.repositories.hr.CandidateRepository;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.VacancyRepository;

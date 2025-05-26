@@ -1,11 +1,11 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
-import com.example.Rock4Mining.authentication.AuthenticationResponse;
-import com.example.Rock4Mining.authentication.AuthenticationService;
-import com.example.Rock4Mining.authentication.RegisterRequest;
-import com.example.Rock4Mining.models.Role;
-import com.example.Rock4Mining.models.User;
-import com.example.Rock4Mining.repositories.UserRepository;
+import com.example.backend.authentication.AuthenticationResponse;
+import com.example.backend.authentication.AuthenticationService;
+import com.example.backend.authentication.RegisterRequest;
+import com.example.backend.models.Role;
+import com.example.backend.models.User;
+import com.example.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;

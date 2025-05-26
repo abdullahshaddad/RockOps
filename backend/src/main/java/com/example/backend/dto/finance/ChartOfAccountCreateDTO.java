@@ -1,6 +1,6 @@
-package com.example.backend.dto;
+package com.example.backend.dto.finance;
 
-import com.example.backend.models.AccountType;
+import com.example.backend.models.finance.AccountType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

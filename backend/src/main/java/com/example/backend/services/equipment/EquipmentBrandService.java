@@ -1,7 +1,7 @@
-package com.example.backend.services;
+package com.example.backend.services.equipment;
 
-import com.example.backend.services.finance.equipment.finance.models.equipment.EquipmentBrand;
-import com.example.backend.services.finance.equipment.EquipmentBrandRepository;
+import com.example.backend.models.equipment.EquipmentBrand;
+import com.example.backend.repositories.equipment.EquipmentBrandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

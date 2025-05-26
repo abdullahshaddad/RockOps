@@ -1,14 +1,15 @@
-package com.example.backend.services;
+package com.example.backend.services.site;
 
-import com.example.backend.services.finance.equipment.EquipmentRepository;
-import com.example.backend.services.finance.equipment.finance.FixedAssetRepository;
-import com.example.backend.services.finance.equipment.finance.models.*;
-import com.example.backend.services.finance.equipment.finance.models.equipment.Equipment;
-import com.example.backend.services.finance.equipment.finance.models.finance.FixedAssets;
-import com.example.backend.services.finance.equipment.finance.models.hr.Employee;
-import com.example.backend.services.finance.equipment.finance.models.site.Site;
-import com.example.backend.services.finance.equipment.finance.models.site.SitePartner;
-import com.example.backend.services.finance.equipment.finance.models.site.SitePartnerId;
+import com.example.backend.repositories.equipment.EquipmentRepository;
+import com.example.backend.repositories.finance.FixedAssetRepository;
+import com.example.backend.models.Partner;
+import com.example.backend.models.Warehouse;
+import com.example.backend.models.equipment.Equipment;
+import com.example.backend.models.finance.FixedAssets;
+import com.example.backend.models.hr.Employee;
+import com.example.backend.models.site.Site;
+import com.example.backend.models.site.SitePartner;
+import com.example.backend.models.site.SitePartnerId;
 import com.example.backend.repositories.*;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.site.SiteRepository;

@@ -1,13 +1,11 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
 
-import com.example.Rock4Mining.models.RequestOrder;
-import com.example.Rock4Mining.repositories.RequestOrderRepository;
-import com.example.Rock4Mining.services.RequestOrderService;
+import com.example.backend.models.RequestOrder;
+import com.example.backend.services.RequestOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 

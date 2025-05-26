@@ -1,14 +1,12 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.models.Warehouse;
-import com.example.Rock4Mining.services.WarehouseMTService;
-import com.example.Rock4Mining.services.WarehouseService;
+import com.example.backend.models.Warehouse;
+import com.example.backend.services.WarehouseMTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 

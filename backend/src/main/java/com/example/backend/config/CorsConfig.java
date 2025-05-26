@@ -14,21 +14,16 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow specific origin (your React app)
-        config.addAllowedOrigin("http://localhost:5174");
+        // Allow all common frontend development ports
         config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("http://localhost:5174");
+        config.addAllowedOrigin("http://localhost:3000");
 
         // Allow all HTTP methods
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("DELETE");
-        config.addAllowedMethod("OPTIONS");
+        config.addAllowedMethod("*");
 
-        // Allow specific headers
-        config.addAllowedHeader("Authorization");
-        config.addAllowedHeader("Content-Type");
-        config.addAllowedHeader("Accept");
+        // Allow all headers
+        config.addAllowedHeader("*");
 
         // Allow credentials (cookies, authorization headers, etc.)
         config.setAllowCredentials(true);

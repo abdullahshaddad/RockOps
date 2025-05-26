@@ -1,10 +1,10 @@
 package com.example.backend.services.finance;
 
 import com.example.backend.dto.finance.AuditLogResponseDTO;
-import com.example.backend.services.finance.equipment.finance.models.finance.AuditAction;
-import com.example.backend.services.finance.equipment.finance.models.finance.AuditLog;
-import com.example.backend.services.finance.equipment.finance.models.User;
-import com.example.backend.services.finance.equipment.finance.AuditLogRepository;
+import com.example.backend.models.finance.AuditAction;
+import com.example.backend.models.finance.AuditLog;
+import com.example.backend.models.User;
+import com.example.backend.repositories.finance.AuditLogRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,9 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
-import com.example.Rock4Mining.models.*;
-import com.example.Rock4Mining.repositories.*;
-import com.example.Rock4Mining.dto.OfferDTO;
-import com.example.Rock4Mining.dto.OfferItemDTO;
+import com.example.backend.dto.OfferDTO;
+import com.example.backend.dto.OfferItemDTO;
+import com.example.backend.models.*;
+import com.example.backend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
