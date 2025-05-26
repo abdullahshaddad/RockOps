@@ -28,7 +28,24 @@ import EquipmentTypeManagement from "./pages/equipment/EquipmentManagement/Equip
 import ViewEquipmentData from "./pages/equipment/EquipmentInfo/ViewEquipmentData.jsx";
 import EquipmentDetails from "./pages/equipment/EquipmentDetails/EquipmentDetails.jsx";
 
-// ===================== Authentication Handlers =====================
+// ===================== Warehouse Imports =====================
+import WarehousesList from "./pages/warehouse/WarehousesList/WarehousesList.jsx";
+import WarehouseDetails from "./pages/warehouse/WarehousesDetails/WarehouseDetails.jsx";
+import WarehouseInformation from "./pages/warehouse/WarehousesInformation/WarehouseInformation.jsx";
+
+// ===================== Merchant & Procurement Components =====================
+import MerchantDetails from "./pages/merchant/MerchantDetails/MerchantDetails.jsx";
+import ProcurementOffers from "./pages/procurement/ProcurementOffers/ProcurementOffers.jsx";
+import ProcurementRequestOrderDetails
+    from "./pages/procurement/ProcurementRequestOrderDetails/ProcurementRequestOrderDetails.jsx";
+import ProcurementMerchants from "./pages/procurement/ProcurementMerchants/ProcurementMerchants.jsx";
+import ProcurementRequestOrders from "./pages/procurement/ProcurementRequestOrders/ProcurementRequestOrders.jsx";
+import PurchaseOrders from "./pages/procurement/ProcurementPurchaseOrders/ProcurementPurchaseOrders/PurchaseOrders.jsx";
+import PurchaseOrderDetails
+    from "./pages/procurement/ProcurementPurchaseOrders/PurchaseOrderDetails/PurchaseOrderDetails.jsx";
+import WorkTypeManagement from "./pages/equipment/EquipmentManagement/WorkTypeManagement.jsx";
+
+
 const AuthRedirect = () => {
     const {currentUser, isAuthenticated, loading} = useAuth();
     if (loading) return <LoadingSpinner/>;
@@ -77,17 +94,55 @@ function App() {
                                     <Route path="/admin"
                                            element={<RoleRoute allowedRoles={['ADMIN']}><AdminPage/></RoleRoute>}/>
 
-                                    <Route path="/dashboard" element={<RoleRoute allowedRoles={allRoles}><DashboardPage/>
-                                    </RoleRoute>}/>
+                                    <Route path="/dashboard"
+                                           element={<RoleRoute allowedRoles={allRoles}><DashboardPage/>
+                                           </RoleRoute>}/>
 
-                                    <Route path="/partners" element={<RoleRoute allowedRoles={["ADMIN", "SITE_ADMIN"]}><Partners/></RoleRoute>}/>
+                                    <Route path="/partners" element={<RoleRoute
+                                        allowedRoles={["ADMIN", "SITE_ADMIN"]}><Partners/></RoleRoute>}/>
 
                                     {/* Site Management Routes */}
-                                    <Route path="/sites" element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
-                                        <Route index element={<RoleRoute allowedRoles={allRoles}><AllSites/></RoleRoute>}/>
-                                        <Route path="details/:siteId" element={<RoleRoute allowedRoles={allRoles}><SiteDetails/></RoleRoute>}/>
-                                        <Route path="employee-details/:id" element={<RoleRoute allowedRoles={allRoles}><EmployeeDetails/></RoleRoute>}/>
+                                    <Route path="/sites"
+                                           element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
+                                        <Route index
+                                               element={<RoleRoute allowedRoles={allRoles}><AllSites/></RoleRoute>}/>
+                                        <Route path="details/:siteId"
+                                               element={<RoleRoute allowedRoles={allRoles}><SiteDetails/></RoleRoute>}/>
+                                        <Route path="employee-details/:id" element={<RoleRoute
+                                            allowedRoles={allRoles}><EmployeeDetails/></RoleRoute>}/>
                                     </Route>
+
+
+                                    {/* Warehouse Management Routes */}
+                                    <Route path="/warehouses" element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
+                                        <Route index element={<RoleRoute allowedRoles={allRoles}><WarehousesList/></RoleRoute>}/>
+                                        <Route path=":id" element={<WarehouseDetails/>}/>
+                                        <Route path="warehouse-details/:id" element={<WarehouseInformation/>}/>
+                                    </Route>
+
+                                    {/* Merchant & Procurement Routes */}
+                                    <Route path="/merchants" element={<RoleRoute allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN", "WAREHOUSE_MANAGER"]}><ProcurementMerchants/></RoleRoute>}/>
+                                    <Route path="/merchants/:id" element={<RoleRoute
+                                        allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN"]}><MerchantDetails/></RoleRoute>}/>
+                                    <Route path="/procurement/request-orders" element={<RoleRoute
+                                        allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN"]}><ProcurementRequestOrders/></RoleRoute>}/>
+                                    <Route path="/procurement/request-orders/:id" element={<RoleRoute
+                                        allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN"]}><ProcurementRequestOrderDetails/></RoleRoute>}/>
+                                    <Route path="/procurement/offers" element={<RoleRoute
+                                        allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN"]}><ProcurementOffers/></RoleRoute>}/>
+
+                                    <Route path="/procurement/purchase-orders" element={
+                                        <RoleRoute allowedRoles={["ADMIN", "PROCUREMENT"]}>
+                                            <PurchaseOrders/>
+                                        </RoleRoute>
+                                    }/>
+
+                                    <Route path="/procurement/purchase-orders/:id" element={
+                                        <RoleRoute allowedRoles={["ADMIN", "PROCUREMENT"]}>
+                                            <PurchaseOrderDetails/>
+                                        </RoleRoute>
+                                    }/>
+
 
                                     {/* HR Management Routes */}
                                     <Route path="/hr" element={<RoleRoute allowedRoles={["HR_MANAGER", "HR_EMPLOYEE", "ADMIN"]}><HRLayout/></RoleRoute>}>
@@ -103,12 +158,12 @@ function App() {
                                     {/* Equipment Management Routes */}
                                     <Route path="/equipment" element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
                                         <Route index element={<RoleRoute allowedRoles={allRoles}><EquipmentMain/></RoleRoute>}/>
-                                        <Route path="brand-management"  element={<RoleRoute allowedRoles={allRoles}><EquipmentBrandManagement/></RoleRoute>}/>
-                                        <Route path="type-management"  element={<RoleRoute allowedRoles={allRoles}><EquipmentTypeManagement/></RoleRoute>}/>
-                                        <Route path="info/:EquipmentID" element={<RoleRoute allowedRoles={allRoles}><ViewEquipmentData /></RoleRoute>} />
-                                        <Route path=":EquipmentID" element={<RoleRoute allowedRoles={allRoles}><EquipmentDetails /></RoleRoute>} />
+                                        <Route path="brand-management" element={<RoleRoute allowedRoles={allRoles}><EquipmentBrandManagement/></RoleRoute>}/>
+                                        <Route path="type-management" element={<RoleRoute allowedRoles={allRoles}><EquipmentTypeManagement/></RoleRoute>}/>
+                                        <Route path="work-type-management" element={<RoleRoute allowedRoles={allRoles}><WorkTypeManagement/></RoleRoute>}/>
+                                        <Route path="info/:EquipmentID" element={<RoleRoute allowedRoles={allRoles}><ViewEquipmentData/></RoleRoute>}/>
+                                        <Route path=":EquipmentID" element={<RoleRoute allowedRoles={allRoles}><EquipmentDetails/></RoleRoute>}/>
                                     </Route>
-
                                 </Route>
 
 

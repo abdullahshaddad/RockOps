@@ -1,14 +1,13 @@
 package com.example.backend.models.equipment;
 
-import com.example.backend.models.Merchant;
 import com.example.backend.models.hr.Employee;
+import com.example.backend.models.merchant.Merchant;
 import com.example.backend.models.site.Site;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.Year;

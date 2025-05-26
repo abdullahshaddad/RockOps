@@ -1,9 +1,9 @@
 package com.example.backend.models.equipment;
 
 
-import com.example.backend.models.ItemStatus;
-import com.example.backend.models.ItemType;
-import com.example.backend.models.Transaction;
+import com.example.backend.models.transaction.Transaction;
+import com.example.backend.models.warehouse.ItemStatus;
+import com.example.backend.models.warehouse.ItemType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;

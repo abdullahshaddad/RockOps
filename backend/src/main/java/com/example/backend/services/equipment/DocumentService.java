@@ -2,10 +2,11 @@ package com.example.backend.services.equipment;
 
 import com.example.backend.dto.equipment.DocumentDTO;
 import com.example.backend.exceptions.ResourceNotFoundException;
-import com.example.backend.models.Warehouse;
 import com.example.backend.models.equipment.Equipment;
 import com.example.backend.models.hr.Employee;
 import com.example.backend.models.site.Site;
+import com.example.backend.models.warehouse.Warehouse;
+import com.example.backend.repositories.warehouse.WarehouseRepository;
 import com.example.backend.services.MinioService;
 import com.example.backend.repositories.equipment.DocumentRepository;
 import com.example.backend.models.equipment.Document.EntityType;
