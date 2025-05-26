@@ -1,4 +1,4 @@
-package com.example.backend.services;
+package com.example.backend.services.hr;
 
 import com.example.backend.models.hr.Vacancy;
 import com.example.backend.models.hr.Candidate;
