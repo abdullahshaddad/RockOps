@@ -126,9 +126,6 @@ const VacancyDetails = () => {
     return (
         <div className="vacancy-details-container">
             <div className="details-header">
-                <button className="back-button" onClick={handleBackClick}>
-                    <i className="fas fa-arrow-left"></i> Back to Vacancies
-                </button>
                 <h1>{vacancy.title}</h1>
                 <div className="header-badges">
                     <span className={`status-badge ${getStatusBadgeClass(vacancy.status)}`}>
