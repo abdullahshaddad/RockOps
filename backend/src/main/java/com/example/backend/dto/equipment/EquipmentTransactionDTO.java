@@ -1,7 +1,7 @@
 package com.example.backend.dto.equipment;
 
-import com.example.backend.models.TransactionStatus;
-import com.example.backend.models.TransactionType;
+import com.example.backend.models.transaction.TransactionStatus;
+import com.example.backend.models.transaction.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

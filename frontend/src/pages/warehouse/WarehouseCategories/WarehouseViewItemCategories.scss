@@ -1,0 +1,685 @@
+.warehouse-view2 {
+  position: relative;
+  padding: 20px;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #1a2b42;
+  margin-bottom: 20px;
+  min-height: 200px; /* Ensures the container has some minimum height */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Ensure content starts at the top */
+  overflow: hidden;
+  position: relative; /* For positioning the Add button */
+  padding-bottom: 90px; /* Add some space at the bottom for the button */
+  margin-top:5rem;
+}
+
+/* Header Styles */
+.header-container2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.left-section2 {
+  display: flex;
+  align-items: baseline;
+  gap:10px;
+}
+
+.page-title2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a2b42;
+  margin: 0;
+  margin-right: 16px;
+}
+
+.item-count2 {
+  font-size: 14px;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.right-section2 {
+  display: flex;
+  align-items: center;
+  justify-content : flex-end;
+  margin-bottom:15px;
+}
+
+.search-container2 {
+  position: relative;
+  min-width: 300px;
+}
+
+.search-input2 {
+  width: 100%;
+  padding: 12px 18px 12px 42px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.search-input2:focus {
+  outline: none;
+  border-color: #4f85e5;
+  box-shadow: 0 0 0 4px rgba(79, 133, 229, 0.1);
+}
+
+.search-icon2 {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #9ca3af;
+}
+
+/* Table Card Styles */
+.table-card2 {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  position: relative;
+  overflow-x: auto; /* Make the table scrollable horizontally */
+}
+
+.table-container2 {
+  display: table;
+  width: 100%; /* Make the table take full width of the container */
+  table-layout: auto; /* Allow columns to adjust based on content */
+  border-collapse: collapse;
+}
+
+/* Table Header Styles */
+.table-header-row2 {
+  display: table-row;
+  background-color: #f1f3f5;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+  color: #4b5563;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Align header cells to the left */
+.table-header-row2 .table-cell2 {
+  text-align: left;
+}
+
+.table-cell2 {
+  display: table-cell;
+  padding: 16px 8px;
+  font-size: 14px;
+  vertical-align: middle;
+  overflow: visible; /* Allow content overflow */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.table-header-cell2:not(:last-child),
+.table-cell2:not(:last-child) {
+  padding-right: 60px; /* Add some spacing between columns */
+}
+
+/* Table Body Styles */
+.table-body2 {
+  display: table-row-group;
+  height: auto; /* Ensures the table body grows based on its content */
+}
+
+.table-row2{
+  display: table-row;
+  border-bottom: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.table-row2:last-child {
+  border-bottom: none;
+}
+
+.table-row2:hover {
+  background-color: #f9fafb;
+}
+
+.table-cell2 {
+  display: table-cell;
+  padding: 16px 8px;
+  font-size: 14px;
+  vertical-align: middle;
+  overflow: visible; /* Make sure content overflows if it's too long */
+  white-space: nowrap; /* Prevent wrapping */
+  // text-overflow: clip; /* Make sure text isn't truncated */
+}
+
+/* General styling for all columns */
+/* For the ID column */
+.id-cell2 {
+  padding-left: 15px;  /* Specific padding for the ID column */
+  padding-right: 8px; /* Specific padding for the ID column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+/* For the Name column */
+.name-cell2 {
+  padding-left: 15px; /* Specific padding for the Name column */
+  padding-right: 25px; /* Specific padding for the Name column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+/* For the Description column */
+.description-cell {
+  padding-left: 87px; /* Specific padding for the Description column */
+  padding-right: 250px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+.parent-cell {
+  padding-left: 105px; /* Specific padding for the Description column */
+  padding-right: 180px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+/* For the actions column (if needed) */
+.actions-cell2 {
+  padding-left: 80px; /* Specific padding for the Description column */
+  padding-right: 160px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align* Adjust padding for action buttons */
+}
+
+.pname-cell2 {
+  padding-left: 15px; /* Specific padding for the Name column */
+  padding-right: 55px; /* Specific padding for the Name column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+/* For the Description column */
+.pdescription-cell {
+  padding-left: 240px; /* Specific padding for the Description column */
+  padding-right: 250px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+.pactions-cell2 {
+  padding-left: 180px; /* Specific padding for the Description column */
+  padding-right: 240px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align* Adjust padding for action buttons */
+}
+
+
+
+
+/* Category and Status Styles */
+.category-tag2 {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-tag2 {
+  display: inline-block;
+  // padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+
+/* Action Button Styles */
+.edit-button2,
+.delete-button2 {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-left: 3px;
+}
+
+.edit-button2 {
+  color: #4f85e5;
+}
+
+.delete-button2 {
+  color: #ef4444;
+}
+
+.edit-button2:hover,
+.delete-button2:hover {
+  background-color: #f3f4f6;
+}
+
+.edit-button2 svg,
+.delete-button2 svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Add Button Styles */
+.add-button2 {
+  position: absolute;
+  bottom: 20px; /* Distance from the bottom */
+  right: 20px; /* Distance from the right */
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: #4f85e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(79, 133, 229, 0.4);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 100;
+}
+
+.add-button2:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(79, 133, 229, 0.5);
+}
+
+.plus-icon2 {
+  width: 24px;
+  height: 24px;
+}
+
+.plus-icon2 {
+  width: 24px;
+  height: 24px;
+}
+
+/* Loading State Styles */
+.loading-container2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.loading-spinner2 {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(79, 133, 229, 0.2);
+  border-radius: 50%;
+  border-top-color: #4f85e5;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin2 {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Empty State Styles */
+.empty-state2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute; /* Position it inside the table */
+  top: 50%; /* Vertically center */
+  left: 50%; /* Horizontally center */
+  transform: translate(-50%, -50%); /* Fine-tune positioning */
+  color: #6b7280;
+  z-index: 10; /* Ensure it's on top of other content */
+  width: 100%;
+  height: auto;
+}
+
+.empty-state2 .empty-icon2 {
+  width: 60px;
+  height: 60px;
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.empty-state2 svg {
+  width: 30px;
+  height: 30px;
+  color: #9ca3af;
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  margin: 0 0 8px 0;
+  color: #4b5563;
+}
+
+.empty-state2 p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Modal Styles */
+.modal-backdrop2 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal2 {
+  width: 100%;
+  max-width: 600px;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s ease;
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header2 h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a2b42;
+  margin: 0;
+}
+
+.close-modal2 {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.close-modal2:hover {
+  background-color: #f3f4f6;
+  color: #1a2b42;
+}
+
+.close-modal2 svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Form Styles */
+form {
+  padding: 24px;
+  overflow-y: auto;
+  margin-top: 1rem;
+}
+
+.form-row2 {
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* Controls space between each input block */
+  margin-top:30px;
+  margin-bottom:40px
+}
+
+.form-group2 {
+  margin-bottom: 1px; /* Space between form groups */
+}
+
+.form-group2 label {
+  display: block; /* Ensure the label takes the full width */
+  margin-bottom: 8px; /* Space between label and input */
+}
+
+.form-group2 input,
+.form-group2 select,
+.form-group2 textarea {
+  width: 100%; /* Ensure inputs take the full width */
+  padding: 8px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+//
+//input,
+//select {
+//  width: 100%;
+//  padding: 12px 16px;
+//  border: 1px solid #e5e7eb;
+//  border-radius: 10px;
+//  font-size: 14px;
+//  transition: all 0.2s ease;
+//}
+//
+//input:focus,
+//select:focus {
+//  outline: none;
+//  border-color: #4f85e5;
+//  box-shadow: 0 0 0 4px rgba(79, 133, 229, 0.1);
+//}
+//
+//select {
+//  appearance: none;
+//  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+//  background-repeat: no-repeat;
+//  background-position: right 16px center;
+//  padding-right: 40px;
+//}
+
+.modal-footer2 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancel-button2,
+.submit-button2 {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button2 {
+  background-color: white;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.submit-button2 {
+  background-color: #4f85e5;
+  color: white;
+  border: none;
+}
+
+.cancel-button2:hover {
+  background-color: #f9fafb;
+}
+
+.submit-button2:hover {
+  background-color: #3b72d9;
+}
+
+
+.notification2{
+  position: fixed;
+  top: 20px; /* Position at the top */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  z-index: 1000;
+  animation: slideDownFade 0.3s ease, slideUpFade 0.3s ease 2.7s;
+}
+
+@keyframes slideDownFade {
+  from {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+}
+
+
+.success-notification2 {
+  background-color: #f0fdf4;
+  border: 1px solid #dcfce7;
+  color: #166534;
+}
+
+.success-notification2 svg {
+  color: #16a34a;
+  width: 20px;
+  height: 20px;
+}
+
+.delete-notification2 {
+  background-color: #fef2f2;  // Light red background
+  border: 1px solid #fecaca;  // Light red border
+  color: #991b1b;  // Dark red text
+}
+
+.delete-notification2 svg {
+  color: #dc2626;  // Red icon color
+  width: 20px;
+  height: 20px;
+}
+
+
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .form-row2 {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.category-table-container{
+  margin-bottom:45px;
+  margin-top:45px;
+}
+
+.section-description {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.table-section-title{
+  font-size: 22px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+

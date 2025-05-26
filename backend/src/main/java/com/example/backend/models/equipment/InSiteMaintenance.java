@@ -1,6 +1,6 @@
 package com.example.backend.models.equipment;
 
-import com.example.backend.models.Transaction;
+import com.example.backend.models.transaction.Transaction;
 import com.example.backend.models.hr.Employee;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
