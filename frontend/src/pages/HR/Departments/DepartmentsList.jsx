@@ -283,13 +283,7 @@ const DepartmentsList = () => {
                                 />
                             </div>
                             <div className="departments-form-actions">
-                                <button
-                                    type="submit"
-                                    className="departments-submit-button"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Adding...' : 'Add Department'}
-                                </button>
+
                                 <button
                                     type="button"
                                     className="departments-cancel-button"
@@ -297,6 +291,13 @@ const DepartmentsList = () => {
                                     disabled={loading}
                                 >
                                     Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="departments-submit-button"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Adding...' : 'Add Department'}
                                 </button>
                             </div>
                         </form>
@@ -341,13 +342,7 @@ const DepartmentsList = () => {
                                 />
                             </div>
                             <div className="departments-form-actions">
-                                <button
-                                    type="submit"
-                                    className="departments-submit-button"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Updating...' : 'Update Department'}
-                                </button>
+
                                 <button
                                     type="button"
                                     className="departments-cancel-button"
@@ -355,6 +350,13 @@ const DepartmentsList = () => {
                                     disabled={loading}
                                 >
                                     Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="departments-submit-button"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Updating...' : 'Update Department'}
                                 </button>
                             </div>
                         </form>
@@ -369,19 +371,20 @@ const DepartmentsList = () => {
                         <h2>Confirm Delete</h2>
                         <p>Are you sure you want to delete this department?</p>
                         <div className="departments-form-actions">
-                            <button
-                                className="departments-confirm-button"
-                                onClick={() => handleDeleteDepartment(deleteConfirmId)}
-                                disabled={loading}
-                            >
-                                <FiCheck /> Confirm
-                            </button>
+
                             <button
                                 className="departments-cancel-button"
                                 onClick={() => setDeleteConfirmId(null)}
                                 disabled={loading}
                             >
                                 <FiX /> Cancel
+                            </button>
+                            <button
+                                className="departments-confirm-button"
+                                onClick={() => handleDeleteDepartment(deleteConfirmId)}
+                                disabled={loading}
+                            >
+                                <FiCheck /> Confirm
                             </button>
                         </div>
                     </div>
