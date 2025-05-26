@@ -2,7 +2,7 @@ package com.example.backend.services.equipment;
 
 import com.example.backend.dto.equipment.*;
 import com.example.backend.exceptions.ResourceNotFoundException;
-import com.example.backend.models.User;
+import com.example.backend.models.user.User;
 import com.example.backend.models.equipment.*;
 import com.example.backend.services.MinioService;
 import com.example.backend.repositories.equipment.EquipmentRepository;

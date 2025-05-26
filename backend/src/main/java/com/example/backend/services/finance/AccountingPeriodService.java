@@ -5,7 +5,7 @@ import com.example.backend.dto.finance.AccountingPeriodResponseDTO;
 import com.example.backend.models.finance.AccountingPeriod;
 import com.example.backend.models.finance.AuditAction;
 import com.example.backend.models.finance.PeriodStatus;
-import com.example.backend.models.User;
+import com.example.backend.models.user.User;
 import com.example.backend.repositories.finance.AccountingPeriodRepository;
 import com.example.backend.repositories.UserRepository;
 import jakarta.transaction.Transactional;
