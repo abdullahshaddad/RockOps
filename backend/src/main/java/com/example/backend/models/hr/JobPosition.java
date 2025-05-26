@@ -13,6 +13,8 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"employees"}) // Prevent circular hash issues
+@ToString(exclude = {"employees"})
 public class JobPosition {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,6 +39,10 @@ public class JobPosition {
     @OneToMany(mappedBy = "jobPosition", cascade = CascadeType.ALL)
     @JsonBackReference("job-employee")
     private List<Employee> employees;
+
+    @OneToMany(mappedBy = "jobPosition", cascade = CascadeType.ALL)
+    @JsonBackReference()
+    private List<Vacancy> vacancies;
 
 
 

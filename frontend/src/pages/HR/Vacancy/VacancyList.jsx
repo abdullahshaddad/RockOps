@@ -238,23 +238,18 @@ const VacancyList = () => {
 
     // Define actions for DataTable
     const actions = [
-        {
-            label: 'View',
-            icon: <FaEye />,
-            onClick: (row) => handleRowClick(row),
-            className: 'table-action-button table-view-button'
-        },
+
         {
             label: 'Edit',
             icon: <FaEdit />,
             onClick: (row) => handleEditClick(row),
-            className: 'table-action-button table-edit-button'
+            className: 'primary'
         },
         {
             label: 'Delete',
             icon: <FaTrashAlt />,
             onClick: (row) => handleDeleteVacancy(row.id),
-            className: 'table-action-button positions-delete-button'
+            className: 'danger'
         }
     ];
 

@@ -126,9 +126,6 @@ const VacancyDetails = () => {
     return (
         <div className="vacancy-details-container">
             <div className="details-header">
-                <button className="back-button" onClick={handleBackClick}>
-                    <i className="fas fa-arrow-left"></i> Back to Vacancies
-                </button>
                 <h1>{vacancy.title}</h1>
                 <div className="header-badges">
                     <span className={`status-badge ${getStatusBadgeClass(vacancy.status)}`}>
@@ -167,7 +164,7 @@ const VacancyDetails = () => {
                             </div>
                             <div className="info-item">
                                 <span className="info-label">Department</span>
-                                <span className="info-value">{vacancy.jobPosition ? vacancy.jobPosition.department : 'N/A'}</span>
+                                <span className="info-value">{vacancy.jobPosition ? vacancy.jobPosition.department.name : 'N/A'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">Posted Date</span>
