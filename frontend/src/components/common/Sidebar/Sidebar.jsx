@@ -183,12 +183,6 @@ const Sidebar = () => {
             hasSubmenu: true,
             submenuItems: [
                 {
-                    title: 'Merchants',
-                    icon: <BsFillPersonVcardFill/>,
-                    path: '/merchants',
-                    roles: ['ADMIN', 'USER', 'SITE_ADMIN', 'PROCUREMENT']
-                },
-                {
                     title: 'Request Orders',
                     icon: <FaFileContract/>,
                     path: '/procurement/request-orders',
