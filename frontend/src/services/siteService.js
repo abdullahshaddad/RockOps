@@ -1,6 +1,6 @@
 // src/services/siteService.js
 import apiClient from '../utils/apiClient';
-import { SITE_ENDPOINTS, PARTNER_ENDPOINTS } from '../config/api.config';
+import { SITE_ENDPOINTS, PARTNER_ENDPOINTS, EMPLOYEE_ENDPOINTS } from '../config/api.config';
 
 export const siteService = {
     // Basic site operations
@@ -23,6 +23,10 @@ export const siteService = {
 
     getSiteEmployees: (siteId) => {
         return apiClient.get(SITE_ENDPOINTS.EMPLOYEES(siteId));
+    },
+
+    getUnassignedEmployees: () => {
+        return apiClient.get(EMPLOYEE_ENDPOINTS.UNASSIGNED);
     },
 
     getSiteEquipment: (siteId) => {
@@ -86,7 +90,7 @@ export const siteService = {
     },
 
     removeEmployee: (siteId, employeeId) => {
-        return apiClient.delete(SITE_ENDPOINTS.ADMIN.REMOVE_EMPLOYEE(siteId, employeeId));
+        return apiClient.delete(`/siteadmin/${siteId}/remove-employee/${employeeId}`);
     },
 
     // Warehouse assignment

@@ -1,6 +1,7 @@
 package com.example.backend.models.hr;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class JobPosition {
     private String positionName;
     @ManyToOne
     @JoinColumn(name = "department_id")
+    @JsonIgnoreProperties({"jobPositions"}) // Only ignore the jobPositions list to prevent circular reference
     private Department department;
     private String head;
     private Double baseSalary;

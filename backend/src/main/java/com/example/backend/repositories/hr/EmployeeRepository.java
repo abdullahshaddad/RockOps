@@ -34,4 +34,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID> { // U
 
     // Find by site object
     List<Employee> findBySite(Site site);
+
+    // Find employees without a site
+    List<Employee> findBySiteIsNull();
 }

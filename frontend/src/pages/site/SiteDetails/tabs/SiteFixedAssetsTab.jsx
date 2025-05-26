@@ -3,6 +3,7 @@ import DataTable from "../../../../components/common/DataTable/DataTable";
 import {useTranslation} from 'react-i18next';
 import {useAuth} from "../../../../contexts/AuthContext";
 
+
 const SiteFixedAssetsTab = ({siteId}) => {
     const {t} = useTranslation();
     const [assetsData, setAssetsData] = useState([]);
@@ -164,42 +165,59 @@ const SiteFixedAssetsTab = ({siteId}) => {
                 ))}
             </div>
 
+            {/* Updated Modal JSX - Replace the existing modal section in your component */}
             {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal">
-                        <h2>{t('site.assignFixedAsset')}</h2>
-                        <button className="close-modal" onClick={handleCloseModal}>×</button>
-                        <div className="fixedAssets-list">
+                <div className="assign-fixed-asset-modal-overlay">
+                    <div className="assign-fixed-asset-modal-content">
+                        <div className="assign-fixed-asset-modal-header">
+                            <h2>{t('site.assignFixedAsset')}</h2>
+                            <button
+                                className="assign-fixed-asset-modal-close-button"
+                                onClick={handleCloseModal}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="assign-fixed-asset-modal-body">
                             {availableFixedAsset.length === 0 ? (
-                                <p>{t('site.noFixedAssetsAvailable')}</p>
+                                <div className="assign-fixed-asset-no-assets">
+                                    <p>{t('site.noFixedAssetsAvailable')}</p>
+                                </div>
                             ) : (
-                                <table className="fixedAssets-table">
-                                    <thead>
-                                    <tr>
-                                        <th>{t('common.name')}</th>
-                                        <th>{t('site.creationDate')}</th>
-                                        <th>{t('fixedAssets.areaOrQuantity')}</th>
-                                        <th>{t('common.action')}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {availableFixedAsset.map((ep) => (
-                                        <tr key={ep.id}>
-                                            <td>{ep.name}</td>
-                                            <td>{ep.creationDate}</td>
-                                            <td>{ep.area}</td>
-                                            <td>
-                                                <button
-                                                    className="assign-btn"
-                                                    onClick={() => handleAssignFixedAsset(ep.id)}
-                                                >
-                                                    {t('site.assign')}
-                                                </button>
-                                            </td>
+                                <div className="assign-fixed-asset-table-container">
+                                    <table className="assign-fixed-asset-table">
+                                        <thead>
+                                        <tr>
+                                            <th>{t('common.name')}</th>
+                                            <th>{t('site.creationDate')}</th>
+                                            <th>{t('fixedAssets.areaOrQuantity')}</th>
+                                            <th>{t('common.action')}</th>
                                         </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                        {availableFixedAsset.map((ep) => (
+                                            <tr key={ep.id}>
+                                                <td>{ep.name}</td>
+                                                <td className="assign-fixed-asset-creation-date">
+                                                    {ep.creationDate}
+                                                </td>
+                                                <td className="assign-fixed-asset-area">
+                                                    {ep.area} m²
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        className="assign-fixed-asset-btn"
+                                                        onClick={() => handleAssignFixedAsset(ep.id)}
+                                                    >
+                                                        {t('site.assign')}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             )}
                         </div>
                     </div>

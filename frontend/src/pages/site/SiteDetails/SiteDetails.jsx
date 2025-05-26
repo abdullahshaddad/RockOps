@@ -103,11 +103,11 @@ const SiteDetails = () => {
                 <button className="back-button" onClick={() => navigate('/sites')}>
                     <span className="back-icon">←</span> Back to Sites
                 </button>
-                <div className="header-actions">
-                    <button className="edit-button" onClick={() => navigate(`/sites/edit/${siteId}`)}>
-                        Edit Site
-                    </button>
-                </div>
+                {/*<div className="header-actions">*/}
+                {/*    <button className="edit-button" onClick={() => navigate(`/sites/edit/${siteId}`)}>*/}
+                {/*        Edit Site*/}
+                {/*    </button>*/}
+                {/*</div>*/}
             </div>
 
             <div className="site-details-content">
