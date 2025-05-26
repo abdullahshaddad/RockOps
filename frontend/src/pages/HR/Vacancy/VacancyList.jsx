@@ -249,10 +249,10 @@ const VacancyList = () => {
 
     return (
         <div className="vacancy-container">
-            <div className="vacancy-header">
+            <div className="departments-header">
                 <h1>Job Vacancies</h1>
                 <button
-                    className="add-vacancy-btn"
+                    className="primary-button"
                     onClick={() => setShowAddModal(true)}
                 >
                     Post New Vacancy

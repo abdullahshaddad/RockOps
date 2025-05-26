@@ -17,6 +17,7 @@
     align-items: center;
     margin-bottom: 2rem;
     border-bottom: 2px solid var(--border-color);
+    padding: 1rem;
 
     h1 {
         font-size: 2rem;
@@ -307,6 +308,7 @@
     max-height: 90vh;
     overflow-y: auto;
     animation: modalSlideIn 0.3s ease-out;
+    padding: 1rem;
 
     h2 {
         margin: 0 0 1.5rem 0;
