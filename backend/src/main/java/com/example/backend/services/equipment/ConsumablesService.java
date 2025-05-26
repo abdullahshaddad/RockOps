@@ -1,9 +1,9 @@
 package com.example.backend.services.equipment;
 
-import com.example.backend.models.ItemStatus;
-import com.example.backend.models.Warehouse;
 import com.example.backend.models.equipment.Consumable;
 import com.example.backend.models.equipment.Equipment;
+import com.example.backend.models.warehouse.ItemStatus;
+import com.example.backend.models.warehouse.Warehouse;
 import com.example.backend.repositories.equipment.ConsumableRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class ConsumablesService {
     public List<Consumable> getRegularConsumables(UUID equipmentId) {
         // Get all consumables for this equipment that are NOT marked as STOLEN or OVERRECEIVED
         return consumableRepository.findByEquipmentId(equipmentId).stream()
-                .filter(c -> c.getStatus() != ItemStatus.STOLEN && c.getStatus() != ItemStatus.OVERRECEIVED)
+                .filter(c -> c.getStatus() != ItemStatus.MISSING && c.getStatus() != ItemStatus.OVERRECEIVED)
                 .collect(Collectors.toList());
     }
 

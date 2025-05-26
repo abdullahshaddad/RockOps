@@ -185,7 +185,7 @@ const Sidebar = () => {
                 {
                     title: 'Merchants',
                     icon: <BsFillPersonVcardFill/>,
-                    path: '/procurement/merchants',
+                    path: '/merchants',
                     roles: ['ADMIN', 'USER', 'SITE_ADMIN', 'PROCUREMENT']
                 },
                 {

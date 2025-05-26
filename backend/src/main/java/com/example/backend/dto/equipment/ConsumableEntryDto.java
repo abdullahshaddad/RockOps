@@ -1,6 +1,6 @@
 package com.example.backend.dto.equipment;
 
-import com.example.backend.models.TransferDirection;
+import com.example.backend.models.transaction.TransferDirection;
 import lombok.Data;
 
 import java.time.LocalDate;

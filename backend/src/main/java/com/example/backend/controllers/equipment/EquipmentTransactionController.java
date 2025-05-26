@@ -2,9 +2,14 @@ package com.example.backend.controllers.equipment;
 
 import com.example.backend.models.*;
 import com.example.backend.models.equipment.Equipment;
+import com.example.backend.models.transaction.Transaction;
+import com.example.backend.models.transaction.TransactionItem;
+import com.example.backend.models.transaction.TransactionPurpose;
+import com.example.backend.models.transaction.TransactionStatus;
+import com.example.backend.models.warehouse.ItemType;
 import com.example.backend.repositories.equipment.EquipmentRepository;
-import com.example.backend.repositories.ItemTypeRepository;
-import com.example.backend.services.TransactionService;
+import com.example.backend.repositories.warehouse.ItemTypeRepository;
+import com.example.backend.services.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

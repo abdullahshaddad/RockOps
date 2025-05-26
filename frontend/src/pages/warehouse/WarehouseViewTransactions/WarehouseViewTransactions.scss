@@ -1,0 +1,1614 @@
+.warehouse-view3 {
+  position: relative;
+  padding: 20px;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #1a2b42;
+  margin-bottom: 20px;
+  min-height: 200px; /* Ensures the container has some minimum height */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Ensure content starts at the top */
+  overflow: hidden;
+  position: relative; /* For positioning the Add button */
+  padding-bottom: 90px; /* Add some space at the bottom for the button */
+  margin-top:3rem;
+}
+
+/* Header Styles */
+.header-container3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.left-section3 {
+  display: flex;
+  align-items: baseline;
+  gap:20px;
+}
+
+.page-title3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a2b42;
+  margin: 0;
+  margin-right: 16px;
+}
+
+.item-count3 {
+  font-size: 14px;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.right-section3 {
+  display: flex;
+  align-items: center;
+  justify-content : flex-end;
+
+}
+
+.search-container3 {
+  position: relative;
+  min-width: 300px;
+}
+
+.search-input3 {
+  width: 100%;
+  padding: 12px 18px 12px 42px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.search-input3:focus {
+  outline: none;
+  border-color: #4f85e5;
+  box-shadow: 0 0 0 4px rgba(79, 133, 229, 0.1);
+}
+
+.search-icon3 {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #9ca3af;
+}
+
+/* Table Card Styles */
+.table-card3 {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  position: relative;
+  overflow-x: auto; /* Make the table scrollable horizontally */
+}
+
+.table-container3 {
+  display: table;
+  width: 100%; /* Make the table take full width of the container */
+  table-layout: auto; /* Allow columns to adjust based on content */
+  border-collapse: collapse;
+}
+
+/* Table Header Styles */
+.table-header-row3 {
+  display: table-row;
+  background-color: #f1f3f5;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+  color: #4b5563;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Align header cells to the left */
+.table-header-row3 .table-cell3 {
+  text-align: left;
+}
+
+.table-cell3 {
+  display: table-cell;
+  padding: 16px 8px;
+  font-size: 14px;
+  vertical-align: middle;
+  overflow: visible; /* Allow content overflow */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.table-header-cell3:not(:last-child),
+.table-cell3:not(:last-child) {
+  padding-right: 60px; /* Add some spacing between columns */
+}
+
+/* Table Body Styles */
+.table-body3 {
+  display: table-row-group;
+  position: relative; /* Add this */
+  height: auto;
+}
+
+.table-row3{
+  display: table-row;
+  border-bottom: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.table-row3:last-child {
+  border-bottom: none;
+}
+
+.table-row3:hover {
+  background-color: #f9fafb;
+}
+
+.table-cell3 {
+  display: table-cell;
+  padding: 16px 8px;
+  font-size: 14px;
+  vertical-align: middle;
+  overflow: visible; /* Make sure content overflows if it's too long */
+  white-space: nowrap; /* Prevent wrapping */
+  // text-overflow: clip; /* Make sure text isn't truncated */
+}
+
+/* General styling for all columns */
+/* For the ID column */
+.id-cell3 {
+  padding-left: 15px;  /* Specific padding for the ID column */
+  padding-right: 8px; /* Specific padding for the ID column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+/* For the Name column */
+.item-type-cell3 {
+  padding-left: 15px; /* Specific padding for the Name column */
+  padding-right: 25px; /* Specific padding for the Name column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+.name-cell3 {
+  padding-left: 80px; /* Specific padding for the Name column */
+  padding-right: 25px; /* Specific padding for the Name column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+/* For the Description column */
+.item-category-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+.quantity-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+.sender-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+.receiver-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+.date-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+.receiver-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+.created-at-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+.added-by-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+.approved-by-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left; /* Align text to the left */
+}
+
+.status-cell3 {
+  padding-left: 60px; /* Specific padding for the Description column */
+  padding-right: 24px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: left ; /* Align text to the left */
+}
+
+/* For the actions column (if needed) */
+.actions-cell3 {
+  padding-left: 40px; /* Specific padding for the Description column */
+  padding-right: 65px; /* Specific padding for the Description column */
+  font-size: 12px;
+  white-space: nowrap;
+  display: flex;
+  gap: 8px; /* space between buttons */
+  align-items: center;
+  justify-content : center;
+}
+
+
+
+
+
+/* Category and Status Styles */
+.category-tag3 {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-tag3 {
+  display: inline-block;
+  // padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+
+/* Action Button Styles */
+.edit-button3,
+.delete-button3 {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-left: 3px;
+}
+
+.edit-button3 {
+  color: #4f85e5;
+}
+
+.delete-button3 {
+  color: #ef4444;
+}
+
+.edit-button3:hover,
+.delete-button3:hover {
+  background-color: #f3f4f6;
+}
+
+.edit-button3 svg,
+.delete-button3 svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Add Button Styles */
+/* Add Button Styles */
+
+.add-button-container {
+  position: absolute;
+  bottom: 20px;
+  right: 40px; /* This positions it on the right */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* This aligns children to the right */
+  z-index: 100;
+}
+
+
+.add-button3 {
+  position: relative; /* Changed from absolute to relative */
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: #4f85e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(79, 133, 229, 0.4);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Table warning message styles */
+.transaction-row-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 248, 225, 0.95);
+  padding: 10px;
+  border-radius: 6px;
+  border-left: 3px solid #ffc107;
+  height: fit-content; /* Make height fit the content */
+  margin: auto 0; /* Center vertically in the row */
+  max-width: 260px;
+  font-size: 0.8rem;
+  color: #856404;
+  margin-top:10px;
+  margin-left:10px;
+}
+
+/* Make sure the table row has proper alignment */
+.transaction-row {
+  display: flex;
+  align-items: center; /* This aligns children vertically */
+}
+
+/* Warning icon size */
+.warning-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+@keyframes hint-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.add-button3:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(79, 133, 229, 0.5);
+}
+
+.plus-icon3 {
+  width: 24px;
+  height: 24px;
+}
+
+.plus-icon3 {
+  width: 24px;
+  height: 24px;
+}
+
+/* Loading State Styles */
+.loading-container3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.loading-spinner3 {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(79, 133, 229, 0.2);
+  border-radius: 50%;
+  border-top-color: #4f85e5;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Empty State Styles */
+.empty-state3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute; /* Position it inside the table */
+  top: 8rem; /* Vertically center */
+  left: 40rem; /* Horizontally center */
+  transform: translate(-50%, -50%); /* Fine-tune positioning */
+  color: #6b7280;
+  z-index: 10; /* Ensure it's on top of other content */
+  width: 100%;
+  height: auto;
+}
+
+.empty-state3 .empty-icon3 {
+  width: 60px;
+  height: 60px;
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.empty-state3 svg {
+  width: 30px;
+  height: 30px;
+  color: #9ca3af;
+}
+
+.empty-state3 h3 {
+  font-size: 18px;
+  margin: 0 0 8px 0;
+  color: #4b5563;
+}
+
+.empty-state3 p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Modal Styles */
+.modal-backdrop3 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal3 {
+  width: 100%;
+  max-width: 640px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header3 h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a2b42;
+  margin: 0;
+}
+
+.close-modal3 {
+  background: none;
+  border: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.close-modal3 svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Form Styles - consistent spacing and sizing */
+.form-transaction {
+  padding: 32px;
+  margin-right: 10px;
+}
+
+/* Consistent form row spacing */
+.form-row3 {
+  display: flex;
+  gap: 24px; /* Exact gap between fields in a row */
+  margin-bottom: 32px; /* Space between rows */
+  margin-top:30px;
+}
+
+/* Each form group takes exactly 50% of the space */
+.form-group3 {
+  width: 50%;
+}
+
+/* Full width for single-field rows */
+.form-group3.full-width {
+  width: 100%;
+  margin-top:20px;
+}
+
+/* Labels with consistent styling */
+.form-group3 label {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* Consistent input styling for all form controls */
+.form-group3 input,
+.form-group3 select,
+.form-group3 textarea,
+.disabled-input {
+  width: 100%;
+  height: 40px; /* Fixed height for all inputs */
+  padding: 0 16px;
+  font-size: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #111827;
+  background-color: #fff;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+  appearance: none; /* Removes browser-specific styling */
+}
+
+/* Special styling for disabled fields */
+.disabled-input {
+  background-color: #f9fafb;
+  color: #374151;
+  cursor: not-allowed;
+}
+
+/* Custom styling for select dropdowns */
+.form-group3 select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+/* Remove browser styling for datetime-local input */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  margin-left: 0;
+}
+
+/* Date input specific styling */
+#transactionDate {
+  padding-right: 16px;
+}
+
+/* Footer with submit button */
+.modal-footer3 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4rem;
+}
+
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+//
+//input,
+//select {
+//  width: 100%;
+//  padding: 12px 16px;
+//  border: 1px solid #e5e7eb;
+//  border-radius: 10px;
+//  font-size: 14px;
+//  transition: all 0.2s ease;
+//}
+//
+//input:focus,
+//select:focus {
+//  outline: none;
+//  border-color: #4f85e5;
+//  box-shadow: 0 0 0 4px rgba(79, 133, 229, 0.1);
+//}
+//
+//select {
+//  appearance: none;
+//  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+//  background-repeat: no-repeat;
+//  background-position: right 16px center;
+//  padding-right: 40px;
+//}
+
+
+
+.cancel-button3,
+.submit-button3 {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button3 {
+  background-color: white;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.submit-button3 {
+  background-color: #4f85e5;
+  color: white;
+  border: none;
+}
+
+.cancel-button3:hover {
+  background-color: #f9fafb;
+}
+
+.submit-button3:hover {
+  background-color: #3b72d9;
+}
+
+
+.notification3{
+  position: fixed;
+  top: 20px; /* Position at the top */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  z-index: 2000;
+  animation: slideDownFade 0.3s ease, slideUpFade 0.3s ease 2.7s;
+}
+
+@keyframes slideDownFade {
+  from {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+}
+
+
+
+
+.success-notification3 {
+  background-color: #f0fdf4;
+  border: 1px solid #dcfce7;
+  color: #166534;
+}
+
+.success-notification3 svg {
+  color: #16a34a;
+  width: 20px;
+  height: 20px;
+}
+
+.delete-notification3 {
+  background-color: #fef2f2;  // Light red background
+  border: 1px solid #fecaca;  // Light red border
+  color: #991b1b;  // Dark red text
+}
+
+.delete-notification3 svg {
+  color: #dc2626;  // Red icon color
+  width: 20px;
+  height: 20px;
+}
+
+
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .form-row2 {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+/* Custom radio button styles */
+.radio-container {
+  display: flex;
+  flex-direction: column; /* Stack vertically */
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.radio-container input[type="radio"] {
+  display: none; /* Hide default radio */
+}
+
+.radio-container label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 15px;
+  color: #333;
+  transition: color 0.3s ease, font-weight 0.3s ease;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.radio-container label:hover {
+  background-color: #eef4ff;
+}
+
+.radio-container label::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-right: 10px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background-color: white;
+}
+
+/* Checked styles */
+.radio-container input[type="radio"]:checked + label {
+  font-weight: 600;
+  color: #007BFF;
+  background-color: #e6f0ff;
+}
+
+.radio-container input[type="radio"]:checked + label::before {
+  border-color: #007BFF;
+  background-color: #007BFF;
+  box-shadow: inset 0 0 0 4px white;
+}
+
+/* Add these styles to your WarehouseViewTransactions.scss file */
+
+.transaction-tables-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.transaction-table-section {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+}
+
+.transaction-section-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.section-description {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+/* Status cell styling */
+.status-cell3.accepted {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.status-cell3.rejected {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.status-cell3.partially_accepted {
+  color: #0284c7;
+  font-weight: 500;
+}
+
+.status-cell3.pending {
+  color: #ca8a04;
+  font-weight: 500;
+}
+
+/* Button styling */
+.accept-button3 {
+  background-color: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.accept-button3:hover {
+  background-color: rgba(22, 163, 74, 0.2);
+}
+
+.reject-button3 {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reject-button3:hover {
+  background-color: rgba(220, 38, 38, 0.2);
+}
+
+/* Notification styling */
+
+
+
+.table-search-container-pending {
+  position: relative;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 250px;
+}
+
+.table-search-container-pending .search-input3 {
+  width: 100%;
+  padding: 12px 16px 12px 42px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #475569;
+  background-color: #ffffff;
+  transition: all 0.2s;
+}
+
+.table-search-container-pending .search-input3:focus {
+  outline: none;
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.2);
+}
+
+.table-search-container-pending .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #94a3b8;
+  pointer-events: none; /* Ensures the icon doesn't interfere with input interaction */
+}
+
+.transaction-tables-container {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  margin-bottom: 80px; /* Add space at the bottom for the fixed button */
+}
+.status-badge3 {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-block; /* Ensure consistent display */
+  white-space: nowrap; /* Prevent wrapping */
+  text-align: center; /* Center text */
+  min-width: 80px; /* Set minimum width to ensure consistent size */
+  &.accepted {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  &.rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+}
+
+
+.status-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  /* Add this to properly align container */
+  width: fit-content;
+  margin-left: 0; /* Reset any margin that might be pushing it */
+}
+
+.info-icon-wrapper {
+  position: relative;
+}
+
+.info-button {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  transition: color 0.2s ease, transform 0.2s ease;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+
+  &:hover {
+    color: #4b5563;
+    transform: scale(1.1);
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  //&:focus {
+  //  outline: none;
+  //  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  //}
+}
+
+.tooltip-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: transparent;
+  cursor: pointer;
+}
+
+.info-icon-wrapper {
+  position: relative;
+}
+
+.rejection-tooltip {
+  position: absolute;
+  top: -10px;
+  right: 30px;
+  width: 280px;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  overflow: hidden;
+  font-size: 14px;
+  animation: fadeIn 0.2s ease;
+
+  /* For tooltips at the right edge of the screen */
+  @media (max-width: 1200px) {
+    right: auto;
+    left: -250px;
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    right: -6px;
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    transform: rotate(45deg);
+    box-shadow: 2px -2px 5px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Adjust arrow positioning for left-positioned tooltips */
+  @media (max-width: 1200px) {
+    &:before {
+      right: auto;
+      left: -6px;
+      box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.06);
+    }
+  }
+}
+
+.tooltip-header {
+  background-color: #f3f4f6;
+  padding: 10px 12px;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tooltip-body {
+  padding: 12px;
+  color: #374151;
+  line-height: 1.5;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.close-tooltip {
+  background: none;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: #6b7280;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: #1f2937;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Make sure the status badge looks good */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-badge.accepted {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: rgb(16, 185, 129);
+}
+
+.status-badge.rejected {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: rgb(239, 68, 68);
+}
+
+.radio-group {
+  display: flex;
+
+  gap:85px; /* Increased spacing for better readability */
+  width: 100%;
+  margin-bottom:2rem;
+}
+
+
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Reduced gap between radio and text */
+  font-size: 14px; /* Slightly smaller font */
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+
+.radio-group label:hover {
+  color: #007bff;
+}
+
+.radio-group input[type="radio"] {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px; /* Reduced from 14px */
+  height: 12px; /* Reduced from 14px */
+  border: 1.5px solid #ccc; /* Thinner border */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  background-color: white;
+  position: relative;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+}
+
+.radio-group input[type="radio"]::before {
+  content: "";
+  width: 8px;  /* Reduced from 6px */
+  height: 8px;  /* Reduced from 6px */
+  background-color: transparent;
+  border-radius: 50%;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Checked State */
+.radio-group input[type="radio"]:checked {
+  border-color: #007bff;
+  box-shadow: 0px 2px 5px rgba(0, 123, 255, 0.3); /* Reduced shadow */
+}
+
+.radio-group input[type="radio"]:checked::before {
+  background-color: #007bff;
+}
+
+/* Hover Effect */
+.radio-group input[type="radio"]:hover {
+  border-color: #007bff;
+  transform: scale(1.05); /* Reduced scaling effect */
+}
+
+/* Optional: Make entire radio group more compact */
+.radio-group {
+  display: flex;
+  gap: 85px; /* Space between radio options */
+}
+
+/* Add these styles to your WarehouseViewTransactions.scss file */
+
+/* Items section styles */
+.items-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.add-item-button {
+  background-color: transparent; /* Remove background */
+  border: none; /* Remove border */
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4f85e5; /* Blue text color */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  text-decoration: none; /* No underline initially */
+}
+
+.add-item-button:hover {
+  background-color: transparent; /* Keep transparent on hover */
+  color: #3b72d9; /* Darker blue on hover */
+  transform: translateY(-1px); /* Slight upward movement on hover */
+}
+
+.add-item-button:active {
+  transform: translateY(0); /* Return to normal on click */
+}
+
+.add-item-button:before {
+  content: '+';
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.transaction-item-container {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Add this line for the shadow */
+}
+
+/* Make the shadow slightly more pronounced on hover */
+.transaction-item-container:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Make shadow more visible on hover */
+}
+
+.transaction-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.transaction-item-header span {
+  font-weight: 600;
+  font-size: 16px;
+  color: #374151;
+}
+
+.remove-item-button {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.remove-item-button:hover {
+  background-color: #fee2e2;
+}
+
+.remove-item-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Make the modal larger to accommodate multiple items */
+.modal3 {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* Ensure form properly scrolls if items list gets long */
+.form-transaction {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 4px; /* Space for scrollbar */
+}
+
+/* Styles for the transaction item rows */
+.transaction-item-container .form-row3 {
+  margin-bottom: 16px; /* Smaller margin within item containers */
+}
+
+/* Responsive styles for smaller screens */
+@media (max-width: 768px) {
+  .items-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .transaction-item-container {
+    padding: 12px;
+  }
+
+  .transaction-item-container .form-row3 {
+    flex-direction: column;
+  }
+
+  .transaction-item-container .form-group3 {
+    width: 100%;
+  }
+}
+
+/* Add these styles to your WarehouseViewTransactions.scss file */
+
+/* Modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Comment modal */
+.comment-modal {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.comment-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: #666;
+}
+
+.close-modal-btn:hover svg {
+  stroke: #333;
+}
+
+.comment-modal-content {
+  padding: 20px;
+}
+
+/* Transaction summary */
+.transaction-summary {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.summary-row {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.summary-row .label {
+  font-weight: 600;
+  width: 100px;
+  color: #555;
+}
+
+.summary-row .value {
+  flex: 1;
+}
+
+/* Status colors */
+.status-accepted {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.status-rejected {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* Comment content */
+.comment-content {
+  background-color: white;
+}
+
+.comment-content h4 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.comment-content p {
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  color: #444;
+}
+
+.ro-quantity-unit-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.ro-quantity-input {
+  width: 100%;
+  padding-right: 60px; // Make room for the unit label
+}
+
+.ro-unit-label {
+  position: absolute;
+  right: 12px;
+  color: #6b7280;
+  font-size: 14px;
+  pointer-events: none; // Prevent the label from interfering with input
+  background-color: #f9fafb;
+  padding: 0 5px;
+  border-left: 1px solid #d1d5db;
+  height: 22px;
+  display: flex;
+  align-items: center;
+}
+
+
+.quantity-unit-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .quantity-input {
+    width: 100%;
+    padding-right: 30px; // Make room for the unit label
+  }
+
+  .unit-label {
+    position: absolute;
+    right: 8px;
+    color: #666;
+    pointer-events: none;
+    font-size: 0.9em;
+  }
+}
+.procurement-form-input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .procurement-form-input {
+    width: 100%;
+    padding-right: 35px; // Make room for the unit suffix
+
+    &.with-unit-suffix {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  .unit-suffix {
+    position: absolute;
+    right: 10px;
+    color: #666;
+    font-size: 0.9em;
+    pointer-events: none;
+  }
+}
+.ro-quantity-unit-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.ro-quantity-input {
+  width: 100%;
+  padding-right: 60px; // Make room for the unit label
+}
+
+.ro-unit-label {
+  position: absolute;
+  right: 12px;
+  color: #6b7280;
+  font-size: 14px;
+  pointer-events: none; // Prevent the label from interfering with input
+  background-color: #f9fafb;
+  padding: 0 5px;
+  border-left: 1px solid #d1d5db;
+  height: 22px;
+  display: flex;
+  align-items: center;
+}
+
