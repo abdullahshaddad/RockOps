@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.hr;
 
-import com.example.backend.models.Candidate;
-import com.example.backend.services.CandidateService;
+import com.example.backend.models.hr.Candidate;
+import com.example.backend.services.hr.CandidateService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;

@@ -1,6 +1,6 @@
-package com.example.backend.dto;
+package com.example.backend.dto.equipment;
 
-import com.example.backend.models.Consumable;
+import com.example.backend.models.equipment.Consumable;
 import lombok.Data;
 
 import java.time.LocalDateTime;

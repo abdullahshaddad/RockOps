@@ -1,15 +1,14 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.dto.OfferDTO;
-import com.example.Rock4Mining.dto.OfferItemDTO;
-import com.example.Rock4Mining.models.Offer;
-import com.example.Rock4Mining.models.OfferItem;
-import com.example.Rock4Mining.models.RequestOrder;
-import com.example.Rock4Mining.services.OfferService;
+import com.example.backend.dto.OfferDTO;
+import com.example.backend.dto.OfferItemDTO;
+import com.example.backend.models.Offer;
+import com.example.backend.models.OfferItem;
+import com.example.backend.models.RequestOrder;
+import com.example.backend.services.OfferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;

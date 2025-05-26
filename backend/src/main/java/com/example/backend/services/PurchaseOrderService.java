@@ -1,17 +1,16 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
-import com.example.Rock4Mining.models.*;
-import com.example.Rock4Mining.repositories.OfferItemRepository;
-import com.example.Rock4Mining.repositories.OfferRepository;
-import com.example.Rock4Mining.repositories.PurchaseOrderItemRepository;
-import com.example.Rock4Mining.repositories.PurchaseOrderRepository;
+import com.example.backend.models.Offer;
+import com.example.backend.models.PurchaseOrder;
+import com.example.backend.repositories.OfferItemRepository;
+import com.example.backend.repositories.OfferRepository;
+import com.example.backend.repositories.PurchaseOrderItemRepository;
+import com.example.backend.repositories.PurchaseOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

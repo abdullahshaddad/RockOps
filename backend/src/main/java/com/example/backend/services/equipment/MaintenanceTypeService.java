@@ -1,9 +1,9 @@
-package com.example.backend.services;
+package com.example.backend.services.equipment;
 
 import com.example.backend.exceptions.ResourceAlreadyExistsException;
 import com.example.backend.exceptions.ResourceNotFoundException;
-import com.example.backend.services.finance.equipment.finance.models.equipment.MaintenanceType;
-import com.example.backend.services.finance.equipment.MaintenanceTypeRepository;
+import com.example.backend.models.equipment.MaintenanceType;
+import com.example.backend.repositories.equipment.MaintenanceTypeRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

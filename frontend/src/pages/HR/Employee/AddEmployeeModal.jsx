@@ -498,7 +498,7 @@ const AddEmployeeModal = ({ onClose, onSave, jobPositions, sites }) => {
                                     />
                                 </div>
 
-                                // Continuing AddEmployeeModal component from where we left off
+
                                 <div className="r4m-form-group">
                                     <label>Salary Multiplier</label>
                                     <input

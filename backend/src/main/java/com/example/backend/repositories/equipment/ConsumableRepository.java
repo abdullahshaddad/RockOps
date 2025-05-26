@@ -1,8 +1,8 @@
 package com.example.backend.repositories.equipment;
 
-import com.example.backend.repositories.equipment.finance.models.ItemStatus;
-import com.example.backend.services.finance.equipment.finance.models.*;
-import com.example.backend.repositories.equipment.finance.models.equipment.Consumable;
+import com.example.backend.models.ItemStatus;
+//import com.example.backend.services.finance.equipment.finance.models.*;
+import com.example.backend.models.equipment.Consumable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

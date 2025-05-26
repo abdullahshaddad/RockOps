@@ -1,12 +1,11 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
-import com.example.Rock4Mining.models.Event;
-import com.example.Rock4Mining.repositories.EventRepository;
+import com.example.backend.models.Event;
+import com.example.backend.repositories.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service

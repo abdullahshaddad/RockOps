@@ -1,9 +1,9 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
-import com.example.Rock4Mining.models.ItemCategory;
-import com.example.Rock4Mining.models.ItemType;
-import com.example.Rock4Mining.repositories.ItemCategoryRepository;
-import com.example.Rock4Mining.repositories.ItemTypeRepository;
+import com.example.backend.models.ItemCategory;
+import com.example.backend.models.ItemType;
+import com.example.backend.repositories.ItemCategoryRepository;
+import com.example.backend.repositories.ItemTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

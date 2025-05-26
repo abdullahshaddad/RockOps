@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.finance;
 
-import com.example.backend.dto.AuditLogResponseDTO;
-import com.example.backend.services.AuditService;
+import com.example.backend.dto.finance.AuditLogResponseDTO;
+import com.example.backend.services.finance.AuditService;
 import com.example.backend.utils.ExportUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

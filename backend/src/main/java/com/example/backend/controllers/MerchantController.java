@@ -1,14 +1,16 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
 
-import com.example.Rock4Mining.models.Merchant;
-import com.example.Rock4Mining.services.MerchantService;
+import com.example.backend.models.Merchant;
+import com.example.backend.services.MerchantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController

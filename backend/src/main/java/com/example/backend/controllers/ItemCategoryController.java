@@ -1,7 +1,7 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.models.ItemCategory;
-import com.example.Rock4Mining.services.ItemCategoryService;
+import com.example.backend.models.ItemCategory;
+import com.example.backend.services.ItemCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

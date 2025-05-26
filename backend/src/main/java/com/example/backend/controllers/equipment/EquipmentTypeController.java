@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.equipment;
 
-import com.example.backend.dto.EquipmentTypeDTO;
-import com.example.backend.services.EquipmentTypeService;
+import com.example.backend.dto.equipment.EquipmentTypeDTO;
+import com.example.backend.services.equipment.EquipmentTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

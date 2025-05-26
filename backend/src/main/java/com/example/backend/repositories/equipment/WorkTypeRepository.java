@@ -1,6 +1,6 @@
 package com.example.backend.repositories.equipment;
 
-import com.example.backend.repositories.equipment.finance.models.equipment.WorkType;
+import com.example.backend.models.equipment.WorkType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

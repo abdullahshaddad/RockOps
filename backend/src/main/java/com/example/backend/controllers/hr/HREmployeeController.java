@@ -1,9 +1,9 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.hr;
 
-import com.example.backend.dto.EmployeeDistributionDTO;
-import com.example.backend.dto.EmployeeRequestDTO;
-import com.example.backend.dto.SalaryStatisticsDTO;
-import com.example.backend.services.HREmployeeService;
+import com.example.backend.dto.hr.EmployeeDistributionDTO;
+import com.example.backend.dto.hr.EmployeeRequestDTO;
+import com.example.backend.dto.hr.SalaryStatisticsDTO;
+import com.example.backend.services.hr.HREmployeeService;
 import com.example.backend.services.MinioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/hr")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('HRMANAGER', 'HREMPLOYEE')")
 public class HREmployeeController {
 
     private final HREmployeeService hrEmployeeService;

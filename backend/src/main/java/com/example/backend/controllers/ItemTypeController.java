@@ -1,7 +1,7 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.models.ItemType;
-import com.example.Rock4Mining.services.ItemTypeService;
+import com.example.backend.models.ItemType;
+import com.example.backend.services.ItemTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,7 @@
-package com.example.backend.dto;
+package com.example.backend.dto.finance;
 
-import com.example.backend.models.InvoiceStatus;
-import com.example.backend.models.PaymentStatus;
+import com.example.backend.models.finance.InvoiceStatus;
+import com.example.backend.models.finance.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.backend.services;
+package com.example.backend.services.equipment;
 
 import com.example.backend.dto.equipment.EquipmentCreateDTO;
 import com.example.backend.dto.equipment.EquipmentDTO;
@@ -6,16 +6,17 @@ import com.example.backend.dto.equipment.EquipmentStatusUpdateDTO;
 import com.example.backend.dto.equipment.EquipmentUpdateDTO;
 import com.example.backend.dto.hr.EmployeeSummaryDTO;
 import com.example.backend.exceptions.ResourceNotFoundException;
-import com.example.backend.services.finance.equipment.EquipmentBrandRepository;
-import com.example.backend.services.finance.equipment.EquipmentRepository;
-import com.example.backend.services.finance.equipment.EquipmentTypeRepository;
-import com.example.backend.services.finance.equipment.finance.models.*;
-import com.example.backend.services.finance.equipment.finance.models.equipment.Equipment;
-import com.example.backend.services.finance.equipment.finance.models.equipment.EquipmentBrand;
-import com.example.backend.services.finance.equipment.finance.models.equipment.EquipmentStatus;
-import com.example.backend.services.finance.equipment.finance.models.equipment.EquipmentType;
-import com.example.backend.services.finance.equipment.finance.models.hr.Employee;
-import com.example.backend.services.finance.equipment.finance.models.site.Site;
+import com.example.backend.models.Merchant;
+import com.example.backend.services.MinioService;
+import com.example.backend.repositories.equipment.EquipmentBrandRepository;
+import com.example.backend.repositories.equipment.EquipmentRepository;
+import com.example.backend.repositories.equipment.EquipmentTypeRepository;
+import com.example.backend.models.equipment.Equipment;
+import com.example.backend.models.equipment.EquipmentBrand;
+import com.example.backend.models.equipment.EquipmentStatus;
+import com.example.backend.models.equipment.EquipmentType;
+import com.example.backend.models.hr.Employee;
+import com.example.backend.models.site.Site;
 import com.example.backend.repositories.*;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.site.SiteRepository;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+
 
 @Service
 public class EquipmentService {

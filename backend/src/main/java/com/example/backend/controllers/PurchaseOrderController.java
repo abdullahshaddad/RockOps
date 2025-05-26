@@ -1,9 +1,8 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.models.Offer;
-import com.example.Rock4Mining.models.OfferItem;
-import com.example.Rock4Mining.models.PurchaseOrder;
-import com.example.Rock4Mining.services.PurchaseOrderService;
+import com.example.backend.models.Offer;
+import com.example.backend.models.PurchaseOrder;
+import com.example.backend.services.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

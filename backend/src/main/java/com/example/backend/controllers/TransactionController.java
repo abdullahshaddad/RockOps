@@ -1,9 +1,9 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.models.*;
-import com.example.Rock4Mining.repositories.ItemTypeRepository;
-import com.example.Rock4Mining.repositories.TransactionRepository;
-import com.example.Rock4Mining.services.TransactionService;
+import com.example.backend.models.*;
+import com.example.backend.repositories.ItemTypeRepository;
+import com.example.backend.repositories.TransactionRepository;
+import com.example.backend.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

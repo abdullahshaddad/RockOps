@@ -1,11 +1,12 @@
-package com.example.backend.services;
+package com.example.backend.services.hr;
 
 import com.example.backend.dto.hr.EmployeeDistributionDTO;
 import com.example.backend.dto.hr.EmployeeRequestDTO;
 import com.example.backend.dto.hr.SalaryStatisticsDTO;
-import com.example.backend.services.finance.equipment.finance.models.hr.Employee;
-import com.example.backend.services.finance.equipment.finance.models.hr.JobPosition;
-import com.example.backend.services.finance.equipment.finance.models.site.Site;
+import com.example.backend.services.MinioService;
+import com.example.backend.models.hr.Employee;
+import com.example.backend.models.hr.JobPosition;
+import com.example.backend.models.site.Site;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.hr.JobPositionRepository;
 import com.example.backend.repositories.site.SiteRepository;

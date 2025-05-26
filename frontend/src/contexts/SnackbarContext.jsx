@@ -8,7 +8,7 @@ const SnackbarContext = createContext();
  * Provider component for the Snackbar system
  */
 export const SnackbarProvider = ({ children }) => {
-    const [Snackbar, setSnackbar] = useState({
+    const [snackbarState, setSnackbar] = useState({
         show: false,
         message: '',
         type: 'success',
@@ -57,10 +57,10 @@ export const SnackbarProvider = ({ children }) => {
         >
             {children}
             <Snackbar
-                show={Snackbar.show}
-                message={Snackbar.message}
-                type={Snackbar.type}
-                duration={Snackbar.duration}
+                show={snackbarState.show}
+                message={snackbarState.message}
+                type={snackbarState.type}
+                duration={snackbarState.duration}
                 onClose={hideSnackbar}
             />
         </SnackbarContext.Provider>

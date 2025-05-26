@@ -1,11 +1,13 @@
-package com.example.backend.services;
+package com.example.backend.services.equipment;
 
-import com.example.backend.services.finance.equipment.EquipmentRepository;
-import com.example.backend.services.finance.equipment.InSiteMaintenanceRepository;
-import com.example.backend.services.finance.equipment.finance.models.*;
-import com.example.backend.services.finance.equipment.finance.models.equipment.Equipment;
-import com.example.backend.services.finance.equipment.finance.models.equipment.InSiteMaintenance;
-import com.example.backend.services.finance.equipment.finance.models.hr.Employee;
+import com.example.backend.models.Transaction;
+import com.example.backend.models.TransactionPurpose;
+import com.example.backend.services.TransactionService;
+import com.example.backend.repositories.equipment.EquipmentRepository;
+import com.example.backend.repositories.equipment.InSiteMaintenanceRepository;
+import com.example.backend.models.equipment.Equipment;
+import com.example.backend.models.equipment.InSiteMaintenance;
+import com.example.backend.models.hr.Employee;
 import com.example.backend.repositories.*;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;

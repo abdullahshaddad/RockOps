@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.finance;
 
-import com.example.backend.models.FixedAssets;
-import com.example.backend.services.FixedAssetsService;
+import com.example.backend.models.finance.FixedAssets;
+import com.example.backend.services.finance.FixedAssetsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

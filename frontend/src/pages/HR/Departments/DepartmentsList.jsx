@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { FiPlus, FiEdit, FiTrash2, FiCheck, FiX } from 'react-icons/fi';
+import DataTable from '../../../components/common/DataTable/DataTable';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
 import './DepartmentsList.scss';
 
 const DepartmentsList = () => {
+    const { showSuccess, showError } = useSnackbar();
     const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -42,6 +45,7 @@ const DepartmentsList = () => {
         } catch (err) {
             console.error('Error fetching departments:', err);
             setError(err.message);
+            showError('Failed to load departments. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -99,6 +103,7 @@ const DepartmentsList = () => {
 
         if (!formData.name.trim()) {
             setError('Department name is required');
+            showError('Department name is required');
             return;
         }
 
@@ -133,9 +138,11 @@ const DepartmentsList = () => {
 
             await fetchDepartments(); // Refresh the list
             handleCloseForm();
+            showSuccess('Department created successfully');
         } catch (err) {
             console.error('Error creating department:', err);
             setError(err.message || 'Failed to create department');
+            showError(err.message || 'Failed to create department');
         } finally {
             setLoading(false);
         }
@@ -146,6 +153,7 @@ const DepartmentsList = () => {
 
         if (!editFormData.name.trim()) {
             setError('Department name is required');
+            showError('Department name is required');
             return;
         }
 
@@ -177,9 +185,11 @@ const DepartmentsList = () => {
 
             await fetchDepartments(); // Refresh the list
             handleCloseEditForm();
+            showSuccess('Department updated successfully');
         } catch (err) {
             console.error('Error updating department:', err);
             setError(err.message || 'Failed to update department');
+            showError(err.message || 'Failed to update department');
         } finally {
             setLoading(false);
         }
@@ -210,13 +220,45 @@ const DepartmentsList = () => {
 
             await fetchDepartments(); // Refresh the list
             setDeleteConfirmId(null);
+            showSuccess('Department deleted successfully');
         } catch (err) {
             console.error('Error deleting department:', err);
             setError(err.message || 'Failed to delete department');
+            showError(err.message || 'Failed to delete department');
         } finally {
             setLoading(false);
         }
     };
+
+    // DataTable configuration
+    const columns = [
+        {
+            header: 'Name',
+            accessor: 'name',
+            sortable: true
+        },
+        {
+            header: 'Description',
+            accessor: 'description',
+            sortable: true,
+            render: (row, value) => value || 'No description'
+        }
+    ];
+
+    const actions = [
+        {
+            label: 'Edit',
+            icon: <FiEdit />,
+            onClick: (row) => handleOpenEditForm(row),
+            className: 'departments-edit-button'
+        },
+        {
+            label: 'Delete',
+            icon: <FiTrash2 />,
+            onClick: (row) => setDeleteConfirmId(row.id),
+            className: 'departments-delete-button'
+        }
+    ];
 
     if (loading && departments.length === 0) {
         return (
@@ -249,68 +291,18 @@ const DepartmentsList = () => {
                 </div>
             )}
 
-            <div className="departments-table-container">
-                <table className="departments-table">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {departments.length === 0 ? (
-                        <tr>
-                            <td colSpan="3" className="no-data">
-                                No departments found. Create your first department!
-                            </td>
-                        </tr>
-                    ) : (
-                        departments.map((department) => (
-                            <tr key={department.id}>
-                                <td>{department.name}</td>
-                                <td>{department.description || 'No description'}</td>
-                                <td className="departments-actions">
-                                    <button
-                                        className="departments-edit-button"
-                                        onClick={() => handleOpenEditForm(department)}
-                                        disabled={loading}
-                                    >
-                                        <FiEdit />
-                                    </button>
-                                    {deleteConfirmId === department.id ? (
-                                        <>
-                                            <button
-                                                className="departments-confirm-button"
-                                                onClick={() => handleDeleteDepartment(department.id)}
-                                                disabled={loading}
-                                            >
-                                                <FiCheck />
-                                            </button>
-                                            <button
-                                                className="departments-cancel-button"
-                                                onClick={() => setDeleteConfirmId(null)}
-                                                disabled={loading}
-                                            >
-                                                <FiX />
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <button
-                                            className="departments-delete-button"
-                                            onClick={() => setDeleteConfirmId(department.id)}
-                                            disabled={loading}
-                                        >
-                                            <FiTrash2 />
-                                        </button>
-                                    )}
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
-            </div>
+            <DataTable
+                data={departments}
+                columns={columns}
+                actions={actions}
+                loading={loading}
+                tableTitle="Departments"
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={columns}
+                defaultItemsPerPage={10}
+                itemsPerPageOptions={[10, 25, 50, 100]}
+            />
 
             {/* Add Department Modal */}
             {isFormOpen && (
@@ -424,6 +416,32 @@ const DepartmentsList = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteConfirmId && (
+                <div className="departments-modal">
+                    <div className="departments-modal-content">
+                        <h2>Confirm Delete</h2>
+                        <p>Are you sure you want to delete this department?</p>
+                        <div className="departments-form-actions">
+                            <button
+                                className="departments-confirm-button"
+                                onClick={() => handleDeleteDepartment(deleteConfirmId)}
+                                disabled={loading}
+                            >
+                                <FiCheck /> Confirm
+                            </button>
+                            <button
+                                className="departments-cancel-button"
+                                onClick={() => setDeleteConfirmId(null)}
+                                disabled={loading}
+                            >
+                                <FiX /> Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

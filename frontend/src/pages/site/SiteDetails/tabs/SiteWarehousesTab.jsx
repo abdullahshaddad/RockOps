@@ -1,0 +1,450 @@
+import React, {useEffect, useRef, useState} from "react";
+import DataTable from "../../../../components/common/DataTable/DataTable.jsx";
+import {useTranslation} from 'react-i18next';
+import {useAuth} from "../../../../contexts/AuthContext.jsx";
+
+const SiteWarehousesTab = ({siteId}) => {
+    const {t} = useTranslation();
+    const [warehouseData, setWarehouseData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // State for Add Warehouse modal
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [managers, setManagers] = useState([]);
+    const [workers, setWorkers] = useState([]);
+    const [selectedManager, setSelectedManager] = useState(null);
+    const [selectedWorkers, setSelectedWorkers] = useState([]);
+    const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
+    const [isWorkersDropdownOpen, setIsWorkersDropdownOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formError, setFormError] = useState(null);
+
+    const workersDropdownRef = useRef(null);
+    const {currentUser} = useAuth();
+
+    const isSiteAdmin = currentUser?.role === "SITE_ADMIN";
+
+    // Define columns for DataTable
+    const columns = [
+        {
+            header: 'Warehouse ID',
+            accessor: 'warehouseID',
+            sortable: true
+        },
+        {
+            header: 'Capacity',
+            accessor: 'capacity',
+            sortable: true
+        },
+        {
+            header: 'Manager',
+            accessor: 'manager',
+            sortable: true
+        }
+    ];
+
+    // Helper function to find and format manager name consistently
+    const findManagerName = (warehouse) => {
+        if (warehouse.managerName) {
+            return warehouse.managerName;
+        }
+
+        if (warehouse.employees && Array.isArray(warehouse.employees) && warehouse.employees.length > 0) {
+            const manager = warehouse.employees.find(emp =>
+                (emp.jobPosition && emp.jobPosition.positionName &&
+                    emp.jobPosition.positionName.toLowerCase() === "warehouse manager") ||
+                (emp.position && emp.position.toLowerCase() === "warehouse manager")
+            );
+
+            if (manager) {
+                return `${manager.firstName} ${manager.lastName}`;
+            }
+        }
+
+        return "No Manager";
+    };
+
+    useEffect(() => {
+        fetchWarehouses();
+    }, [siteId]);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (workersDropdownRef.current && !workersDropdownRef.current.contains(event.target)) {
+                setIsWorkersDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const fetchWarehouses = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:8080/api/v1/site/${siteId}/warehouses`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("No warehouses found for this site.");
+            }
+
+            const data = await response.json();
+
+            if (Array.isArray(data)) {
+                const transformedData = data.map((item) => ({
+                    warehouseID: item.id,
+                    capacity: `${item.capacity} m²`,
+                    manager: findManagerName(item),
+                }));
+
+                setWarehouseData(transformedData);
+            } else {
+                setWarehouseData([]);
+            }
+
+            setLoading(false);
+        } catch (err) {
+            setError(err.message);
+            setWarehouseData([]);
+            setLoading(false);
+        }
+    };
+
+    // Function to fetch managers and workers when modal opens
+    const fetchEmployees = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            // Fetch managers
+            const managersResponse = await fetch("http://localhost:8080/api/v1/employees/warehouse-managers", {
+                headers: {"Authorization": `Bearer ${token}`},
+            });
+
+            if (!managersResponse.ok) throw new Error("Failed to fetch managers");
+            const managersData = await managersResponse.json();
+            setManagers(managersData);
+
+            // Fetch workers
+            const workersResponse = await fetch("http://localhost:8080/api/v1/employees/warehouse-workers", {
+                headers: {"Authorization": `Bearer ${token}`},
+            });
+
+            if (!workersResponse.ok) throw new Error("Failed to fetch workers");
+            const workersData = await workersResponse.json();
+            setWorkers(workersData);
+        } catch (error) {
+            console.error("Error fetching employees:", error);
+            setFormError("Failed to load employee data. Please try again.");
+        }
+    };
+
+    // Handle opening the Add Warehouse modal
+    const handleOpenAddModal = () => {
+        setShowAddModal(true);
+        setSelectedManager(null);
+        setSelectedWorkers([]);
+        setSelectedWorkerIds([]);
+        setIsWorkersDropdownOpen(false);
+        setPreviewImage(null);
+        setFormError(null);
+        fetchEmployees();
+    };
+
+    // Handle closing the Add Warehouse modal
+    const handleCloseAddModal = () => {
+        setShowAddModal(false);
+    };
+
+    // Handle file change for warehouse image
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setPreviewImage(URL.createObjectURL(file));
+        }
+    };
+
+    // Handle manager selection
+    const handleSelectManager = (managerId) => {
+        if (!managerId) {
+            setSelectedManager(null);
+            return;
+        }
+
+        try {
+            let manager = managers.find(m => m.id === managerId);
+
+            if (!manager) {
+                const parsedId = parseInt(managerId, 10);
+                manager = managers.find(m => m.id === parsedId);
+            }
+
+            if (!manager) {
+                manager = managers.find(m => String(m.id) === String(managerId));
+            }
+
+            if (manager) {
+                setSelectedManager(manager);
+            } else {
+                console.error("Could not find manager with ID:", managerId);
+                setSelectedManager(null);
+            }
+        } catch (error) {
+            console.error("Error selecting manager:", error);
+            setSelectedManager(null);
+        }
+    };
+
+    // Toggle workers dropdown
+    const toggleWorkersDropdown = () => {
+        setIsWorkersDropdownOpen(!isWorkersDropdownOpen);
+    };
+
+    // Handle worker selection
+    const handleSelectWorker = (worker) => {
+        if (!selectedWorkerIds.includes(worker.id)) {
+            setSelectedWorkers([...selectedWorkers, worker]);
+            setSelectedWorkerIds([...selectedWorkerIds, worker.id]);
+        }
+    };
+
+    // Handle removing a worker from selection
+    const handleRemoveWorker = (workerId) => {
+        setSelectedWorkers(selectedWorkers.filter(worker => worker.id !== workerId));
+        setSelectedWorkerIds(selectedWorkerIds.filter(id => id !== workerId));
+    };
+
+    // Handle form submission
+    const handleAddWarehouse = async (event) => {
+        event.preventDefault();
+        setIsSubmitting(true);
+        setFormError(null);
+
+        const formElements = event.currentTarget.elements;
+        const token = localStorage.getItem("token");
+        const formData = new FormData();
+
+        const warehouseData = {
+            name: formElements.name.value,
+            capacity: parseInt(formElements.capacity.value, 10),
+        };
+
+        const employees = [];
+
+        if (selectedManager) {
+            employees.push({id: selectedManager.id});
+        }
+
+        if (selectedWorkers.length > 0) {
+            selectedWorkers.forEach(worker => {
+                employees.push({id: worker.id});
+            });
+        }
+
+        if (employees.length > 0) {
+            warehouseData.employees = employees;
+        }
+
+        formData.append("warehouseData", JSON.stringify(warehouseData));
+
+        const fileInput = document.getElementById("imageUpload");
+        if (fileInput && fileInput.files.length > 0) {
+            formData.append("photo", fileInput.files[0]);
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/siteadmin/${siteId}/add-warehouse`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+            setShowAddModal(false);
+            fetchWarehouses();
+        } catch (err) {
+            console.error("Failed to add warehouse:", err.message);
+            setFormError(`Failed to add warehouse: ${err.message}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (loading) return <div className="loading-container">{t('site.loadingWarehouses')}</div>;
+
+    return (
+        <div className="site-warehouses-tab">
+            <div className="tab-header">
+                <h3>{t('site.siteWarehousesReport')}</h3>
+                {isSiteAdmin && (
+                    <div className="btn-primary-container">
+                        <button className="assign-button" onClick={handleOpenAddModal}>
+                            Add Warehouse
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {error ? (
+                <div className="error-container">{error}</div>
+            ) : (
+                <div className="data-table-container">
+                    <DataTable
+                        data={warehouseData}
+                        columns={columns}
+                        loading={loading}
+                        showSearch={true}
+                        showFilters={true}
+                        filterableColumns={columns}
+                        itemsPerPageOptions={[10, 25, 50, 100]}
+                        defaultItemsPerPage={10}
+                        tableTitle="Warehouses List"
+                    />
+                </div>
+            )}
+
+            {/* Add Warehouse Modal */}
+            {showAddModal && (
+                <div className="modal-overlay">
+                    <div className="warehouse-modal">
+                        <button className="close-modal" onClick={handleCloseAddModal}>×</button>
+                        <h2>Add New Warehouse</h2>
+
+                        {formError && <div className="form-error">{formError}</div>}
+
+                        <div className="warehouse-form-container">
+                            <div className="profile-section">
+                                <label htmlFor="imageUpload" className="image-upload-label">
+                                    {previewImage ? (
+                                        <img src={previewImage} alt="Warehouse" className="warehouse-image"/>
+                                    ) : (
+                                        <div className="image-placeholder"></div>
+                                    )}
+                                    <span className="upload-text">{t('common.uploadPhoto')}</span>
+                                </label>
+                                <input
+                                    type="file"
+                                    id="imageUpload"
+                                    name="photo"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    style={{display: "none"}}
+                                />
+                            </div>
+
+                            <div className="add-warehouse-form">
+                                <form onSubmit={handleAddWarehouse}>
+                                    <div className="form-grid">
+                                        <div>
+                                            <label>Warehouse Name</label>
+                                            <input type="text" name="name" required/>
+                                        </div>
+
+                                        <div>
+                                            <label>Warehouse Capacity (m²)</label>
+                                            <input type="number" name="capacity" required min="1"/>
+                                        </div>
+
+                                        <div>
+                                            <label>Warehouse Manager</label>
+                                            <select
+                                                name="managerId"
+                                                onChange={(e) => handleSelectManager(e.target.value)}
+                                            >
+                                                <option value="">Select Warehouse Manager</option>
+                                                {managers.map(manager => (
+                                                    <option key={manager.id} value={manager.id}>
+                                                        {manager.firstName} {manager.lastName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label>Warehouse Workers</label>
+                                            <div className="workers-dropdown" ref={workersDropdownRef}>
+                                                <div className="dropdown-header" onClick={toggleWorkersDropdown}>
+                                                    <span>Select Workers</span>
+                                                    <span
+                                                        className={`dropdown-icon ${isWorkersDropdownOpen ? 'open' : ''}`}>▼</span>
+                                                </div>
+
+                                                {isWorkersDropdownOpen && (
+                                                    <div className="dropdown-menu">
+                                                        {workers
+                                                            .filter(worker => !selectedWorkerIds.includes(worker.id))
+                                                            .map(worker => (
+                                                                <div
+                                                                    key={worker.id}
+                                                                    className="dropdown-item"
+                                                                    onClick={() => handleSelectWorker(worker)}
+                                                                >
+                                                                    {worker.firstName} {worker.lastName}
+                                                                </div>
+                                                            ))}
+                                                        {workers.filter(worker => !selectedWorkerIds.includes(worker.id)).length === 0 && (
+                                                            <div className="dropdown-item">No workers available</div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {selectedWorkers.length > 0 && (
+                                                <div className="workers-list">
+                                                    {selectedWorkers.map(worker => (
+                                                        <div key={worker.id} className="worker-chip">
+                                                            <span>{worker.firstName} {worker.lastName}</span>
+                                                            <span
+                                                                className="remove-worker"
+                                                                onClick={() => handleRemoveWorker(worker.id)}
+                                                            >
+                                                                ×
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="button-group">
+                                        <button
+                                            type="button"
+                                            className="cancel-button"
+                                            onClick={handleCloseAddModal}
+                                            disabled={isSubmitting}
+                                        >
+                                            {t('common.cancel')}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="add-button"
+                                            disabled={isSubmitting}
+                                        >
+                                            Add
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default SiteWarehousesTab;

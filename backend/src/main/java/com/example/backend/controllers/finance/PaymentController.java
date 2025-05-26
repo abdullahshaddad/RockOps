@@ -1,8 +1,8 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.finance;
 
-import com.example.backend.dto.PaymentRequestDTO;
-import com.example.backend.dto.PaymentResponseDTO;
-import com.example.backend.services.PaymentService;
+import com.example.backend.dto.finance.PaymentRequestDTO;
+import com.example.backend.dto.finance.PaymentResponseDTO;
+import com.example.backend.services.finance.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;

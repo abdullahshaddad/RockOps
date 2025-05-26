@@ -1,4 +1,4 @@
-//package com.example.Rock4Mining.services;
+package com.example.backend.services;//package com.example.Rock4Mining.services;
 //
 //import com.example.Rock4Mining.models.*;
 //import com.example.Rock4Mining.repositories.*;

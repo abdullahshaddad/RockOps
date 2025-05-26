@@ -1,16 +1,11 @@
-package com.example.Rock4Mining.controllers;
+package com.example.backend.controllers;
 
-import com.example.Rock4Mining.models.Item;
-import com.example.Rock4Mining.models.ItemCategory;
-import com.example.Rock4Mining.models.Transaction;
-import com.example.Rock4Mining.models.Warehouse;
-import com.example.Rock4Mining.repositories.ItemRepository;
-import com.example.Rock4Mining.services.ItemCategoryService;
-import com.example.Rock4Mining.services.ItemService;
-import com.example.Rock4Mining.services.WarehouseService;
-import lombok.RequiredArgsConstructor;
+import com.example.backend.models.Item;
+import com.example.backend.repositories.ItemRepository;
+import com.example.backend.services.ItemCategoryService;
+import com.example.backend.services.ItemService;
+import com.example.backend.services.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

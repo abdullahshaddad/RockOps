@@ -1,8 +1,8 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.equipment;
 
-import com.example.backend.dto.DocumentDTO;
-import com.example.backend.models.Document.EntityType;
-import com.example.backend.services.DocumentService;
+import com.example.backend.dto.equipment.DocumentDTO;
+import com.example.backend.models.equipment.Document.EntityType;
+import com.example.backend.services.equipment.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

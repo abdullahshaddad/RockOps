@@ -1,7 +1,6 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.hr;
 
-import com.example.backend.models.Department;
-import com.example.backend.services.DepartmentService;
+import com.example.backend.services.hr.DepartmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class DepartmentController {
     public ResponseEntity<?> getAllDepartments() {
         try {
             logger.info("Fetching all departments...");
-            List<Department> departments = departmentService.getAllDepartments();
+            List<Map<String, Object>> departments = departmentService.getAllDepartmentsAsMap();
             logger.info("Successfully fetched {} departments", departments.size());
             return ResponseEntity.ok(departments);
         } catch (Exception e) {
@@ -42,10 +41,10 @@ public class DepartmentController {
     public ResponseEntity<?> getDepartmentById(@PathVariable UUID id) {
         try {
             logger.info("Fetching department with id: {}", id);
-            Optional<Department> department = departmentService.getDepartmentById(id);
-            if (department.isPresent()) {
-                logger.info("Found department: {}", department.get().getName());
-                return ResponseEntity.ok(department.get());
+            Map<String, Object> department = departmentService.getDepartmentByIdAsMap(id);
+            if (department != null) {
+                logger.info("Found department: {}", department.get("name"));
+                return ResponseEntity.ok(department);
             } else {
                 logger.warn("Department not found with id: {}", id);
                 Map<String, String> errorResponse = new HashMap<>();
@@ -62,11 +61,11 @@ public class DepartmentController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createDepartment(@RequestBody Department department) {
+    public ResponseEntity<?> createDepartment(@RequestBody Map<String, Object> departmentData) {
         try {
-            logger.info("Creating department with name: {}", department.getName());
-            Department createdDepartment = departmentService.createDepartment(department);
-            logger.info("Successfully created department with id: {}", createdDepartment.getId());
+            logger.info("Creating department with name: {}", departmentData.get("name"));
+            Map<String, Object> createdDepartment = departmentService.createDepartmentFromMap(departmentData);
+            logger.info("Successfully created department with id: {}", createdDepartment.get("id"));
             return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartment);
         } catch (IllegalArgumentException e) {
             logger.warn("Validation error creating department: {}", e.getMessage());
@@ -84,11 +83,11 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateDepartment(@PathVariable UUID id, @RequestBody Department department) {
+    public ResponseEntity<?> updateDepartment(@PathVariable UUID id, @RequestBody Map<String, Object> departmentData) {
         try {
             logger.info("Updating department with id: {}", id);
-            Department updatedDepartment = departmentService.updateDepartment(id, department);
-            logger.info("Successfully updated department: {}", updatedDepartment.getName());
+            Map<String, Object> updatedDepartment = departmentService.updateDepartmentFromMap(id, departmentData);
+            logger.info("Successfully updated department: {}", updatedDepartment.get("name"));
             return ResponseEntity.ok(updatedDepartment);
         } catch (IllegalArgumentException e) {
             logger.warn("Validation error updating department: {}", e.getMessage());

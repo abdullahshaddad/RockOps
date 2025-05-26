@@ -1,7 +1,6 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
 import io.minio.*;
-import io.minio.errors.*;
 import io.minio.http.Method;
 import io.minio.messages.Item;
 import jakarta.annotation.PostConstruct;

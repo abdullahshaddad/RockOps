@@ -1,4 +1,4 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.hr;
 
 import com.example.backend.models.Vacancy;
 import com.example.backend.services.VacancyService;

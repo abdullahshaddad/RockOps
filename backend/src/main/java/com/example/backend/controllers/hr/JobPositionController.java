@@ -1,10 +1,10 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.hr;
 
-import com.example.backend.dto.JobPositionDTO;
-import com.example.backend.models.Employee;
-import com.example.backend.models.JobPosition;
-import com.example.backend.repositories.JobPositionRepository;
-import com.example.backend.services.JobPositionService;
+import com.example.backend.dto.hr.JobPositionDTO;
+import com.example.backend.models.hr.Employee;
+import com.example.backend.models.hr.JobPosition;
+import com.example.backend.repositories.hr.JobPositionRepository;
+import com.example.backend.services.hr.JobPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

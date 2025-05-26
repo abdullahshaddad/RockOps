@@ -1,10 +1,10 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
 
-import com.example.Rock4Mining.models.*;
-import com.example.Rock4Mining.repositories.ItemTypeRepository;
-import com.example.Rock4Mining.repositories.RequestOrderRepository;
-import com.example.Rock4Mining.repositories.WarehouseRepository;
+import com.example.backend.models.*;
+import com.example.backend.repositories.ItemTypeRepository;
+import com.example.backend.repositories.RequestOrderRepository;
+import com.example.backend.repositories.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

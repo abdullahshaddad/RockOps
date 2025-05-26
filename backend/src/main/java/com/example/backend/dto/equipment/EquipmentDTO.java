@@ -1,7 +1,7 @@
-package com.example.backend.dto;
+package com.example.backend.dto.equipment;
 
-import com.example.backend.models.Equipment;
-import com.example.backend.models.EquipmentStatus;
+import com.example.backend.models.equipment.Equipment;
+import com.example.backend.models.equipment.EquipmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

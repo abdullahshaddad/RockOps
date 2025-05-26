@@ -1,7 +1,7 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.equipment;
 
-import com.example.backend.dto.WorkTypeDTO;
-import com.example.backend.services.WorkTypeService;
+import com.example.backend.dto.equipment.WorkTypeDTO;
+import com.example.backend.services.equipment.WorkTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

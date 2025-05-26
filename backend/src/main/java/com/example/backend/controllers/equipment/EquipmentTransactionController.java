@@ -1,7 +1,8 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.equipment;
 
 import com.example.backend.models.*;
-import com.example.backend.repositories.EquipmentRepository;
+import com.example.backend.models.equipment.Equipment;
+import com.example.backend.repositories.equipment.EquipmentRepository;
 import com.example.backend.repositories.ItemTypeRepository;
 import com.example.backend.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;

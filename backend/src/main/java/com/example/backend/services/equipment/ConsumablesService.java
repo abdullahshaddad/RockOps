@@ -1,10 +1,10 @@
-package com.example.backend.services;
+package com.example.backend.services.equipment;
 
-import com.example.backend.services.finance.equipment.finance.models.*;
-import com.example.backend.services.finance.equipment.finance.models.equipment.Consumable;
-import com.example.backend.services.finance.equipment.finance.models.equipment.Equipment;
-import com.example.backend.services.finance.equipment.ConsumableRepository;
-import com.example.backend.repositories.ConsumablesLogRepository;
+import com.example.backend.models.ItemStatus;
+import com.example.backend.models.Warehouse;
+import com.example.backend.models.equipment.Consumable;
+import com.example.backend.models.equipment.Equipment;
+import com.example.backend.repositories.equipment.ConsumableRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 @Service
 public class ConsumablesService {
 
-    @Autowired
-    private ConsumablesLogRepository consumablesLogRepository;
 
     @Autowired
     private ConsumableRepository consumableRepository;
@@ -27,9 +25,7 @@ public class ConsumablesService {
     public void createConsumableTransaction(Equipment equipment, Warehouse warehouse, Integer quantity, LocalDateTime timestamp) {
 
     }
-    public List<ConsumablesLog> getAllConsumablesLogs() {
-        return consumablesLogRepository.findAll();
-    }
+
 
     // You can implement other methods as needed, such as for viewing pending transactions, etc.
     public List<Consumable> getConsumablesByEquipmentId(UUID equipmentId) {

@@ -1,5 +1,6 @@
-package com.example.backend.dto;
+package com.example.backend.dto.hr;
 
+import com.example.backend.models.hr.Department;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class EmployeeSummaryDTO {
     private UUID id;
     private String fullName;
     private String position;
-    private String department;
+    private Department department;
     private String email;
     private String phoneNumber;
     private String status;

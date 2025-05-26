@@ -1,8 +1,8 @@
-package com.example.backend.services.hr;
+package com.example.backend.services;
 
-import com.example.backend.models.JobPosition;
+import com.example.backend.models.hr.JobPosition;
 import com.example.backend.models.Vacancy;
-import com.example.backend.repositories.JobPositionRepository;
+import com.example.backend.repositories.hr.JobPositionRepository;
 import com.example.backend.repositories.VacancyRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

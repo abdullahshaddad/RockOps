@@ -1,9 +1,9 @@
-package com.example.backend.services;
+package com.example.backend.services.equipment;
 
 import com.example.backend.dto.equipment.EquipmentTypeDTO;
 import com.example.backend.exceptions.ResourceNotFoundException;
-import com.example.backend.services.finance.equipment.finance.models.equipment.EquipmentType;
-import com.example.backend.services.finance.equipment.EquipmentTypeRepository;
+import com.example.backend.models.equipment.EquipmentType;
+import com.example.backend.repositories.equipment.EquipmentTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

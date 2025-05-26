@@ -1,13 +1,13 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.finance;
 
-import com.example.backend.dto.JournalEntryLineDTO;
-import com.example.backend.dto.JournalEntryRequestDTO;
-import com.example.backend.dto.JournalEntryResponseDTO;
-import com.example.backend.models.JournalEntryStatus;
+import com.example.backend.dto.finance.JournalEntryLineDTO;
+import com.example.backend.dto.finance.JournalEntryRequestDTO;
+import com.example.backend.dto.finance.JournalEntryResponseDTO;
+import com.example.backend.models.finance.JournalEntryStatus;
 import com.example.backend.models.User;
-import com.example.backend.repositories.JournalEntryRepository;
+import com.example.backend.repositories.finance.JournalEntryRepository;
 import com.example.backend.repositories.UserRepository;
-import com.example.backend.services.JournalEntryService;
+import com.example.backend.services.finance.JournalEntryService;
 import com.example.backend.services.MinioService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;

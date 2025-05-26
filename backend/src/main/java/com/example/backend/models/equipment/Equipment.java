@@ -1,12 +1,14 @@
 package com.example.backend.models.equipment;
 
-import com.example.backend.models.site.Site;
+import com.example.backend.models.Merchant;
 import com.example.backend.models.hr.Employee;
+import com.example.backend.models.site.Site;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.Year;
@@ -17,24 +19,25 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @Entity
-public class Equipment
-{
+public class Equipment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = false)
-    private String type;
+    // Changed from String type to ManyToOne relationship with EquipmentType
+    @ManyToOne
+    @JoinColumn(name = "equipment_type_id", nullable = false)
+    private EquipmentType type;
 
-    // Replace fullModelName with separate model and name fields
     @Column(nullable = false)
     private String model;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String brand;
+    @ManyToOne
+    @JoinColumn(name = "equipment_brand_id", nullable = false)
+    private EquipmentBrand brand;
 
     @Column(nullable = false)
     private Year manufactureYear;
@@ -51,8 +54,9 @@ public class Equipment
     @Column(nullable = true)
     private double dollarPrice;
 
-    @Column(nullable = false)
-    private String purchasedFrom;
+    @ManyToOne
+    @JoinColumn(name = "merchant_id")
+    private Merchant purchasedFrom;
 
     @Column(nullable = false)
     private String examinedBy;
@@ -86,34 +90,40 @@ public class Equipment
     private Integer workedHours;
 
     @ManyToOne
-    @JoinColumn(name = "site_id", referencedColumnName = "id") // Foreign key in Equipment
+    @JoinColumn(name = "site_id", referencedColumnName = "id")
     @JsonManagedReference
-    // @JsonIgnore
-    //@JsonBackReference
     private Site site;
 
     @OneToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
-    //@JsonManagedReference
-    //@JsonIgnore
     private Employee mainDriver;
 
     @ManyToOne
     @JoinColumn(name = "sub_driver_id", referencedColumnName = "id")
     private Employee subDriver;
 
-
     @OneToMany(mappedBy = "equipment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<Consumable> consumables = new ArrayList<>();
 
 
+
+
+
     public Equipment() {
-        this.status=EquipmentStatus.AVAILABLE;
+        this.status = EquipmentStatus.AVAILABLE;
     }
 
-    // Optional - helper method to get combined model and name if needed for display purposes
+    // Helper method to get combined model and name for display purposes
     public String getFullModelName() {
         return model + " " + name;
+    }
+
+    public EquipmentBrand getBrand() {
+        return brand;
+    }
+
+    public void setBrand(EquipmentBrand brand) {
+        this.brand = brand;
     }
 }

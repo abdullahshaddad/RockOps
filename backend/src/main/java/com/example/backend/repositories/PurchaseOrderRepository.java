@@ -1,7 +1,6 @@
-package com.example.Rock4Mining.repositories;
+package com.example.backend.repositories;
 
-import com.example.Rock4Mining.models.PurchaseOrder;
-import com.example.Rock4Mining.models.PurchaseOrderItem;
+import com.example.backend.models.PurchaseOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

@@ -151,7 +151,8 @@ const PositionsList = () => {
             onClick: (row) => {
                 setSelectedPosition(row);
                 setShowEditForm(true);
-            }
+            },
+            className: 'primary',
         },
         {
             label: 'Delete',
@@ -167,10 +168,10 @@ const PositionsList = () => {
 
     return (
         <div className="positions-container">
-            <div className="positions-header">
+            <div className="departments-header">
                 <h1>Job Positions</h1>
                 <button
-                    className="positions-add-button"
+                    className="btn btn-primary"
                     onClick={() => setShowAddForm(true)}
                 >
                     <FiPlus /> Add Position

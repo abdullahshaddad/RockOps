@@ -1,7 +1,10 @@
-package com.example.Rock4Mining.repositories;
+package com.example.backend.repositories;
 
 
-import com.example.Rock4Mining.models.*;
+import com.example.backend.models.PartyType;
+import com.example.backend.models.Transaction;
+import com.example.backend.models.TransactionPurpose;
+import com.example.backend.models.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

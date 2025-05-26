@@ -1,7 +1,7 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
-import com.example.Rock4Mining.models.Partner;
-import com.example.Rock4Mining.repositories.PartnerRepository;
+import com.example.backend.models.Partner;
+import com.example.backend.repositories.PartnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

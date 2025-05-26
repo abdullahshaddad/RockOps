@@ -1,7 +1,7 @@
-package com.example.backend.repositories;
+package com.example.backend.repositories.hr;
 
-import com.example.backend.repositories.finance.models.hr.Employee;
-import com.example.backend.repositories.finance.models.site.Site;
+import com.example.backend.models.hr.Employee;
+import com.example.backend.models.site.Site;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

@@ -1,15 +1,17 @@
-package com.example.Rock4Mining.services;
+package com.example.backend.services;
 
-import com.example.Rock4Mining.models.*;
-import com.example.Rock4Mining.repositories.ItemRepository;
-import com.example.Rock4Mining.repositories.ItemTypeRepository;
-import com.example.Rock4Mining.repositories.TransactionRepository;
-import com.example.Rock4Mining.repositories.WarehouseRepository;
+import com.example.backend.models.Item;
+import com.example.backend.models.ItemStatus;
+import com.example.backend.models.ItemType;
+import com.example.backend.models.Warehouse;
+import com.example.backend.repositories.ItemRepository;
+import com.example.backend.repositories.ItemTypeRepository;
+import com.example.backend.repositories.TransactionRepository;
+import com.example.backend.repositories.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 

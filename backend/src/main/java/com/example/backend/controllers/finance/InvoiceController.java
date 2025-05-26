@@ -1,8 +1,8 @@
-package com.example.backend.controllers;
+package com.example.backend.controllers.finance;
 
-import com.example.backend.dto.InvoiceDTO;
-import com.example.backend.models.PaymentStatus;
-import com.example.backend.services.InvoiceService;
+import com.example.backend.dto.finance.InvoiceDTO;
+import com.example.backend.models.finance.PaymentStatus;
+import com.example.backend.services.finance.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

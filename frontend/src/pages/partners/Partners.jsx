@@ -115,13 +115,13 @@ const Partners = () => {
             label: 'Edit',
             icon: <FaEdit />,
             onClick: handleEditPartner,
-            className: 'users-edit-button'
+            className: 'primary'
         },
         {
             label: 'Delete',
             icon: <FaTrashAlt />,
             onClick: handleDeletePartner,
-            className: 'delete-button'
+            className: 'danger'
         }
     ] : [];
 
@@ -130,7 +130,7 @@ const Partners = () => {
             <div className="table-header">
                 <h2>{t('partners.title', 'Partners')}</h2>
                 {isAdmin && (
-                    <button className="add-user-button" onClick={() => setShowAddModal(true)}>
+                    <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
                         <FaUsers/> {t('partners.addButton', 'Add Partner')}
                     </button>
                 )}

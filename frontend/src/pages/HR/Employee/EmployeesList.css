@@ -1,7 +1,6 @@
 /* Overall container */
 .employees-container {
     max-width: 1200px;
-    margin: 0 auto;
     padding: 20px;
     font-family: var(--font-family);
     background-color: var(--main-background-color);
