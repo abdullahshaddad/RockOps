@@ -4,9 +4,13 @@ import './VacancyList.scss';
 import AddVacancyModal from './AddVacancyModal';
 import EditVacancyModal from './EditVacancyModal';
 import {FaEdit, FaTrashAlt} from "react-icons/fa";
+import { useSnackbar } from '../../../contexts/SnackbarContext';
+import { vacancyService } from '../../../services/vacancyService';
+import { jobPositionService } from '../../../services/jobPositionService';
 
 const VacancyList = () => {
     const navigate = useNavigate();
+    const { showSuccess, showError } = useSnackbar();
     const [vacancies, setVacancies] = useState([]);
     const [filteredVacancies, setFilteredVacancies] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -23,26 +27,16 @@ const VacancyList = () => {
     const fetchVacancies = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8080/api/v1/vacancies', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
+            const response = await vacancyService.getAll();
+            const data = response.data;
             setVacancies(data);
             setFilteredVacancies(data);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching vacancies:', error);
-            setError(error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to load vacancies';
+            setError(errorMessage);
+            showError('Failed to load vacancies. Please try again.');
             setLoading(false);
         }
     };
@@ -50,23 +44,11 @@ const VacancyList = () => {
     // Fetch job positions for the dropdown
     const fetchJobPositions = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8080/api/v1/job-positions', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setJobPositions(data);
+            const response = await jobPositionService.getAll();
+            setJobPositions(response.data);
         } catch (error) {
             console.error('Error fetching job positions:', error);
+            showError('Failed to load job positions');
         }
     };
 
@@ -106,28 +88,18 @@ const VacancyList = () => {
     const handleAddVacancy = async (newVacancy) => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-
-            const response = await fetch('http://localhost:8080/api/v1/vacancies', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newVacancy)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            const response = await vacancyService.create(newVacancy);
 
             // Refresh the vacancy list
             await fetchVacancies();
             setShowAddModal(false);
+            showSuccess('Vacancy created successfully!');
 
         } catch (error) {
             console.error('Error adding vacancy:', error);
-            setError(error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to create vacancy';
+            setError(errorMessage);
+            showError('Failed to create vacancy. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -137,29 +109,19 @@ const VacancyList = () => {
     const handleEditVacancy = async (updatedVacancy) => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-
-            const response = await fetch(`http://localhost:8080/api/v1/vacancies/${selectedVacancy.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(updatedVacancy)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            const response = await vacancyService.update(selectedVacancy.id, updatedVacancy);
 
             // Refresh the vacancy list
             await fetchVacancies();
             setShowEditModal(false);
             setSelectedVacancy(null);
+            showSuccess('Vacancy updated successfully!');
 
         } catch (error) {
             console.error('Error updating vacancy:', error);
-            setError(error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to update vacancy';
+            setError(errorMessage);
+            showError('Failed to update vacancy. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -175,26 +137,17 @@ const VacancyList = () => {
 
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-
-            const response = await fetch(`http://localhost:8080/api/v1/vacancies/${vacancyId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            await vacancyService.delete(vacancyId);
 
             // Refresh the vacancy list
             await fetchVacancies();
+            showSuccess('Vacancy deleted successfully!');
 
         } catch (error) {
             console.error('Error deleting vacancy:', error);
-            setError(error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to delete vacancy';
+            setError(errorMessage);
+            showError('Failed to delete vacancy. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -249,10 +202,10 @@ const VacancyList = () => {
 
     return (
         <div className="vacancy-container">
-            <div className="vacancy-header">
+            <div className="departments-header">
                 <h1>Job Vacancies</h1>
                 <button
-                    className="add-vacancy-btn"
+                    className="primary-button"
                     onClick={() => setShowAddModal(true)}
                 >
                     Post New Vacancy

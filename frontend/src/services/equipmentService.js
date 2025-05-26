@@ -164,4 +164,37 @@ export const equipmentService = {
         return apiClient.post(EQUIPMENT_ENDPOINTS.CREATE_DTO, equipmentData);
     },
 
+    // Equipment Transaction Management
+    receiveTransaction: (equipmentId, senderId, senderType, batchNumber, purpose, items, transactionDate) => {
+        const params = new URLSearchParams({
+            senderId,
+            senderType,
+            batchNumber: batchNumber.toString(),
+            purpose
+        });
+        
+        if (transactionDate) {
+            const formattedDate = new Date(transactionDate).toISOString().split('.')[0];
+            params.append('transactionDate', formattedDate);
+        }
+        
+        return apiClient.post(`${EQUIPMENT_ENDPOINTS.RECEIVE_TRANSACTION(equipmentId)}?${params}`, items);
+    },
+
+    sendTransaction: (equipmentId, receiverId, receiverType, batchNumber, purpose, items, transactionDate) => {
+        const params = new URLSearchParams({
+            receiverId,
+            receiverType,
+            batchNumber: batchNumber.toString(),
+            purpose
+        });
+        
+        if (transactionDate) {
+            const formattedDate = new Date(transactionDate).toISOString().split('.')[0];
+            params.append('transactionDate', formattedDate);
+        }
+        
+        return apiClient.post(`${EQUIPMENT_ENDPOINTS.SEND_TRANSACTION(equipmentId)}?${params}`, items);
+    },
+
 };
