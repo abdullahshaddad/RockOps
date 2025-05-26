@@ -1,7 +1,7 @@
 package com.example.backend.authentication;
 
 import com.example.backend.config.JwtService;
-import com.example.backend.models.User;
+import com.example.backend.models.user.User;
 import com.example.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
