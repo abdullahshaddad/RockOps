@@ -4,6 +4,11 @@ import './AllSites.css';
 import { useAuth } from "../../../Contexts/AuthContext";
 import { useTranslation } from 'react-i18next';
 import { FaBuilding } from 'react-icons/fa';
+import { siteService } from "../../../services/siteService.js";
+import { useSnackbar } from "../../../contexts/SnackbarContext.jsx";
+
+// Default placeholder for site image
+const siteimg = "data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100' height='100' fill='%23ddd'/%3e%3ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='%23999'%3eSite%3c/text%3e%3c/svg%3e";
 
 const AllSites = () => {
     const { t } = useTranslation();
@@ -12,6 +17,7 @@ const AllSites = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const { currentUser } = useAuth();
+    const { showError, showSuccess } = useSnackbar();
 
     // Modal states and data
     const [showAddModal, setShowAddModal] = useState(false);
@@ -106,18 +112,9 @@ const AllSites = () => {
     const fetchSites = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8080/api/v1/site', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-            const data = await response.json();
-            setSites(data);
+            const response = await siteService.getAll();
+            console.log("Sites fetched from service:", response.data);
+            setSites(response.data);
             setError(null);
         } catch (err) {
             setError(t('common.error') + ': ' + err.message);
@@ -129,15 +126,8 @@ const AllSites = () => {
 
     const fetchPartners = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:8080/api/v1/partner/getallpartners", {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
-
-            if (!response.ok) throw new Error("Failed to fetch partners");
-
-            const data = await response.json();
-            setPartners(data);
+            const response = await siteService.getAllPartners();
+            setPartners(response.data);
         } catch (error) {
             console.error("Error fetching partners:", error);
         }
@@ -222,35 +212,16 @@ const AllSites = () => {
 
     const fetchSite = async (siteId) => {
         try {
-            const token = localStorage.getItem("token");
-            // Fetch full site details to get all information
-            const response = await fetch(`http://localhost:8080/api/v1/site/${siteId}`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-            const siteData = await response.json();
+            const siteResponse = await siteService.getById(siteId);
+            const siteData = siteResponse.data;
             console.log("Raw response from API:", siteData);
+            
             try {
                 // Try fetching partners specifically for this site
-                const partnersResponse = await fetch(`http://localhost:8080/api/v1/site/${siteId}/partners`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-
-                if (partnersResponse.ok) {
-                    const partnersData = await partnersResponse.json();
-                    console.log("Site partners fetched separately:", partnersData);
-
-                    // Add the partners to the site data
-                    siteData.partners = partnersData;
-                }
+                const partnersResponse = await siteService.getSitePartners(siteId);
+                console.log("Site partners fetched separately:", partnersResponse.data);
+                // Add the partners to the site data
+                siteData.partners = partnersResponse.data;
             } catch (partnerErr) {
                 console.warn("Could not fetch site partners separately:", partnerErr.message);
                 // Continue with the basic site data even if partners fetch fails
@@ -282,7 +253,7 @@ const AllSites = () => {
             setShowEditModal(true);
         } catch (err) {
             console.error("Error fetching site details:", err.message);
-            alert("Failed to load site details. Using basic site data.");
+            showError("Failed to load site details. Using basic site data.");
             // Fall back to using the basic site data if detailed fetch fails
             setEditingSite(site);
             setShowEditModal(true);
@@ -309,7 +280,6 @@ const AllSites = () => {
     const handleAddSite = async (e) => {
         e.preventDefault();
 
-        const token = localStorage.getItem("token");
         const formDataToSend = new FormData();
 
         // Create site data object
@@ -329,29 +299,20 @@ const AllSites = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:8080/siteadmin/addsite", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                },
-                body: formDataToSend,
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
+            await siteService.addSite(formDataToSend);
             // Refresh site list and close modal
             fetchSites();
             handleCloseModals();
+            showSuccess("Site added successfully!");
         } catch (err) {
             console.error("Failed to add site:", err.message);
-            alert("Failed to add site. Please try again.");
+            showError("Failed to add site. Please try again.");
         }
     };
 
     const handleUpdateSite = async (e) => {
         e.preventDefault();
 
-        const token = localStorage.getItem("token");
         const formDataToSend = new FormData();
 
         // Create site data object WITHOUT id in the JSON
@@ -381,28 +342,14 @@ const AllSites = () => {
                 throw new Error("Missing site ID for update");
             }
 
-            // Use the exact endpoint format from your working EditSite component
-            const response = await fetch(`http://localhost:8080/siteadmin/updatesite/${formData.id}`, {
-                method: "PUT",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                },
-                body: formDataToSend,
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Server error response:", errorText);
-                throw new Error(errorText || `HTTP error! Status: ${response.status}`);
-            }
-
+            await siteService.updateSite(formData.id, formDataToSend);
             // Refresh site list and close modal
             fetchSites();
             handleCloseModals();
-            alert("Site updated successfully!");
+            showSuccess("Site updated successfully!");
         } catch (err) {
             console.error("Failed to update site:", err);
-            alert(`Failed to update site: ${err.message}`);
+            showError(`Failed to update site: ${err.message}`);
         }
     };
 
@@ -608,8 +555,8 @@ const AllSites = () => {
                                             {/*</div>*/}
 
                                             <div className="site-form-actions">
-                                                <button type="submit" className="site-submit-button">{t('site.addSite')}</button>
                                                 <button type="button" className="site-cancel-button" onClick={handleCloseModals}>{t('common.cancel')}</button>
+                                                <button type="submit" className="site-submit-button">{t('site.addSite')}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -747,8 +694,9 @@ const AllSites = () => {
                                             {/*</div>*/}
 
                                             <div className="site-form-actions">
-                                                <button type="submit" className="site-submit-button site-save-button">{t('common.save')}</button>
                                                 <button type="button" className="site-cancel-button" onClick={handleCloseModals}>{t('common.cancel')}</button>
+                                                <button type="submit" className="site-submit-button site-save-button">{t('common.save')}</button>
+
                                             </div>
                                         </form>
                                     </div>

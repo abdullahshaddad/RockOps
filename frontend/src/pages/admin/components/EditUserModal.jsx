@@ -189,12 +189,13 @@ const EditUserModal = ({user, mode = 'edit', onCancel, onSave}) => {
                         </select>
                     </div>
                     <div className="form-actions">
-                        <button type="submit" className="save-button">
-                            {mode === 'edit' ? t('common.save') : t('admin.addUser')}
-                        </button>
                         <button type="button" className="cancel-button" onClick={onCancel}>
                             {t('common.cancel')}
                         </button>
+                        <button type="submit" className="save-button">
+                            {mode === 'edit' ? t('common.save') : t('admin.addUser')}
+                        </button>
+
                     </div>
                 </form>
             </div>
