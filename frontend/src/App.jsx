@@ -77,32 +77,20 @@ function App() {
                                     <Route path="/admin"
                                            element={<RoleRoute allowedRoles={['ADMIN']}><AdminPage/></RoleRoute>}/>
 
-                                    <Route path="/dashboard" element={<RoleRoute
-                                        allowedRoles={allRoles}>
-                                        <DashboardPage/>
+                                    <Route path="/dashboard" element={<RoleRoute allowedRoles={allRoles}><DashboardPage/>
                                     </RoleRoute>}/>
 
-                                    <Route path="/partners" element={<RoleRoute
-                                        allowedRoles={["ADMIN", "SITE_ADMIN"]}><Partners/></RoleRoute>}/>
+                                    <Route path="/partners" element={<RoleRoute allowedRoles={["ADMIN", "SITE_ADMIN"]}><Partners/></RoleRoute>}/>
 
                                     {/* Site Management Routes */}
-                                    <Route path="/sites"
-                                           element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
-                                        <Route index
-                                               element={<RoleRoute allowedRoles={allRoles}><AllSites/></RoleRoute>}/>
-                                        <Route path="details/:siteId"
-                                               element={<RoleRoute allowedRoles={allRoles}><SiteDetails/></RoleRoute>}/>
-
+                                    <Route path="/sites" element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
+                                        <Route index element={<RoleRoute allowedRoles={allRoles}><AllSites/></RoleRoute>}/>
+                                        <Route path="details/:siteId" element={<RoleRoute allowedRoles={allRoles}><SiteDetails/></RoleRoute>}/>
+                                        <Route path="employee-details/:id" element={<RoleRoute allowedRoles={allRoles}><EmployeeDetails/></RoleRoute>}/>
                                     </Route>
-                                    <Route path="hr/employee-details/:id"
-                                           element={<RoleRoute
-                                               allowedRoles={allRoles}><EmployeeDetails/></RoleRoute>}
-                                    />
-                                  
 
                                     {/* HR Management Routes */}
-                                    <Route path="/hr" element={<RoleRoute
-                                        allowedRoles={["HR_MANAGER", "HR_EMPLOYEE", "ADMIN"]}><HRLayout/></RoleRoute>}>
+                                    <Route path="/hr" element={<RoleRoute allowedRoles={["HR_MANAGER", "HR_EMPLOYEE", "ADMIN"]}><HRLayout/></RoleRoute>}>
                                         <Route path="vacancies" element={<VacancyList/>}/>
                                         <Route path="positions" element={<PositionsList/>}/>
                                         <Route path="employees" element={<EmployeesList/>}/>
@@ -112,15 +100,15 @@ function App() {
                                         <Route path="departments" element={<DepartmentsList/>}/>
                                     </Route>
 
-                                    <Route path="/equipment"
-                                           element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
+                                    {/* Equipment Management Routes */}
+                                    <Route path="/equipment" element={<RoleRoute allowedRoles={allRoles}><SitesLayout/></RoleRoute>}>
                                         <Route index element={<RoleRoute allowedRoles={allRoles}><EquipmentMain/></RoleRoute>}/>
                                         <Route path="brand-management"  element={<RoleRoute allowedRoles={allRoles}><EquipmentBrandManagement/></RoleRoute>}/>
                                         <Route path="type-management"  element={<RoleRoute allowedRoles={allRoles}><EquipmentTypeManagement/></RoleRoute>}/>
                                         <Route path="info/:EquipmentID" element={<RoleRoute allowedRoles={allRoles}><ViewEquipmentData /></RoleRoute>} />
                                         <Route path=":EquipmentID" element={<RoleRoute allowedRoles={allRoles}><EquipmentDetails /></RoleRoute>} />
-
                                     </Route>
+
                                 </Route>
 
 
