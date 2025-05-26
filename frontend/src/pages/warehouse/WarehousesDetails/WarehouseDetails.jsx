@@ -7,8 +7,50 @@ import WarehouseViewItemTypesTable from "../../warehouse/WarehouseItemTypes/Ware
 import WarehouseViewItemsCategoriesTable from "../../warehouse/WarehouseCategories/WarehouseViewItemsCategoriesTable";
 import WarehouseViewTransactionsTable from "../../warehouse/WarehouseViewTransactions/WarehouseViewTransactionsTable";
 // Add import for the new Request Orders table component
- import WarehouseRequestOrders from "../../warehouse/WarehouseRequestOrders/WarehouseRequestOrders";
+import WarehouseRequestOrders from "../../warehouse/WarehouseRequestOrders/WarehouseRequestOrders";
 import "./WarehouseDetails.scss";
+
+// Simple Error Boundary Component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+          <h3>Something went wrong loading this section.</h3>
+          <p>Error: {this.state.error?.message}</p>
+          <button 
+            onClick={() => this.setState({ hasError: false, error: null })}
+            style={{ 
+              padding: '10px 20px', 
+              backgroundColor: '#007bff', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const WarehouseDetails = () => {
   const { id } = useParams();
@@ -55,17 +97,41 @@ const WarehouseDetails = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "items":
-        return <WarehouseViewItemsTable warehouseId={id} />;
+        return (
+          <ErrorBoundary>
+            <WarehouseViewItemsTable warehouseId={id} />
+          </ErrorBoundary>
+        );
       case "categories":
-        return <WarehouseViewItemsCategoriesTable warehouseId={id} />;
+        return (
+          <ErrorBoundary>
+            <WarehouseViewItemsCategoriesTable warehouseId={id} />
+          </ErrorBoundary>
+        );
       case "types":
-        return <WarehouseViewItemTypesTable warehouseId={id} />;
+        return (
+          <ErrorBoundary>
+            <WarehouseViewItemTypesTable warehouseId={id} />
+          </ErrorBoundary>
+        );
       case "transactions":
-        return <WarehouseViewTransactionsTable warehouseId={id} />;
+        return (
+          <ErrorBoundary>
+            <WarehouseViewTransactionsTable warehouseId={id} />
+          </ErrorBoundary>
+        );
       case "requestOrders":
-        return <WarehouseRequestOrders warehouseId={id} />;
+        return (
+          <ErrorBoundary>
+            <WarehouseRequestOrders warehouseId={id} />
+          </ErrorBoundary>
+        );
       default:
-        return <WarehouseViewItemsTable warehouseId={id} />;
+        return (
+          <ErrorBoundary>
+            <WarehouseViewItemsTable warehouseId={id} />
+          </ErrorBoundary>
+        );
     }
   };
 

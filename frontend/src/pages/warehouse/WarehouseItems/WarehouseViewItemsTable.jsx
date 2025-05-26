@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./WarehouseViewItems.scss";
 import { useParams } from 'react-router-dom';
-import Table from "../../../components/common/OurTable/Table.jsx";
+import DataTable from "../../../components/common/DataTable/DataTable.jsx";
+import { FaEdit, FaTrash, FaCheckCircle } from 'react-icons/fa';
 
 const WarehouseViewItemsTable = ({ warehouseId }) => {
   const [tableData, setTableData] = useState([]);
@@ -228,51 +229,6 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
     });
   };
 
-  const filteredData = tableData.filter((item) => {
-    const textMatch = item.itemType?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.itemType?.itemCategory?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.itemStatus?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    if (activeTab === 'inWarehouse') {
-      return textMatch && item.itemStatus === 'IN_WAREHOUSE' && !item.resolved;
-    }
-    if (activeTab === 'missingItems') {
-      return textMatch && item.itemStatus === 'MISSING' && !item.resolved;
-    }
-    if (activeTab === 'excessItems') {
-      return textMatch && item.itemStatus === 'OVERRECEIVED' && !item.resolved;
-    }
-    if (activeTab === 'resolvedHistory') {
-      return textMatch && item.resolved;
-    }
-
-    return textMatch;
-  });
-
-  const filteredResolutionHistory = resolutionHistory.filter((resolution) => {
-    return resolution.item?.itemType?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resolution.item?.itemType?.itemCategory?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resolution.resolutionType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resolution.resolvedBy?.toLowerCase().includes(searchTerm.toLowerCase());
-  });
-
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 'IN_WAREHOUSE':
-        return 'In Warehouse';
-      case 'DELIVERING':
-        return 'Delivering';
-      case 'PENDING':
-        return 'Pending';
-      case 'MISSING':
-        return 'Missing Items';
-      case 'OVERRECEIVED':
-        return 'Excess Items';
-      default:
-        return status;
-    }
-  };
-
   const getResolutionTypeLabel = (resolutionType) => {
     switch (resolutionType) {
       case 'ACKNOWLEDGE_LOSS':
@@ -297,34 +253,34 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Define columns for regular items table (In Warehouse - no batch number needed)
+  // Define columns for regular items table (In Warehouse)
   const itemColumns = [
     {
-      id: 'category',
-      label: 'CATEGORY',
-      width: '255px',
+      header: 'CATEGORY',
+      accessor: 'itemType.itemCategory.name',
+      sortable: true,
       render: (row) => (
-          <span className="category-tag">
+        <span className="category-tag">
           {row.itemType?.itemCategory?.name || "No Category"}
         </span>
       )
     },
     {
-      id: 'name',
-      label: 'ITEM',
-      width: '250px',
+      header: 'ITEM',
+      accessor: 'itemType.name',
+      sortable: true,
       render: (row) => row.itemType?.name || "N/A"
     },
     {
-      id: 'quantity',
-      label: 'QUANTITY',
-      width: '250px',
+      header: 'QUANTITY',
+      accessor: 'quantity',
+      sortable: true,
       render: (row) => row.quantity || 0
     },
     {
-      id: 'unit',
-      label: 'UNIT',
-      width: '230px',
+      header: 'UNIT',
+      accessor: 'itemType.measuringUnit',
+      sortable: true,
       render: (row) => row.itemType?.measuringUnit || "N/A"
     }
   ];
@@ -332,456 +288,425 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
   // Define columns for discrepancy items (Missing/Excess Items - WITH batch number)
   const discrepancyItemColumns = [
     {
-      id: 'category',
-      label: 'CATEGORY',
-      width: '210px',
+      header: 'CATEGORY',
+      accessor: 'itemType.itemCategory.name',
+      sortable: true,
       render: (row) => (
-          <span className="category-tag">
+        <span className="category-tag">
           {row.itemType?.itemCategory?.name || "No Category"}
         </span>
       )
     },
     {
-      id: 'name',
-      label: 'ITEM',
-      width: '210px',
+      header: 'ITEM',
+      accessor: 'itemType.name',
+      sortable: true,
       render: (row) => row.itemType?.name || "N/A"
     },
     {
-      id: 'quantity',
-      label: 'QUANTITY',
-      width: '210px',
+      header: 'QUANTITY',
+      accessor: 'quantity',
+      sortable: true,
       render: (row) => row.quantity || 0
     },
     {
-      id: 'unit',
-      label: 'UNIT',
-      width: '210px',
+      header: 'UNIT',
+      accessor: 'itemType.measuringUnit',
+      sortable: true,
       render: (row) => row.itemType?.measuringUnit || "N/A"
     },
     {
-      id: 'batchNumber',
-      label: 'BATCH #',
-      width: '200px',
+      header: 'BATCH #',
+      accessor: 'transaction.batchNumber',
+      sortable: true,
       render: (row) => (
-          <span className="batch-number">
+        <span className="batch-number">
           {row.transaction?.batchNumber || row.batchNumber || 'N/A'}
         </span>
       )
     }
   ];
 
-  // Define columns for resolution history table (WITH batch number)
+  // Define columns for resolution history table
   const historyColumns = [
     {
-      id: 'category',
-      label: 'CATEGORY',
-      width: '210px',
+      header: 'CATEGORY',
+      accessor: 'item.itemType.itemCategory.name',
+      sortable: true,
       render: (row) => (
-          <span className="category-tag">
+        <span className="category-tag">
           {row.item?.itemType?.itemCategory?.name || "No Category"}
         </span>
       )
     },
     {
-      id: 'name',
-      label: 'ITEM',
-      width: '210px',
+      header: 'ITEM',
+      accessor: 'item.itemType.name',
+      sortable: true,
       render: (row) => row.item?.itemType?.name || "N/A"
     },
     {
-      id: 'quantity',
-      label: 'QUANTITY',
-      width: '210px',
+      header: 'QUANTITY',
+      accessor: 'originalQuantity',
+      sortable: true,
       render: (row) => row.originalQuantity || 0
     },
     {
-      id: 'batchNumber',
-      label: 'BATCH #',
-      width: '210px',
+      header: 'BATCH #',
+      accessor: 'item.transaction.batchNumber',
+      sortable: true,
       render: (row) => (
-          <span className="batch-number">
+        <span className="batch-number">
           {row.item?.transaction?.batchNumber || row.item?.batchNumber || 'N/A'}
         </span>
       )
     },
     {
-      id: 'resolutionType',
-      label: 'RESOLUTION',
-      width: '180px',
+      header: 'RESOLUTION',
+      accessor: 'resolutionType',
+      sortable: true,
       render: (row) => (
-          <span className={`resolution-badge ${row.resolutionType?.toLowerCase().replace('_', '-')}`}>
+        <span className={`resolution-badge ${row.resolutionType?.toLowerCase().replace('_', '-')}`}>
           {getResolutionTypeLabel(row.resolutionType)}
         </span>
       )
     },
     {
-      id: 'resolvedBy',
-      label: 'RESOLVED BY',
-      width: '210px',
+      header: 'RESOLVED BY',
+      accessor: 'resolvedBy',
+      sortable: true,
       render: (row) => row.resolvedBy || "System"
     },
     {
-      id: 'resolvedAt',
-      label: 'RESOLVED AT',
-      width: '250px',
+      header: 'RESOLVED AT',
+      accessor: 'resolvedAt',
+      sortable: true,
       render: (row) => (
-          <span className="date-cell">
+        <span className="date-cell">
           {formatDate(row.resolvedAt)}
         </span>
       )
     },
     {
-      id: 'notes',
-      label: 'NOTES',
-      width: '210px',
+      header: 'NOTES',
+      accessor: 'notes',
+      sortable: true,
       render: (row) => (
-          <div className="notes-preview" title={row.notes}>
-            {row.notes?.length > 50 ? `${row.notes.substring(0, 50)}...` : row.notes}
-          </div>
+        <div className="notes-preview" title={row.notes}>
+          {row.notes?.length > 50 ? `${row.notes.substring(0, 50)}...` : row.notes}
+        </div>
       )
     }
   ];
 
   // Action configuration for regular items
-// Action configuration for regular items (In Warehouse) - smaller width
-  const itemActionConfig = {
-    label: 'ACTIONS',
-    width: '150px',  // Smaller width for In Warehouse
-    renderActions: (row) => (
-        <>
-          {row.itemStatus === 'MISSING' || row.itemStatus === 'OVERRECEIVED' ? (
-              <button
-                  className="custom-table-action-button resolve"
-                  title="Resolve Discrepancy"
-                  onClick={() => handleOpenResolutionModal(row)}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
-          ) : (
-              <button className="custom-table-action-button edit" title="Edit Item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
-              </button>
-          )}
-          <button
-              className="custom-table-action-button delete"
-              title="Delete Item"
-              onClick={() => handleDeleteItem(row.id)}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-              <line x1="10" y1="11" x2="10" y2="17" />
-              <line x1="14" y1="11" x2="14" y2="17" />
-            </svg>
-          </button>
-        </>
-    )
+  const getItemActions = (row) => {
+    const actions = [];
+    
+    if (row.itemStatus === 'MISSING' || row.itemStatus === 'OVERRECEIVED') {
+      actions.push({
+        label: 'Resolve Discrepancy',
+        icon: <FaCheckCircle />,
+        onClick: (row) => handleOpenResolutionModal(row),
+        className: 'success'
+      });
+    } else {
+      actions.push({
+        label: 'Edit Item',
+        icon: <FaEdit />,
+        onClick: (row) => console.log('Edit item:', row),
+        className: 'primary'
+      });
+    }
+    
+    actions.push({
+      label: 'Delete Item',
+      icon: <FaTrash />,
+      onClick: (row) => handleDeleteItem(row.id),
+      className: 'danger'
+    });
+    
+    return actions;
   };
 
-// Action configuration for discrepancy items (Missing/Excess) - keep original width
-  const discrepancyActionConfig = {
-    label: 'ACTIONS',
-    width: '150px',  // Keep original width for Missing/Excess
-    renderActions: (row) => (
-        <>
-          {row.itemStatus === 'MISSING' || row.itemStatus === 'OVERRECEIVED' ? (
-              <button
-                  className="custom-table-action-button resolve"
-                  title="Resolve Discrepancy"
-                  onClick={() => handleOpenResolutionModal(row)}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
-          ) : (
-              <button className="custom-table-action-button edit" title="Edit Item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
-              </button>
-          )}
-          <button
-              className="custom-table-action-button delete"
-              title="Delete Item"
-              onClick={() => handleDeleteItem(row.id)}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-              <line x1="10" y1="11" x2="10" y2="17" />
-              <line x1="14" y1="11" x2="14" y2="17" />
-            </svg>
-          </button>
-        </>
-    )
+  // Filter data based on active tab
+  const getFilteredData = () => {
+    switch (activeTab) {
+      case 'inWarehouse':
+        return tableData.filter(item => 
+          item.itemStatus !== 'MISSING' && 
+          item.itemStatus !== 'OVERRECEIVED' || 
+          item.resolved
+        );
+      case 'missingItems':
+        return tableData.filter(item => 
+          item.itemStatus === 'MISSING' && !item.resolved
+        );
+      case 'excessItems':
+        return tableData.filter(item => 
+          item.itemStatus === 'OVERRECEIVED' && !item.resolved
+        );
+      case 'resolvedHistory':
+        return resolutionHistory;
+      default:
+        return tableData;
+    }
+  };
+
+  const getCurrentColumns = () => {
+    switch (activeTab) {
+      case 'resolvedHistory':
+        return historyColumns;
+      case 'inWarehouse':
+        return itemColumns;
+      case 'missingItems':
+      case 'excessItems':
+        return discrepancyItemColumns;
+      default:
+        return itemColumns;
+    }
+  };
+
+  const getCurrentActions = () => {
+    if (activeTab === 'resolvedHistory') {
+      return []; // No actions for resolved history
+    }
+    return getItemActions;
   };
 
   return (
-      <div className="warehouse-view4">
-        {/* Header with count and search */}
-        <div className="header-container4">
-          <div className="left-section4">
-            <h1 className="page-title4">Inventory</h1>
-            <div className="item-count4">
-              {activeTab === 'resolvedHistory'
-                  ? `${resolutionHistory.length} resolutions`
-                  : `${tableData.length} items`}
-            </div>
+    <div className="warehouse-view4">
+      {/* Header with count and search */}
+      <div className="header-container4">
+        <div className="left-section4">
+          <h1 className="page-title4">Inventory</h1>
+          <div className="item-count4">
+            {activeTab === 'resolvedHistory'
+              ? `${resolutionHistory.length} resolutions`
+              : `${getFilteredData().length} items`}
           </div>
-
         </div>
+      </div>
 
-        {/* Tab navigation */}
-        <div className="inventory-tabs">
-          <button
-              className={`inventory-tab ${activeTab === 'inWarehouse' ? 'active' : ''}`}
-              onClick={() => setActiveTab('inWarehouse')}
-          >
-            In Warehouse
-          </button>
-          <button
-              className={`inventory-tab ${activeTab === 'missingItems' ? 'active' : ''}`}
-              onClick={() => setActiveTab('missingItems')}
-          >
-            Missing Items
-            {tableData.filter(item => item.itemStatus === 'MISSING' && !item.resolved).length > 0 && (
-                <span className="tab-badge">
+      {/* Tab navigation */}
+      <div className="inventory-tabs">
+        <button
+          className={`inventory-tab ${activeTab === 'inWarehouse' ? 'active' : ''}`}
+          onClick={() => setActiveTab('inWarehouse')}
+        >
+          In Warehouse
+        </button>
+        <button
+          className={`inventory-tab ${activeTab === 'missingItems' ? 'active' : ''}`}
+          onClick={() => setActiveTab('missingItems')}
+        >
+          Missing Items
+          {tableData.filter(item => item.itemStatus === 'MISSING' && !item.resolved).length > 0 && (
+            <span className="tab-badge">
               {tableData.filter(item => item.itemStatus === 'MISSING' && !item.resolved).length}
             </span>
-            )}
-          </button>
-          <button
-              className={`inventory-tab ${activeTab === 'excessItems' ? 'active' : ''}`}
-              onClick={() => setActiveTab('excessItems')}
-          >
-            Excess Items
-            {tableData.filter(item => item.itemStatus === 'OVERRECEIVED' && !item.resolved).length > 0 && (
-                <span className="tab-badge">
+          )}
+        </button>
+        <button
+          className={`inventory-tab ${activeTab === 'excessItems' ? 'active' : ''}`}
+          onClick={() => setActiveTab('excessItems')}
+        >
+          Excess Items
+          {tableData.filter(item => item.itemStatus === 'OVERRECEIVED' && !item.resolved).length > 0 && (
+            <span className="tab-badge">
               {tableData.filter(item => item.itemStatus === 'OVERRECEIVED' && !item.resolved).length}
             </span>
-            )}
-          </button>
-          <button
-              className={`inventory-tab ${activeTab === 'resolvedHistory' ? 'active' : ''}`}
-              onClick={() => setActiveTab('resolvedHistory')}
-          >
-            Resolution History
-          </button>
+          )}
+        </button>
+        <button
+          className={`inventory-tab ${activeTab === 'resolvedHistory' ? 'active' : ''}`}
+          onClick={() => setActiveTab('resolvedHistory')}
+        >
+          Resolved History
+        </button>
+      </div>
+
+      {/* Info cards for different tabs */}
+      {activeTab === 'missingItems' && (
+        <div className="missing-info-card">
+          <div className="missing-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </div>
+          <div className="missing-info-content">
+            <h3>Missing Items</h3>
+            <p>
+              These items are expected to be in the warehouse but cannot be found during inventory checks. 
+              Each item requires resolution to maintain accurate inventory records.
+            </p>
+          </div>
         </div>
+      )}
 
-        {/* Resolution info cards */}
-        {(activeTab === 'missingItems' || activeTab === 'excessItems') && (
-            <div className="resolution-info-card">
-              <div className="resolution-icon">
+      {activeTab === 'excessItems' && (
+        <div className="excess-info-card">
+          <div className="excess-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </div>
+          <div className="excess-info-content">
+            <h3>Excess Items</h3>
+            <p>
+              These items were found in quantities higher than expected during inventory checks. 
+              Review and resolve each discrepancy to ensure accurate inventory tracking.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'resolvedHistory' && (
+        <div className="resolution-info-card">
+          <div className="resolution-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="resolution-info-content">
+            <h3>Resolution History</h3>
+            <p>
+              This tab shows the complete history of all resolved inventory discrepancies. Each entry includes details about the original issue, the resolution action taken, and who resolved it.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* DataTable Component */}
+      <DataTable
+        data={getFilteredData()}
+        columns={getCurrentColumns()}
+        loading={activeTab === 'resolvedHistory' ? historyLoading : loading}
+        showSearch={true}
+        showFilters={true}
+        filterableColumns={getCurrentColumns().filter(col => col.sortable)}
+        itemsPerPageOptions={[10, 25, 50, 100]}
+        defaultItemsPerPage={10}
+        actions={getCurrentActions()}
+        className={`inventory-table ${activeTab}-table`}
+      />
+
+      {/* Resolution Modal */}
+      {isResolutionModalOpen && selectedItem && (
+        <div className="modal-backdrop4">
+          <div className="modal4">
+            <div className="modal-header4">
+              <h2>Resolve Inventory Discrepancy</h2>
+              <button className="close-modal4" onClick={() => setIsResolutionModalOpen(false)}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                  <path d="M18 6L6 18M6 6l12 12"/>
                 </svg>
-              </div>
-              <div className="resolution-info-content">
-                <h3>Inventory Discrepancy Resolution</h3>
-                <p>
-                  {activeTab === 'missingItems'
-                      ? 'Items marked as "Missing" represent inventory shortages identified during transactions. These items were expected to be received but were not found. Review and resolve these discrepancies to maintain accurate inventory records.'
-                      : 'Items marked as "Excess" represent inventory surpluses identified during transactions. These are items that were received beyond expected quantities. Review and resolve these discrepancies to determine appropriate action.'}
-                </p>
-              </div>
+              </button>
             </div>
-        )}
 
-        {activeTab === 'resolvedHistory' && (
-            <div className="resolution-info-card">
-              <div className="resolution-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div className="modal-content4">
+              <div className="item-details">
+                <h3>Item Details</h3>
+                <div className="resolution-detail">
+                  <span className="resolution-label">Item:</span>
+                  <span className="resolution-value">{selectedItem.itemType?.name}</span>
+                </div>
+                <div className="resolution-detail">
+                  <span className="resolution-label">Category:</span>
+                  <span className="resolution-value">{selectedItem.itemType?.itemCategory?.name}</span>
+                </div>
+                <div className="resolution-detail">
+                  <span className="resolution-label">Quantity:</span>
+                  <span className="resolution-value">{selectedItem.quantity}</span>
+                </div>
+                <div className="resolution-detail">
+                  <span className="resolution-label">Status:</span>
+                  <span className="resolution-value">{selectedItem.itemStatus === 'MISSING' ? 'Missing' : selectedItem.itemStatus === 'OVERRECEIVED' ? 'Excess' : 'In Warehouse'}</span>
+                </div>
               </div>
-              <div className="resolution-info-content">
-                <h3>Resolution History</h3>
-                <p>
-                  This tab shows the complete history of all resolved inventory discrepancies. Each entry includes details about the original issue, the resolution action taken, and who resolved it.
-                </p>
-              </div>
-            </div>
-        )}
 
-        {/* Table Component - Different column sets for different tabs */}
-        {/* Table Component - Different column sets for different tabs */}
-        {activeTab === 'resolvedHistory' ? (
-            <Table
-                columns={historyColumns}
-                data={filteredResolutionHistory}
-                isLoading={historyLoading}
-                emptyMessage="No resolution history found"
-                className="resolution-history-table"
-            />
-        ) : activeTab === 'inWarehouse' ? (
-            <Table
-                columns={itemColumns}
-                data={filteredData}
-                isLoading={loading}
-                emptyMessage="No warehouse items found"
-                actionConfig={itemActionConfig}  // Use smaller width config
-                className="inventory-items-table"
-            />
-        ) : (
-            <Table
-                columns={discrepancyItemColumns}
-                data={filteredData}
-                isLoading={loading}
-                emptyMessage={`No ${activeTab === 'missingItems' ? 'missing' : 'excess'} items found`}
-                actionConfig={discrepancyActionConfig}  // Use original width config
-                className="discrepancy-items-table"
-            />
-        )}
-
-        {/* Resolution Modal */}
-        {isResolutionModalOpen && selectedItem && (
-            <div className="resolution-modal-backdrop">
-              <div className="resolution-modal">
-                <div className="resolution-modal-header">
-                  <h2>Resolve Inventory Discrepancy</h2>
-                  <button
-                      className="close-modal-button"
-                      onClick={() => setIsResolutionModalOpen(false)}
+              <form onSubmit={handleResolutionSubmit}>
+                <div className="form-group4">
+                  <label htmlFor="resolutionType">Resolution Type</label>
+                  <select
+                    id="resolutionType"
+                    name="resolutionType"
+                    value={resolutionData.resolutionType}
+                    onChange={handleResolutionInputChange}
+                    required
                   >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M18 6L6 18M6 6l12 12" />
-                    </svg>
+                    <option value="">Select Resolution Type</option>
+                    <option value="ACKNOWLEDGE_LOSS">Acknowledge Loss</option>
+                    <option value="COUNTING_ERROR">Counting Error</option>
+                    <option value="FOUND_ITEMS">Items Found</option>
+                    <option value="REPORT_THEFT">Report Theft</option>
+                    <option value="ACCEPT_SURPLUS">Accept Surplus</option>
+                    <option value="RETURN_TO_SENDER">Return to Sender</option>
+                  </select>
+                </div>
+
+                <div className="form-group4">
+                  <label htmlFor="notes">Notes</label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    value={resolutionData.notes}
+                    onChange={handleResolutionInputChange}
+                    placeholder="Add any additional notes about this resolution..."
+                    rows="4"
+                  />
+                </div>
+
+                <div className="form-group4">
+                  <label htmlFor="transactionId">Related Transaction ID (Optional)</label>
+                  <input
+                    type="text"
+                    id="transactionId"
+                    name="transactionId"
+                    value={resolutionData.transactionId}
+                    onChange={handleResolutionInputChange}
+                    placeholder="Enter transaction ID if applicable"
+                  />
+                </div>
+
+                <div className="modal-footer4">
+                  <button type="button" className="cancel-button4" onClick={() => setIsResolutionModalOpen(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="submit-button4">
+                    Resolve Discrepancy
                   </button>
                 </div>
-
-                <div className="resolution-modal-body">
-                  <div className="resolution-item-details">
-                    <div className="resolution-detail">
-                      <span className="resolution-label">Item:</span>
-                      <span className="resolution-value">{selectedItem.itemType?.name}</span>
-                    </div>
-
-                    <div className="resolution-detail">
-                      <span className="resolution-label">Quantity:</span>
-                      <span className="resolution-value">{selectedItem.quantity} {selectedItem.itemType?.measuringUnit || ''}</span>
-                    </div>
-
-                    <div className="resolution-detail">
-                      <span className="resolution-label">Status:</span>
-                      <span className="resolution-value">{getStatusLabel(selectedItem.itemStatus)}</span>
-                    </div>
-
-                    <div className="resolution-detail">
-                      <span className="resolution-label">Batch Number:</span>
-                      <span className="resolution-value">{selectedItem.transaction?.batchNumber || selectedItem.batchNumber || 'N/A'}</span>
-                    </div>
-                  </div>
-
-                  <form onSubmit={handleResolutionSubmit} className="resolution-form">
-                    <div className="resolution-form-group">
-                      <label htmlFor="resolutionType">Resolution Type</label>
-                      <select
-                          id="resolutionType"
-                          name="resolutionType"
-                          value={resolutionData.resolutionType}
-                          onChange={handleResolutionInputChange}
-                          required
-                      >
-                        <option value="">Select Resolution Type</option>
-                        {selectedItem.itemStatus === 'MISSING' ? (
-                            <>
-                              <option value="ACKNOWLEDGE_LOSS">Acknowledge Loss</option>
-                              <option value="COUNTING_ERROR">Counting Error</option>
-                              <option value="FOUND_ITEMS">Items Found</option>
-                              <option value="REPORT_THEFT">Report Theft</option>
-                            </>
-                        ) : (
-                            <>
-                              <option value="ACCEPT_SURPLUS">Accept Surplus</option>
-                              <option value="RETURN_TO_SENDER">Return to Sender</option>
-                              <option value="COUNTING_ERROR">Counting Error</option>
-                            </>
-                        )}
-                      </select>
-                    </div>
-
-                    <div className="resolution-form-group">
-                      <label htmlFor="notes">Resolution Notes</label>
-                      <textarea
-                          id="notes"
-                          name="notes"
-                          value={resolutionData.notes}
-                          onChange={handleResolutionInputChange}
-                          placeholder="Provide details about this resolution"
-                          rows={4}
-                          required
-                      />
-                    </div>
-
-                    <div className="resolution-confirmation">
-                      <p className="resolution-confirmation-text">
-                        {resolutionData.resolutionType === 'ACKNOWLEDGE_LOSS' &&
-                            "You are confirming that these items are lost and will be removed from inventory."}
-                        {resolutionData.resolutionType === 'COUNTING_ERROR' &&
-                            "You are indicating this was a counting error and inventory will be adjusted."}
-                        {resolutionData.resolutionType === 'FOUND_ITEMS' &&
-                            "You are confirming items were found and will be returned to regular inventory."}
-                        {resolutionData.resolutionType === 'REPORT_THEFT' &&
-                            "You are reporting theft. This will be logged and items will be written off."}
-                        {resolutionData.resolutionType === 'ACCEPT_SURPLUS' &&
-                            "You are accepting the surplus items into regular inventory."}
-                        {resolutionData.resolutionType === 'RETURN_TO_SENDER' &&
-                            "You are initiating a return of these items to the sender."}
-                      </p>
-                    </div>
-
-                    <div className="resolution-modal-footer">
-                      <button
-                          type="button"
-                          className="cancel-button"
-                          onClick={() => setIsResolutionModalOpen(false)}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                          type="submit"
-                          className="resolve-submit-button"
-                          disabled={!resolutionData.resolutionType || !resolutionData.notes}
-                      >
-                        Resolve Discrepancy
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+              </form>
             </div>
-        )}
+          </div>
+        </div>
+      )}
 
-        {/* Notifications */}
-        {showNotification && (
-            <div className="notification success-notification">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                <path d="M22 4L12 14.01l-3-3" />
-              </svg>
-              <span>Operation completed successfully</span>
-            </div>
-        )}
+      {/* Success notification */}
+      {showNotification && (
+        <div className="notification4 success-notification4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+            <path d="M22 4L12 14.01l-3-3"/>
+          </svg>
+          <span>Discrepancy resolved successfully</span>
+        </div>
+      )}
 
-        {showNotification2 && (
-            <div className="notification success-notification">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                <path d="M22 4L12 14.01l-3-3" />
-              </svg>
-              <span>Item deleted successfully</span>
-            </div>
-        )}
-      </div>
+      {/* Delete notification */}
+      {showNotification2 && (
+        <div className="notification4 delete-notification4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+            <path d="M22 4L12 14.01l-3-3"/>
+          </svg>
+          <span>Item deleted successfully</span>
+        </div>
+      )}
+    </div>
   );
 };
 

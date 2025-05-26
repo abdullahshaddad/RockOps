@@ -42,9 +42,7 @@ import ProcurementRequestOrderDetails
 import ProcurementMerchants from "./pages/procurement/ProcurementMerchants/ProcurementMerchants.jsx";
 import ProcurementRequestOrders from "./pages/procurement/ProcurementRequestOrders/ProcurementRequestOrders.jsx";
 import PurchaseOrders from "./pages/procurement/ProcurementPurchaseOrders/ProcurementPurchaseOrders/PurchaseOrders.jsx";
-import PurchaseOrderDetails
-    from "./pages/procurement/ProcurementPurchaseOrders/PurchaseOrderDetails/PurchaseOrderDetails.jsx";
-import WorkTypeManagement from "./pages/equipment/EquipmentManagement/WorkTypeManagement.jsx";
+import PurchaseOrderDetails from "./pages/procurement/ProcurementPurchaseOrders/PurchaseOrderDetails/PurchaseOrderDetails.jsx";
 
 
 const AuthRedirect = () => {

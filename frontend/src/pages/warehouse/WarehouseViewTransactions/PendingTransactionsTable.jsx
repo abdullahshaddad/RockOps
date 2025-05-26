@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
+import DataTable from "../../../components/common/DataTable/DataTable.jsx";
+import { FaEdit } from 'react-icons/fa';
 import "./WarehouseViewTransactions.scss";
 import UpdatePendingTransactionModal from "./UpdatePendingTransactionModal.jsx";
 
 const PendingTransactionsTable = ({ warehouseId }) => {
     const [loading, setLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
     const [pendingTransactions, setPendingTransactions] = useState([]);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -99,16 +100,6 @@ const PendingTransactionsTable = ({ warehouseId }) => {
         }
     };
 
-    // Filter transactions based on search term
-    const filteredTransactions = searchTerm ?
-        pendingTransactions.filter((item) =>
-            item.itemType?.itemCategory?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.itemType?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.sender?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.receiver?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (item.batchNumber && item.batchNumber.toString().includes(searchTerm))
-        ) : pendingTransactions;
-
     // Function to handle opening the update modal
     const handleOpenUpdateModal = (transaction) => {
         setSelectedTransaction(transaction);
@@ -170,6 +161,64 @@ const PendingTransactionsTable = ({ warehouseId }) => {
         setSelectedTransaction(null);
     };
 
+    // Define columns for DataTable
+    const columns = [
+        {
+            header: 'Items',
+            accessor: 'items.length',
+            sortable: true,
+            render: (row) => row.items?.length || 0
+        },
+        {
+            header: 'Sender',
+            accessor: 'sender.name',
+            sortable: true,
+            render: (row) => row.sender?.name || "N/A"
+        },
+        {
+            header: 'Receiver',
+            accessor: 'receiver.name',
+            sortable: true,
+            render: (row) => row.receiver?.name || row.receiver?.equipment?.fullModelName || "N/A"
+        },
+        {
+            header: 'Batch Number',
+            accessor: 'batchNumber',
+            sortable: true,
+            render: (row) => row.batchNumber || "N/A"
+        },
+        {
+            header: 'Transaction Date',
+            accessor: 'transactionDate',
+            sortable: true,
+            render: (row) => row.transactionDate ? new Date(row.transactionDate).toLocaleDateString('en-GB') : "N/A"
+        },
+        {
+            header: 'Created At',
+            accessor: 'createdAt',
+            sortable: true,
+            render: (row) => row.createdAt ? new Date(row.createdAt).toLocaleString('en-GB', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            }) : "N/A"
+        },
+        {
+            header: 'Added By',
+            accessor: 'addedBy',
+            sortable: true
+        }
+    ];
+
+    // Action configuration for DataTable
+    const getActions = (row) => [
+        {
+            label: 'Edit transaction',
+            icon: <FaEdit />,
+            onClick: (row) => handleOpenUpdateModal(row),
+            className: 'primary'
+        }
+    ];
+
     return (
         <div className="transaction-table-pending">
             <div className="left-section3">
@@ -178,127 +227,32 @@ const PendingTransactionsTable = ({ warehouseId }) => {
             </div>
             <div className="section-description">(Transactions you've initiated that are waiting for approval)</div>
 
-            {/* Search input for this table only */}
-            <div className="right-section3">
-            <div className="table-search-container-pending">
-                <input
-                    type="text"
-                    placeholder="Search pending transactions..."
-                    className="search-input3"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="M21 21l-4.35-4.35"/>
-                </svg>
-            </div>
-            </div>
+            <DataTable
+                data={pendingTransactions}
+                columns={columns}
+                loading={loading}
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={columns.filter(col => col.sortable)}
+                itemsPerPageOptions={[10, 25, 50]}
+                defaultItemsPerPage={10}
+                actions={getActions}
+                className="pending-transactions-table"
+            />
 
-            <div
-                className="table-card3"
-                style={{
-                    minHeight: filteredTransactions.length === 0 ? '300px' : 'auto',
-                }}
-            >
-                {loading ? (
-                    <div className="loading-container3">
-                        <div className="loading-spinner3"></div>
-                        <p>Loading transaction data...</p>
-                    </div>
-                ) : (
-                    <>
-                        <div className="table-header-row3">
-                            <div className="table-header-cell item-type-cell3">Items</div>
-                            <div className="table-header-cell sender-cell3">Sender</div>
-                            <div className="table-header-cell receiver-cell3">Receiver</div>
-                            <div className="table-header-cell quantity-cell3">Batch Number</div>
-                            <div className="table-header-cell date-cell3">Transaction Date</div>
-                            <div className="table-header-cell created-at-cell3">Created At</div>
-                            <div className="table-header-cell added-by-cell3">Added By</div>
-                            <div className="table-header-cell status-cell3">Status</div>
-                            <div className="table-header-cell actions-cell3">Actions</div>
-                        </div>
-
-                        <div className="table-body3">
-                            {filteredTransactions.length > 0 ? (
-                                filteredTransactions.map((item, index) => (
-                                    <div className="table-row3" key={index}>
-                                        <div className="table-cell item-type-cell3">{item.items?.length || 0}</div>
-
-                                        <div className="table-cell sender-cell3">
-                                            {item.sender
-                                                ? item.sender.name || item.sender.fullModelName || item.sender.equipment?.fullModelName || "N/A"
-                                                : "N/A"}
-                                        </div>
-                                        <div className="table-cell receiver-cell3">
-                                            {item.receiver
-                                                ? item.receiver.name || item.receiver.fullModelName || item.receiver.equipment?.fullModelName || "N/A"
-                                                : "N/A"}
-                                        </div>
-                                        <div className="table-cell quantity-cell3">{item.batchNumber}</div>
-
-                                        <div className="table-cell date-cell3">
-                                            {item.transactionDate ? new Date(item.transactionDate).toLocaleDateString('en-GB') : "N/A"}
-                                        </div>
-                                        <div className="table-cell created-at-cell3">
-                                            {item.createdAt ? new Date(item.createdAt).toLocaleString('en-GB', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                                second: '2-digit',
-                                            }) : "N/A"}
-                                        </div>
-                                        <div className="table-cell added-by-cell3">
-                                            {item.addedBy}
-                                        </div>
-                                        <div className="table-cell status-cell3">{item.status}</div>
-                                        <div className="table-cell actions-cell3">
-                                            <button
-                                                className="edit-button0"
-                                                onClick={() => handleOpenUpdateModal(item)}
-                                                title="Edit transaction"
-                                            >
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="empty-state3">
-                                    <div className="empty-icon3">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                            <path d="M20 6L9 17l-5-5"/>
-                                        </svg>
-                                    </div>
-                                    <h3>No pending transactions</h3>
-                                    <p>You haven't created any transactions that are waiting for approval</p>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                )}
-            </div>
-
-            {/* Update Transaction Modal */}
+            {/* Update Modal */}
             {isUpdateModalOpen && selectedTransaction && (
                 <UpdatePendingTransactionModal
-                    transaction={selectedTransaction}
                     isOpen={isUpdateModalOpen}
                     onClose={handleCloseUpdateModal}
+                    transaction={selectedTransaction}
                     onUpdate={handleUpdateTransaction}
-                    warehouseId={warehouseId}
                 />
             )}
 
             {/* Success notification */}
             {showSuccessNotification && (
-                <div className="notification success-notification3">
+                <div className="notification3 success-notification3">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
                         <path d="M22 4L12 14.01l-3-3"/>

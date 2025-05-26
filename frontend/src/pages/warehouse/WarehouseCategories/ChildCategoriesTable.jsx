@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Table from "../../../components/common/OurTable/Table.jsx"; // Adjust the import path as needed
+import DataTable from "../../../components/common/DataTable/DataTable.jsx";
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import "./WarehouseViewItemCategories.scss";
 
 const ChildCategoriesTable = ({
@@ -17,17 +18,17 @@ const ChildCategoriesTable = ({
             setError(null);
             try {
                 const token = localStorage.getItem("token");
-                console.log("tokennn" + token);
-                // Log the actual URL being used
-                console.log("Fetching from URL:", `http://localhost:8080/api/v1/itemCategories/children`);
-
+                
+                if (!token) {
+                    throw new Error("No authentication token found");
+                }
+                
                 const response = await fetch(`http://localhost:8080/api/v1/itemCategories/children`, {
                     headers: {
-                        "Authorization": `Bearer ${token}`
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     }
                 });
-
-                console.log("Response status:", response.status);
 
                 // If the response is not ok, get the error message
                 if (!response.ok) {
@@ -37,11 +38,11 @@ const ChildCategoriesTable = ({
                 }
 
                 const data = await response.json();
-                console.log("Child categories data:", data);
                 setChildCategories(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error("Error fetching child categories:", error);
                 setError(error.message);
+                setChildCategories([]);
             } finally {
                 setLoading(false);
             }
@@ -50,80 +51,42 @@ const ChildCategoriesTable = ({
         fetchChildCategories();
     }, []);
 
-    // Define table columns
+    // Define table columns for DataTable
     const columns = [
         {
-            id: 'name',
-            label: 'CATEGORY',
-            width: '200px',
-            minWidth: '150px',
-            sortable: true,
-            filterable: true,
-            filterType: 'text'
+            header: 'CATEGORY',
+            accessor: 'name',
+            sortable: true
         },
         {
-            id: 'description',
-            label: 'DESCRIPTION',
-            flexWeight: 2,
-            minWidth: '200px',
+            header: 'DESCRIPTION',
+            accessor: 'description',
             sortable: true,
-            filterable: true,
-            filterType: 'text',
             render: (row) => row.description || 'No description'
         },
         {
-            id: 'parentCategory.name',
-            label: 'PARENT CATEGORY',
-            width: '180px',
-            minWidth: '150px',
+            header: 'PARENT CATEGORY',
+            accessor: 'parentCategory.name',
             sortable: true,
-            filterable: true,
-            filterType: 'select',
-            render: (row) => row.parentCategory ? row.parentCategory.name : "None",
-            sortFunction: (a, b) => {
-                const aVal = a.parentCategory ? a.parentCategory.name : '';
-                const bVal = b.parentCategory ? b.parentCategory.name : '';
-                return aVal.localeCompare(bVal);
-            }
+            render: (row) => row.parentCategory ? row.parentCategory.name : "None"
         }
     ];
 
-    // Action configuration
-    const actionConfig = {
-        label: 'ACTIONS',
-        width: '120px',
-        renderActions: (row) => (
-            <div className="table-actions">
-                <button
-                    className="edit-button2"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit(row);
-                    }}
-                    title="Edit category"
-                >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                </button>
-                <button
-                    className="delete-button2"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(row.id);
-                    }}
-                    title="Delete category"
-                >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                        <line x1="10" y1="11" x2="10" y2="17"/>
-                        <line x1="14" y1="11" x2="14" y2="17"/>
-                    </svg>
-                </button>
-            </div>
-        )
-    };
+    // Action configuration for DataTable
+    const actions = [
+        {
+            label: 'Edit category',
+            icon: <FaEdit />,
+            onClick: (row) => onEdit(row),
+            className: 'primary'
+        },
+        {
+            label: 'Delete category',
+            icon: <FaTrash />,
+            onClick: (row) => onDelete(row.id),
+            className: 'danger'
+        }
+    ];
 
     if (error) {
         return (
@@ -145,32 +108,83 @@ const ChildCategoriesTable = ({
         );
     }
 
-    return (
-        <div className="category-table-container">
-            <div className="table-header-container">
-                <div className="left-section2">
-                    <h2 className="table-section-title">Child Categories</h2>
-                    <div className="item-count2">{childCategories.length} categories</div>
+    // Add safety check for DataTable component
+    try {
+        // Simple test to see if DataTable is the issue
+        const useSimpleTable = false; // Set to true to test without DataTable
+        
+        if (useSimpleTable) {
+            return (
+                <div className="category-table-container">
+                    <div className="table-header-container">
+                        <div className="left-section2">
+                            <h2 className="table-section-title">Child Categories (Simple)</h2>
+                            <div className="item-count2">{childCategories.length} categories</div>
+                        </div>
+                        <div className="section-description">
+                            (A more specific category that falls under a parent category, used to better organize and manage items)
+                        </div>
+                    </div>
+                    <div style={{ padding: '20px' }}>
+                        {loading && <p>Loading child categories...</p>}
+                        {childCategories.length === 0 && !loading && <p>No child categories found.</p>}
+                        {childCategories.map((category, index) => (
+                            <div key={category.id || index} style={{ padding: '10px', border: '1px solid #ccc', margin: '5px 0' }}>
+                                <strong>{category.name}</strong>: {category.description}
+                                {category.parentCategory && <p>Parent: {category.parentCategory.name}</p>}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="section-description">
-                    (A more specific category that falls under a parent category, used to better organize and manage items)
+            );
+        }
+
+        return (
+            <div className="category-table-container">
+                <div className="table-header-container">
+                    <div className="left-section2">
+                        <h2 className="table-section-title">Child Categories</h2>
+                        <div className="item-count2">{childCategories.length} categories</div>
+                    </div>
+                    <div className="section-description">
+                        (A more specific category that falls under a parent category, used to better organize and manage items)
+                    </div>
+                </div>
+
+                <DataTable
+                    data={childCategories}
+                    columns={columns}
+                    loading={loading}
+                    showSearch={true}
+                    showFilters={true}
+                    filterableColumns={columns}
+                    itemsPerPageOptions={[10, 25, 50]}
+                    defaultItemsPerPage={10}
+                    actions={actions}
+                    className="child-categories-table"
+                />
+            </div>
+        );
+    } catch (renderError) {
+        console.error("Error rendering ChildCategoriesTable:", renderError);
+        return (
+            <div className="category-table-container">
+                <div className="table-header-container">
+                    <div className="left-section2">
+                        <h2 className="table-section-title">Child Categories</h2>
+                        <div className="item-count2">0 categories</div>
+                    </div>
+                    <div className="section-description">
+                        (A more specific category that falls under a parent category, used to better organize and manage items)
+                    </div>
+                </div>
+                <div className="error-container">
+                    <p>Error rendering table: {renderError.message}</p>
+                    <p>Please refresh the page or contact support.</p>
                 </div>
             </div>
-
-            <Table
-                columns={columns}
-                data={childCategories}
-                isLoading={loading}
-                emptyMessage="No child categories found. Try adjusting your search or add a new category"
-                actionConfig={actionConfig}
-                className="child-categories-table"
-                itemsPerPage={10}
-                enablePagination={true}
-                enableSorting={true}
-                enableFiltering={true}
-            />
-        </div>
-    );
+        );
+    }
 };
 
 export default ChildCategoriesTable;
