@@ -192,13 +192,13 @@ const DepartmentsList = () => {
             label: 'Edit',
             icon: <FiEdit />,
             onClick: (row) => handleOpenEditForm(row),
-            className: 'departments-edit-button'
+            className: 'primary'
         },
         {
             label: 'Delete',
             icon: <FiTrash2 />,
             onClick: (row) => setDeleteConfirmId(row.id),
-            className: 'departments-delete-button'
+            className: 'danger'
         }
     ];
 
