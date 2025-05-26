@@ -1,0 +1,47 @@
+.employee-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.active {
+  background-color: rgba(76, 175, 80, 0.15);
+  color: var(--color-success);
+}
+
+.status-badge.inactive {
+  background-color: rgba(158, 158, 158, 0.15);
+  color: var(--color-text-tertiary);
+}
+
+.status-badge.invited {
+  background-color: rgba(255, 152, 0, 0.15);
+  color: var(--color-warning);
+}
+
+.status-badge.on_leave {
+  background-color: rgba(33, 150, 243, 0.15);
+  color: var(--color-info);
+}
+
+.status-badge.suspended {
+  background-color: rgba(244, 67, 54, 0.15);
+  color: var(--color-danger);
+}
+
+.status-badge.terminated {
+  background-color: rgba(97, 97, 97, 0.15);
+  color: var(--color-text-secondary);
+}

@@ -13,9 +13,13 @@ import {
 } from 'react-icons/fi';
 import AddAttendanceForm from '../../Components/HR/AddAttendanceForm';
 import EditAttendanceForm from '../../Components/HR/EditAttendanceForm';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
+import { attendanceService } from '../../../services/attendanceService';
+import { employeeService } from '../../../services/employeeService';
 import './AttendanceList.scss';
 
 const AttendanceList = () => {
+    const { showSuccess, showError } = useSnackbar();
     const [attendanceRecords, setAttendanceRecords] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -81,35 +85,29 @@ const AttendanceList = () => {
     const fetchAttendanceRecords = async () => {
         setLoading(true);
         try {
-            // Build query parameters based on filters
-            const params = new URLSearchParams();
-            if (filters.employeeId) params.append('employeeId', filters.employeeId);
-            if (filters.status) params.append('status', filters.status);
-            if (filters.department) params.append('department', filters.department);
-            if (filters.attendanceType) params.append('type', filters.attendanceType);
-            if (dateRange.startDate) params.append('startDate', dateRange.startDate);
-            if (dateRange.endDate) params.append('endDate', dateRange.endDate);
-
-            const queryString = params.toString() ? `?${params.toString()}` : '';
-
-            const response = await fetch(`http://localhost:8080/api/v1/attendance${queryString}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch attendance records');
+            // For now, we'll use a simple approach to get all attendance records
+            // You may need to implement specific filtering endpoints in the backend
+            let records = [];
+            
+            if (filters.employeeId) {
+                // Get attendance for specific employee
+                const response = await attendanceService.getByEmployee(filters.employeeId);
+                records = response.data;
+            } else {
+                // Get daily summary for the date range or current date
+                const date = filters.date || new Date().toISOString().split('T')[0];
+                const response = await attendanceService.getDailySummary(date);
+                // Flatten the response if it's grouped by status
+                records = Object.values(response.data).flat();
             }
 
-            const data = await response.json();
-            setAttendanceRecords(data);
+            setAttendanceRecords(records);
             setError(null);
         } catch (err) {
             console.error('Error fetching attendance records:', err);
-            setError(err.message || 'Failed to load attendance records');
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to load attendance records';
+            setError(errorMessage);
+            showError('Failed to load attendance records. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -118,22 +116,12 @@ const AttendanceList = () => {
     // Function to fetch employees
     const fetchEmployees = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/employees`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch employees');
-            }
-
-            const data = await response.json();
-            setEmployees(data);
+            const response = await employeeService.getAll();
+            setEmployees(response.data);
         } catch (err) {
             console.error('Error fetching employees:', err);
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to load employees';
+            showError('Failed to load employees');
         }
     };
 

@@ -331,6 +331,9 @@ const EquipmentMain = () => {
                         <Link to="/equipment/brand-management" className="equipment-brand-button">
                             <FaTags /> Manage Brands
                         </Link>
+                        <Link to="/equipment/work-type-management" className="equipment-work-type-button">
+                            <FaTags /> Manage Work Types
+                        </Link>
                         <button className="equipment-add-button" onClick={handleAddEquipment}>
                             <FaPlus /> Add Equipment
                         </button>

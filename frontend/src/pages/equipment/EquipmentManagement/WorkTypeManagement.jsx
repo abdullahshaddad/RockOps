@@ -1,56 +1,74 @@
 import React, { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import { equipmentService } from '../../../services/equipmentService';
+import { workTypeService } from '../../../services/workTypeService';
 import { useSnackbar } from '../../../contexts/SnackbarContext';
+import { createErrorHandlers } from '../../../utils/errorHandler';
 import DataTable from '../../../components/common/DataTable/DataTable';
 import './EquipmentTypeManagement.scss';
 
-const EquipmentTypeManagement = () => {
-    const [types, setTypes] = useState([]);
+const WorkTypeManagement = () => {
+    const [workTypes, setWorkTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [editingType, setEditingType] = useState(null);
+    const [editingWorkType, setEditingWorkType] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        description: ''
+        description: '',
+        active: true
     });
-    const [deletingType, setDeletingType] = useState(null);
+    const [deletingWorkType, setDeletingWorkType] = useState(null);
 
     // Use the snackbar context
     const { showSuccess, showError, showInfo, showWarning, showSnackbar, hideSnackbar } = useSnackbar();
 
-    // Fetch all equipment types
-    const fetchTypes = async () => {
+    // Create error handlers for this component
+    const errorHandlers = createErrorHandlers(showError, 'work type');
+
+    // Fetch all work types
+    const fetchWorkTypes = async () => {
         try {
             setLoading(true);
-            const response = await equipmentService.getAllEquipmentTypes();
-            setTypes(response.data);
+            const response = await workTypeService.getAllForManagement();
+            if (response.data) {
+                // Filter to only show active work types
+                const activeWorkTypes = response.data.filter(workType => workType.active);
+                setWorkTypes(activeWorkTypes);
+                
+                if (activeWorkTypes.length === 0) {
+                    showInfo('No active work types found. Add your first work type!');
+                }
+            } else {
+                // Initialize with empty array if no data
+                setWorkTypes([]);
+                showInfo('No work types found. Add your first work type!');
+            }
             setLoading(false);
         } catch (err) {
-            console.error('Error fetching equipment types:', err);
-            setError('Failed to load equipment types');
-            showError('Failed to load equipment types. Please try again later.');
+            errorHandlers.handleFetchError(err);
+            setError('Failed to load work types');
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchTypes();
+        fetchWorkTypes();
     }, []);
 
-    const handleOpenModal = (type = null) => {
-        if (type) {
-            setEditingType(type);
+    const handleOpenModal = (workType = null) => {
+        if (workType) {
+            setEditingWorkType(workType);
             setFormData({
-                name: type.name,
-                description: type.description || ''
+                name: workType.name,
+                description: workType.description || '',
+                active: workType.active
             });
         } else {
-            setEditingType(null);
+            setEditingWorkType(null);
             setFormData({
                 name: '',
-                description: ''
+                description: '',
+                active: true
             });
         }
         setShowModal(true);
@@ -68,28 +86,31 @@ const EquipmentTypeManagement = () => {
         e.preventDefault();
 
         try {
-            if (editingType) {
-                await equipmentService.updateEquipmentType(editingType.id, formData);
-                showSuccess(`Equipment type "${formData.name}" has been updated successfully`);
+            if (editingWorkType) {
+                await workTypeService.update(editingWorkType.id, formData);
+                showSuccess(`Work type "${formData.name}" has been updated successfully`);
             } else {
-                await equipmentService.createEquipmentType(formData);
-                showSuccess(`Equipment type "${formData.name}" has been added successfully`);
+                await workTypeService.create(formData);
+                showSuccess(`Work type "${formData.name}" has been added successfully`);
             }
 
             setShowModal(false);
-            fetchTypes(); // Refresh the list
+            fetchWorkTypes(); // Refresh the list
         } catch (err) {
-            console.error('Error saving equipment type:', err);
-            showError(`Failed to ${editingType ? 'update' : 'add'} equipment type: ${err.response?.data?.message || err.message}`);
+            if (editingWorkType) {
+                errorHandlers.handleUpdateError(err);
+            } else {
+                errorHandlers.handleCreateError(err);
+            }
         }
     };
 
-    const confirmDelete = (typeId, typeName) => {
-        // Store the type to be deleted
-        setDeletingType({ id: typeId, name: typeName });
+    const confirmDelete = (workTypeId, workTypeName) => {
+        // Store the work type to be deleted
+        setDeletingWorkType({ id: workTypeId, name: workTypeName });
 
         // Custom message with buttons
-        const message = `Are you sure you want to delete "${typeName}"?`;
+        const message = `Are you sure you want to delete "${workTypeName}"?`;
 
         // Show persistent confirmation warning that won't auto-hide
         showWarning(message, 0, true);
@@ -107,7 +128,7 @@ const EquipmentTypeManagement = () => {
                 yesButton.innerText = 'YES';
                 yesButton.className = 'snackbar-action-button confirm';
                 yesButton.onclick = () => {
-                    performDelete(typeId, typeName);
+                    performDelete(workTypeId, workTypeName);
                     hideSnackbar();
                 };
 
@@ -116,7 +137,7 @@ const EquipmentTypeManagement = () => {
                 noButton.innerText = 'NO';
                 noButton.className = 'snackbar-action-button cancel';
                 noButton.onclick = () => {
-                    setDeletingType(null);
+                    setDeletingWorkType(null);
                     hideSnackbar();
                 };
 
@@ -127,16 +148,15 @@ const EquipmentTypeManagement = () => {
         }, 100);
     };
 
-    const performDelete = async (typeId, typeName) => {
+    const performDelete = async (workTypeId, workTypeName) => {
         try {
-            await equipmentService.deleteEquipmentType(typeId);
-            showSuccess(`Equipment type "${typeName}" has been deleted successfully`);
-            fetchTypes(); // Refresh the list
+            await workTypeService.delete(workTypeId);
+            showSuccess(`Work type "${workTypeName}" has been deleted successfully`);
+            fetchWorkTypes(); // Refresh the list
         } catch (err) {
-            console.error('Error deleting equipment type:', err);
-            showError(`Failed to delete equipment type: ${err.response?.data?.message || err.message}`);
+            errorHandlers.handleDeleteError(err);
         } finally {
-            setDeletingType(null);
+            setDeletingWorkType(null);
         }
     };
 
@@ -175,32 +195,32 @@ const EquipmentTypeManagement = () => {
     return (
         <div className="equipment-types-container">
             <div className="equipment-types-header">
-                <h1>Equipment Types</h1>
+                <h1>Work Types</h1>
                 <button
                     className="equipment-types-add-button"
                     onClick={() => handleOpenModal()}
                 >
-                    <FaPlus /> Add Equipment Type
+                    <FaPlus /> Add Work Type
                 </button>
             </div>
 
             <DataTable
-                data={types}
+                data={workTypes}
                 columns={columns}
                 loading={loading}
                 actions={actions}
-                tableTitle="Equipment Types List"
+                tableTitle="Work Types List"
                 showSearch={true}
                 showFilters={true}
                 filterableColumns={columns}
             />
 
-            {/* Modal for adding/editing equipment types */}
+            {/* Modal for adding/editing work types */}
             {showModal && (
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h2>{editingType ? 'Edit Equipment Type' : 'Add Equipment Type'}</h2>
+                            <h2>{editingWorkType ? 'Edit Work Type' : 'Add Work Type'}</h2>
                             <button className="modal-close" onClick={() => setShowModal(false)}>
                                 &times;
                             </button>
@@ -215,6 +235,7 @@ const EquipmentTypeManagement = () => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
+                                    placeholder="Enter work type name (e.g., Excavation, Transportation, Maintenance)"
                                 />
                             </div>
                             <div className="form-group">
@@ -225,14 +246,36 @@ const EquipmentTypeManagement = () => {
                                     value={formData.description}
                                     onChange={handleChange}
                                     rows="4"
+                                    placeholder="Enter a description of this work type..."
                                 />
                             </div>
-                            <div className="modal-actions">
-                                <button type="button" onClick={() => setShowModal(false)}>
+                            <div className="form-group">
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        name="active"
+                                        checked={formData.active}
+                                        onChange={(e) => setFormData(prev => ({
+                                            ...prev,
+                                            active: e.target.checked
+                                        }))}
+                                    />
+                                    <span className="checkbox-text">Active</span>
+                                </label>
+                                <small className="form-help-text">
+                                    Inactive work types will not be available for selection when creating Sarky entries
+                                </small>
+                            </div>
+                            <div className="form-actions">
+                                <button
+                                    type="button"
+                                    className="cancel-button"
+                                    onClick={() => setShowModal(false)}
+                                >
                                     Cancel
                                 </button>
-                                <button type="submit" className="save-button">
-                                    {editingType ? 'Update' : 'Add'}
+                                <button type="submit" className="submit-button">
+                                    {editingWorkType ? 'Update' : 'Add'} Work Type
                                 </button>
                             </div>
                         </form>
@@ -243,4 +286,4 @@ const EquipmentTypeManagement = () => {
     );
 };
 
-export default EquipmentTypeManagement;
+export default WorkTypeManagement; 

@@ -15,10 +15,14 @@ export const EQUIPMENT_ENDPOINTS = {
     CREATE_DTO: '/api/equipment/dto',
     UPDATE_DTO: (id) => `/api/equipment/dto/${id}`,
     ELIGIBLE_DRIVERS: (typeId) => `/api/equipment/type/${typeId}/eligible-drivers`,
+    SARKY_DRIVERS: (typeId) => `/api/equipment/type/${typeId}/sarky-drivers`,
     CHECK_DRIVER_COMPATIBILITY: (equipmentId, employeeId) =>
         `/api/equipment/${equipmentId}/check-driver-compatibility/${employeeId}`,
     BRANDS: '/api/equipment/brands',
     BRAND_BY_ID: (id) => `/api/equipment/brands/${id}`,
+    // Transaction endpoints
+    SEND_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/send-transaction`,
+    RECEIVE_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/receive-transaction`,
 };
 
 // Sarky module endpoints
@@ -60,21 +64,63 @@ export const FINANCE_ENDPOINTS = {
 export const EMPLOYEE_ENDPOINTS = {
     BASE: '/api/v1/employees',
     BY_ID: (id) => `/api/v1/employees/${id}`,
+    UNASSIGNED: '/api/v1/site/unassigned-employees',  // Updated to match backend endpoint
     DRIVERS: '/api/v1/employees/drivers',
     WAREHOUSE_WORKERS: '/api/v1/employees/warehouse-workers',
     WAREHOUSE_MANAGERS: '/api/v1/employees/warehouse-managers',
     TECHNICIANS: '/api/v1/employees/technicians',
     ATTENDANCE: {
-        BY_EMPLOYEE: (employeeId) => `/api/v1/attendance/employee/${employeeId}`,
-        MONTHLY: (employeeId) => `/api/v1/attendance/employee/${employeeId}/monthly`,
-        GENERATE_MONTHLY: '/api/v1/attendance/generate-monthly'
+        BY_EMPLOYEE: (employeeId) => `/api/v1/employees/${employeeId}/attendance`,
+        MONTHLY: (employeeId) => `/api/v1/employees/${employeeId}/attendance/monthly`,
+        GENERATE_MONTHLY: '/api/v1/employees/attendance/generate-monthly'
+    }
+};
+
+// HR module endpoints
+export const HR_ENDPOINTS = {
+    // HR Employee Management
+    EMPLOYEE: {
+        BASE: '/api/v1/hr/employee',
+        BY_ID: (id) => `/api/v1/hr/employee/${id}`,
+        CREATE: '/api/v1/hr/employee',
+        UPDATE: (id) => `/api/v1/hr/employee/${id}`,
+        DELETE: (id) => `/api/v1/hr/employee/${id}`
+    },
+    
+    // HR Dashboard
+    DASHBOARD: {
+        SALARY_STATISTICS: '/api/v1/hr/dashboard/salary-statistics',
+        EMPLOYEE_DISTRIBUTION: '/api/v1/hr/dashboard/employee-distribution'
     }
 };
 
 // Site module endpoints
 export const SITE_ENDPOINTS = {
     BASE: '/api/v1/site',
-    BY_ID: (id) => `/api/site/${id}`
+    BY_ID: (id) => `/api/v1/site/${id}`,
+    PARTNERS: (siteId) => `/api/v1/site/${siteId}/partners`,
+    UNASSIGNED_PARTNERS: (siteId) => `/api/v1/site/${siteId}/unassigned-partners`,
+    EMPLOYEES: (siteId) => `/api/v1/site/${siteId}/employees`,
+    EQUIPMENT: (siteId) => `/api/v1/site/${siteId}/equipment`,
+    WAREHOUSES: (siteId) => `/api/v1/site/${siteId}/warehouses`,
+    MERCHANTS: (siteId) => `/api/v1/site/${siteId}/merchants`,
+    FIXED_ASSETS: (siteId) => `/api/v1/site/${siteId}/fixedassets`,
+    
+    // Site Admin endpoints
+    ADMIN: {
+        ADD_SITE: '/siteadmin/addsite',
+        UPDATE_SITE: (id) => `/siteadmin/updatesite/${id}`,
+        ADD_WAREHOUSE: (siteId) => `/siteadmin/${siteId}/add-warehouse`,
+        ASSIGN_EQUIPMENT: (siteId, equipmentId) => `/siteadmin/${siteId}/assign-equipment/${equipmentId}`,
+        REMOVE_EQUIPMENT: (siteId, equipmentId) => `/siteadmin/${siteId}/remove-equipment/${equipmentId}`,
+        ASSIGN_EMPLOYEE: (siteId, employeeId) => `/siteadmin/${siteId}/assign-employee/${employeeId}`,
+        REMOVE_EMPLOYEE: (siteId, employeeId) => `/siteadmin/${siteId}/remove-employee/${employeeId}`,
+        ASSIGN_WAREHOUSE: (siteId, warehouseId) => `/siteadmin/${siteId}/assign-warehouse/${warehouseId}`,
+        ASSIGN_FIXED_ASSET: (siteId, fixedAssetId) => `/siteadmin/${siteId}/assign-fixedAsset/${fixedAssetId}`,
+        ASSIGN_PARTNER: (siteId, partnerId) => `/siteadmin/${siteId}/assign-partner/${partnerId}`,
+        UPDATE_PARTNER_PERCENTAGE: (siteId, partnerId) => `/siteadmin/${siteId}/update-partner-percentage/${partnerId}`,
+        REMOVE_PARTNER: (siteId, partnerId) => `/siteadmin/${siteId}/remove-partner/${partnerId}`
+    }
 };
 
 // Merchant module endpoints
@@ -86,6 +132,7 @@ export const MERCHANT_ENDPOINTS = {
 // Work Type module endpoints
 export const WORK_TYPE_ENDPOINTS = {
     BASE: '/api/v1/worktypes',
+    MANAGEMENT: '/api/v1/worktypes/management',
     BY_ID: (id) => `/api/v1/worktypes/${id}`,
     CREATE: '/api/v1/worktypes',
     UPDATE: (id) => `/api/v1/worktypes/${id}`,
@@ -96,8 +143,13 @@ export const WORK_TYPE_ENDPOINTS = {
 export const JOB_POSITION_ENDPOINTS = {
     BASE: '/api/v1/job-positions',
     CREATE_DTO: '/api/v1/job-positions/dto',
-    BY_ID: (id) => `/api/v1/job-positions/dto/${id}`,
-    UPDATE_DTO: (id) => `/api/v1/job-positions/dto/${id}`
+    BY_ID: (id) => `/api/v1/job-positions/${id}`,
+    DTO_BY_ID: (id) => `/api/v1/job-positions/dto/${id}`,
+    UPDATE_DTO: (id) => `/api/v1/job-positions/dto/${id}`,
+    DELETE: (id) => `/api/v1/job-positions/${id}`,
+    EMPLOYEES: (id) => `/api/v1/job-positions/${id}/employees`,
+    CREATE: '/api/v1/job-positions',
+    UPDATE: (id) => `/api/v1/job-positions/${id}`
 };
 
 // Document module endpoints
@@ -149,7 +201,11 @@ export const OFFER_ENDPOINTS = {
 export const CANDIDATE_ENDPOINTS = {
     BASE: '/api/v1/candidates',
     BY_ID: (id) => `/api/v1/candidates/${id}`,
-    BY_VACANCY: (vacancyId) => `/api/v1/candidates/vacancy/${vacancyId}`
+    BY_VACANCY: (vacancyId) => `/api/v1/candidates/vacancy/${vacancyId}`,
+    CREATE: '/api/v1/candidates',
+    UPDATE: (id) => `/api/v1/candidates/${id}`,
+    DELETE: (id) => `/api/v1/candidates/${id}`,
+    TO_EMPLOYEE: (id) => `/api/v1/candidates/${id}/to-employee`
 };
 
 // Vacancy module endpoints
@@ -159,4 +215,57 @@ export const VACANCY_ENDPOINTS = {
     CREATE: '/api/v1/vacancies',
     UPDATE: (id) => `/api/v1/vacancies/${id}`,
     DELETE: (id) => `/api/v1/vacancies/${id}`
+};
+
+// Department module endpoints
+export const DEPARTMENT_ENDPOINTS = {
+    BASE: '/api/v1/departments',
+    BY_ID: (id) => `/api/v1/departments/${id}`,
+    CREATE: '/api/v1/departments',
+    UPDATE: (id) => `/api/v1/departments/${id}`,
+    DELETE: (id) => `/api/v1/departments/${id}`,
+    TEST: '/api/v1/departments/test'
+};
+
+// Attendance module endpoints
+export const ATTENDANCE_ENDPOINTS = {
+    BASE: '/api/v1/attendance',
+    BY_EMPLOYEE: (employeeId) => `/api/v1/attendance/employee/${employeeId}`,
+    MONTHLY: (employeeId) => `/api/v1/attendance/employee/${employeeId}/monthly`,
+    GENERATE_MONTHLY: '/api/v1/attendance/generate-monthly',
+    HOURLY: '/api/v1/attendance/hourly',
+    DAILY: '/api/v1/attendance/daily',
+    UPDATE_STATUS: (attendanceId) => `/api/v1/attendance/${attendanceId}/status`,
+    MARK_PRESENT: '/api/v1/attendance/mark-present',
+    DAILY_SUMMARY: '/api/v1/attendance/daily-summary'
+};
+
+// Transaction module endpoints
+export const TRANSACTION_ENDPOINTS = {
+    BASE: '/api/v1/transactions',
+    CREATE: '/api/v1/transactions/create',
+    BY_BATCH: (batchNumber) => `/api/v1/transactions/batch/${batchNumber}`,
+    ACCEPT: (transactionId) => `/api/v1/transactions/${transactionId}/accept`,
+    REJECT: (transactionId) => `/api/v1/transactions/${transactionId}/reject`,
+    UPDATE: (transactionId) => `/api/v1/transactions/${transactionId}/update`
+};
+
+// Item Type module endpoints
+export const ITEM_TYPE_ENDPOINTS = {
+    BASE: '/api/v1/itemTypes',
+    BY_ID: (id) => `/api/v1/itemTypes/${id}`,
+    CREATE: '/api/v1/itemTypes',
+    UPDATE: (id) => `/api/v1/itemTypes/${id}`,
+    DELETE: (id) => `/api/v1/itemTypes/${id}`
+};
+
+// Warehouse module endpoints
+export const WAREHOUSE_ENDPOINTS = {
+    BASE: '/api/v1/warehouses',
+    BY_ID: (id) => `/api/v1/warehouses/${id}`,
+    BY_SITE: (siteId) => `/api/v1/site/${siteId}/warehouses`,
+    ITEMS: (warehouseId) => `/api/v1/items/warehouse/${warehouseId}`,
+    CREATE: '/api/v1/warehouses',
+    UPDATE: (id) => `/api/v1/warehouses/${id}`,
+    DELETE: (id) => `/api/v1/warehouses/${id}`
 };

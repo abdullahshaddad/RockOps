@@ -339,6 +339,34 @@ form {
       resize: vertical;
       min-height: 100px;
     }
+
+    // Checkbox styles
+    .checkbox-label {
+      display: flex !important;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem !important;
+      cursor: pointer;
+
+      input[type="checkbox"] {
+        width: auto !important;
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .checkbox-text {
+        color: var(--color-text-primary);
+        font-weight: var(--bold-font-weight);
+      }
+    }
+
+    .form-help-text {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      margin-top: 0.25rem;
+      font-style: italic;
+    }
   }
 }
 

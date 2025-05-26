@@ -654,6 +654,25 @@ public class EquipmentService {
                 .collect(Collectors.toList());
     }
 
+    public List<EmployeeSummaryDTO> getDriversForSarkyByEquipmentType(UUID equipmentTypeId) {
+        EquipmentType equipmentType = equipmentTypeRepository.findById(equipmentTypeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipment type not found with id: " + equipmentTypeId));
+
+        // Find all employees who can drive this equipment type (no assignment restrictions)
+        List<Employee> allEmployees = employeeRepository.findAll();
+        List<Employee> eligibleDrivers = allEmployees.stream()
+                .filter(employee ->
+                        // Make sure employee is active
+                        "ACTIVE".equals(employee.getStatus()) &&
+                                // Check if they can drive this equipment type
+                                employee.canDrive(equipmentType))
+                .collect(Collectors.toList());
+
+        // Convert to EmployeeSummaryDTO
+        return eligibleDrivers.stream()
+                .map(this::convertToSummaryDTO)
+                .collect(Collectors.toList());
+    }
 
     // Helper method to convert Employee to EmployeeSummaryDTO
     private EmployeeSummaryDTO convertToSummaryDTO(Employee employee) {

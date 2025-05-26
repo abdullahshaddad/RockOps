@@ -1,20 +1,28 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import DataTable from "../../../../components/common/DataTable/DataTable.jsx";
-import {useTranslation} from 'react-i18next';
-import {useAuth} from "../../../../contexts/AuthContext.jsx";
+import { useTranslation } from 'react-i18next';
+import { useAuth } from "../../../../contexts/AuthContext.jsx";
+import { siteService } from "../../../../services/siteService";
+import { useNavigate } from "react-router-dom";
+import "../SiteDetails.scss";
 
-const SiteEmployeesTab = ({siteId}) => {
-    const {t} = useTranslation();
+const SiteEmployeesTab = ({ siteId }) => {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
     const [employeeData, setEmployeeData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [availableEmployee, setAvailableEmployee] = useState([]);
-    const {currentUser} = useAuth();
+    const [availableEmployees, setAvailableEmployees] = useState([]);
+    const [assigningEmployee, setAssigningEmployee] = useState(null);
+    const { currentUser } = useAuth();
 
-    const isSiteAdmin = currentUser?.role === "SITE_ADMIN";
+    const isSiteAdmin = currentUser?.role === "SITE_ADMIN" || currentUser?.role === "ADMIN";
 
-    // Define columns for DataTable
+    const handleRowClick = (row) => {
+        navigate(`/hr/employee-details/${row.employeeID}`);
+    };
+
     const columns = [
         {
             header: 'Employee ID',
@@ -45,185 +53,159 @@ const SiteEmployeesTab = ({siteId}) => {
             header: 'Contract Type',
             accessor: 'contractType',
             sortable: true
+        },
+        {
+            header: 'Actions',
+            accessor: 'actions',
+            sortable: false,
+            render: (row) => (
+                isSiteAdmin && (
+                    <button
+                        className="btn-danger"
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            handleUnassignEmployee(row.employeeID);
+                        }}
+                    >
+                        Unassign
+                    </button>
+                )
+            )
         }
     ];
 
     useEffect(() => {
-        fetchEmployees();
+        if (siteId) {
+            fetchEmployees();
+        }
     }, [siteId]);
 
     const fetchEmployees = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:8080/api/v1/site/${siteId}/employees`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
+            setLoading(true);
+            setError(null);
 
-            if (!response.ok) {
-                const text = await response.text();
-                try {
-                    const json = JSON.parse(text);
-                    throw new Error(json.message || `HTTP error! Status: ${response.status}`);
-                } catch (err) {
-                    throw new Error(`No employees found for this site.`);
-                }
-            }
-
-            const data = await response.json();
+            const response = await siteService.getSiteEmployees(siteId);
+            const data = response.data;
 
             if (Array.isArray(data)) {
-                const transformedData = data.map(item => ({
-                    employeeID: item.id,
-                    employeeName: `${item.firstName} ${item.lastName}`,
-                    mobileNumber: item.phoneNumber,
-                    position: item.jobPosition?.positionName || "Unknown",
-                    department: item.jobPosition?.department || "Unknown",
-                    contractType: item.jobPosition?.type || "N/A"
-                }));
+                const transformedData = data.map(item => {
+                    let departmentName = "Unknown";
+                    if (item.jobPosition?.department?.name) {
+                        departmentName = item.jobPosition.department.name;
+                    } else if (item.jobPosition?.departmentName) {
+                        departmentName = item.jobPosition.departmentName;
+                    } else if (item.jobPositionDepartment) {
+                        departmentName = item.jobPositionDepartment;
+                    }
+
+                    return {
+                        employeeID: item.id,
+                        employeeName: `${item.firstName || ''} ${item.lastName || ''}`.trim(),
+                        mobileNumber: item.phoneNumber || 'N/A',
+                        position: item.jobPosition?.positionName || item.jobPositionName || "Unknown",
+                        department: departmentName,
+                        contractType: item.jobPosition?.type || item.jobPositionType || "N/A"
+                    };
+                });
 
                 setEmployeeData(transformedData);
             } else {
                 setEmployeeData([]);
             }
-
-            setLoading(false);
         } catch (err) {
-            setError(err.message);
+            console.error('Error in fetchEmployees:', err);
+            setError(err.message || 'Failed to fetch employees');
             setEmployeeData([]);
+        } finally {
             setLoading(false);
         }
     };
 
-    // Count employees by position
-    const positionCounts = employeeData.reduce((acc, item) => {
-        acc[item.position] = (acc[item.position] || 0) + 1;
-        return acc;
-    }, {});
-
-    const handleOpenModal = () => {
-        setShowModal(true);
-        fetchAvailableEmployee();
-    };
-
-    const handleCloseModal = () => setShowModal(false);
-
-    const fetchAvailableEmployee = async () => {
+    const handleOpenModal = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:8080/api/v1/employees", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await siteService.getUnassignedEmployees();
+            console.log('Unassigned employees response:', response); // Debug log
+            
+            // Ensure we have data and it's an array
+            const data = response?.data || [];
+            
+            // Filter for unassigned employees and transform the data
+            const unassignedEmployees = Array.isArray(data) ? data.map(emp => ({
+                id: emp.id,
+                firstName: emp.firstName || '',
+                lastName: emp.lastName || '',
+                jobPositionName: emp.jobPosition?.positionName || emp.jobPositionName || 'Not Specified',
+                jobPositionDepartment: emp.jobPosition?.department?.name || emp.jobPositionDepartment || 'Not Specified',
+                jobPositionType: emp.jobPosition?.type || emp.jobPositionType || 'Not Specified'
+            })) : [];
 
-            if (!response.ok) throw new Error("Failed to fetch employee.");
-
-            const data = await response.json();
-            const unassignedEmployee = data.filter(ep => ep.siteId === null || ep.siteId === undefined);
-            setAvailableEmployee(unassignedEmployee);
+            console.log('Transformed unassigned employees:', unassignedEmployees); // Debug log
+            setAvailableEmployees(unassignedEmployees);
+            setShowModal(true);
         } catch (err) {
             console.error("Error fetching available employees:", err);
-            setAvailableEmployee([]);
+            const errorMessage = err.response?.data?.message || err.message || "Failed to load available employees";
+            alert(`Error: ${errorMessage}. Please try again.`);
         }
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setAvailableEmployees([]);
+        setAssigningEmployee(null);
     };
 
     const handleAssignEmployee = async (employeeId) => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:8080/siteadmin/${siteId}/assign-employee/${employeeId}`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!response.ok) throw new Error("Failed to assign employee.");
-            setShowModal(false);
-            fetchEmployees(); // Refresh the employees list
+            setAssigningEmployee(employeeId);
+            await siteService.assignEmployee(siteId, employeeId);
+            await fetchEmployees();
+            handleCloseModal();
         } catch (err) {
             console.error("Error assigning employee:", err);
+            alert("Failed to assign employee. Please try again.");
+        } finally {
+            setAssigningEmployee(null);
         }
     };
 
-    if (loading) return <div className="loading-container">{t('site.loadingEmployees')}</div>;
+    const handleUnassignEmployee = async (employeeId) => {
+        try {
+            await siteService.removeEmployee(siteId, employeeId);
+            await fetchEmployees();
+        } catch (err) {
+            console.error("Error unassigning employee:", err);
+            alert("Failed to unassign employee. Please try again.");
+        }
+    };
+
+    if (loading) {
+        return <div className="loading-container">{t('site.loadingEmployees')}</div>;
+    }
 
     return (
-        <div className="site-employees-tab">
+        <div className="tab-content">
             <div className="tab-header">
-                <h3>{t('site.siteEmployeesReport')}</h3>
-                {isSiteAdmin && (
-                    <div className="btn-primary-container">
-                        <button className="assign-button" onClick={handleOpenModal}>
-                            {t('site.assignEmployee')}
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            <div className="employees-stats">
-                {Object.entries(positionCounts).map(([position, count]) => (
-                    <div className="stat-card" key={position}>
-                        <div className="stat-title">{position}</div>
-                        <div className="stat-value">{count}</div>
-                    </div>
-                ))}
-            </div>
-
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal">
-                        <h2>{t('site.assignEmployee')}</h2>
-                        <button className="close-modal" onClick={handleCloseModal}>×</button>
-                        <div className="employee-list">
-                            {availableEmployee.length === 0 ? (
-                                <p>{t('site.noEmployeesAvailable')}</p>
-                            ) : (
-                                <table className="employee-table">
-                                    <thead>
-                                    <tr>
-                                        <th>{t('common.name')}</th>
-                                        <th>{t('hr.dashboard.position')}</th>
-                                        <th>{t('hr.dashboard.department')}</th>
-                                        <th>{t('hr.contractType')}</th>
-                                        <th>{t('common.action')}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {availableEmployee.map((ep) => (
-                                        <tr key={ep.id}>
-                                            <td>{ep.firstName} {ep.lastName}</td>
-                                            <td>{ep.jobPositionName}</td>
-                                            <td>{ep.jobPositionDepartment}</td>
-                                            <td>{ep.jobPositionType}</td>
-                                            <td>
-                                                <button
-                                                    className="assign-btn"
-                                                    onClick={() => handleAssignEmployee(ep.id)}
-                                                >
-                                                    {t('site.assign')}
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
-                            )}
+                <div className="header-content">
+                    <h3>{t('site.siteEmployeesReport')}</h3>
+                    {isSiteAdmin && (
+                        <div className="btn-primary-container">
+                            <button className="btn-primary" onClick={handleOpenModal}>
+                                Add Employee
+                            </button>
                         </div>
-                    </div>
+                    )}
                 </div>
-            )}
+            </div>
 
             {error ? (
-                <div className="error-container">{error}</div>
+                <div className="error-message">
+                    <p>{error}</p>
+                    <button className="btn-secondary" onClick={fetchEmployees}>Retry</button>
+                </div>
             ) : (
-                <div className="data-table-container">
+                <div className="table-container">
                     <DataTable
                         data={employeeData}
                         columns={columns}
@@ -234,7 +216,65 @@ const SiteEmployeesTab = ({siteId}) => {
                         itemsPerPageOptions={[10, 25, 50, 100]}
                         defaultItemsPerPage={10}
                         tableTitle="Employees List"
+                        onRowClick={handleRowClick}
+                        rowClassName="clickable-row"
                     />
+                </div>
+            )}
+
+            {showModal && (
+                <div className="assign-employee-modal-overlay">
+                    <div className="assign-employee-modal-content">
+                        <div className="assign-employee-modal-header">
+                            <h2>{t('site.assignEmployee')}</h2>
+                            <button className="assign-employee-modal-close-button" onClick={handleCloseModal}>×</button>
+                        </div>
+                        
+                        <div className="assign-employee-modal-body">
+                            {availableEmployees.length === 0 ? (
+                                <div className="assign-employee-no-employees">
+                                    <p>{t('site.noEmployeesAvailable')}</p>
+                                </div>
+                            ) : (
+                                <div className="assign-employee-table-container">
+                                    <table className="assign-employee-table">
+                                        <thead>
+                                            <tr>
+                                                <th>{t('common.name')}</th>
+                                                <th>{t('hr.dashboard.position')}</th>
+                                                <th>{t('hr.dashboard.department')}</th>
+                                                <th>{t('hr.contractType')}</th>
+                                                <th>{t('common.action')}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {availableEmployees.map((employee) => (
+                                                <tr key={employee.id}>
+                                                    <td>{employee.firstName} {employee.lastName}</td>
+                                                    <td>{employee.jobPositionName || 'Not Specified'}</td>
+                                                    <td>{employee.jobPositionDepartment || 'Not Specified'}</td>
+                                                    <td>
+                                                        <span className={`status-badge ${employee.jobPositionType?.toLowerCase()}`}>
+                                                            {employee.jobPositionType || 'Not Specified'}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            className="assign-employee-btn"
+                                                            onClick={() => handleAssignEmployee(employee.id)}
+                                                            disabled={assigningEmployee === employee.id}
+                                                        >
+                                                            {assigningEmployee === employee.id ? 'Assigning...' : t('site.assign')}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

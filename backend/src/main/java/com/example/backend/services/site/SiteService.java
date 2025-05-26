@@ -9,6 +9,7 @@ import com.example.backend.models.site.Site;
 import com.example.backend.models.site.SitePartner;
 import com.example.backend.models.warehouse.Warehouse;
 import com.example.backend.repositories.PartnerRepository;
+import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.site.SiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,14 @@ public class SiteService
 {
     private SiteRepository siteRepository;
     private PartnerRepository partnerRepository;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
-    public SiteService(SiteRepository siteRepository, PartnerRepository partnerRepository)
+    public SiteService(SiteRepository siteRepository, PartnerRepository partnerRepository, EmployeeRepository employeeRepository)
     {
         this.siteRepository = siteRepository;
         this.partnerRepository = partnerRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     public Site getSiteById(UUID id)
@@ -141,8 +144,8 @@ public class SiteService
         return unassignedPartnersList;
     }
 
-
-
-
+    public List<Employee> getUnassignedEmployees() {
+        return employeeRepository.findBySiteIsNull();
+    }
 
 }

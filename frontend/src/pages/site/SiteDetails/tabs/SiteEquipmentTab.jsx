@@ -12,7 +12,7 @@ const SiteEquipmentTab = ({siteId}) => {
     const [availableEquipment, setAvailableEquipment] = useState([]);
     const {currentUser} = useAuth();
 
-    const isSiteAdmin = currentUser?.role === "SITE_ADMIN";
+    const isSiteAdmin = currentUser?.role === "SITE_ADMIN" || currentUser?.role === "ADMIN";
 
     // Define columns for DataTable
     const columns = [
@@ -50,6 +50,24 @@ const SiteEquipmentTab = ({siteId}) => {
             header: 'Purchase Date',
             accessor: 'purchaseDate',
             sortable: true
+        },
+        {
+            header: 'Actions',
+            accessor: 'actions',
+            sortable: false,
+            render: (row) => (
+                isSiteAdmin && (
+                    <button
+                        className="btn-danger"
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            handleUnassignEquipment(row.equipmentID);
+                        }}
+                    >
+                        Unassign
+                    </button>
+                )
+            )
         }
     ];
 
@@ -158,6 +176,25 @@ const SiteEquipmentTab = ({siteId}) => {
         }
     };
 
+    const handleUnassignEquipment = async (equipmentId) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:8080/siteadmin/${siteId}/remove-equipment/${equipmentId}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) throw new Error("Failed to unassign equipment.");
+            await fetchEquipment(); // Refresh the equipment list
+        } catch (err) {
+            console.error("Error unassigning equipment:", err);
+            alert("Failed to unassign equipment. Please try again.");
+        }
+    };
+
     if (loading) return <div className="loading-container">{t('site.loadingEquipment')}</div>;
 
     return (
@@ -182,46 +219,79 @@ const SiteEquipmentTab = ({siteId}) => {
                     </div>
                 ))}
             </div>
-
+            {/* Updated Assign Equipment Modal JSX - Replace the existing modal section in your component */}
             {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal">
-                        <h2>{t('site.assignEquipment')}</h2>
-                        <button className="close-modal" onClick={handleCloseModal}>×</button>
-                        <div className="equipment-list">
+                <div className="assign-equipment-modal-overlay">
+                    <div className="assign-equipment-modal-content">
+                        <div className="assign-equipment-modal-header">
+                            <h2>{t('site.assignEquipment')}</h2>
+                            <button
+                                className="assign-equipment-modal-close-button"
+                                onClick={handleCloseModal}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="assign-equipment-modal-body">
                             {availableEquipment.length === 0 ? (
-                                <p>{t('site.noEquipmentAvailable')}</p>
+                                <div className="assign-equipment-no-equipment">
+                                    <p>{t('site.noEquipmentAvailable')}</p>
+                                </div>
                             ) : (
-                                <table className="equipment-table">
-                                    <thead>
-                                    <tr>
-                                        <th>{t('common.type')}</th>
-                                        <th>{t('common.model')}</th>
-                                        <th>{t('common.status')}</th>
-                                        <th>{t('common.action')}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {availableEquipment.map((eq) => {
-                                        const eqData = eq.equipment || {};
-                                        return (
-                                            <tr key={eqData.id || eq.id}>
-                                                <td>{eqData.type}</td>
-                                                <td>{eqData.modelNumber}</td>
-                                                <td>{eqData.status}</td>
-                                                <td>
-                                                    <button
-                                                        className="assign-btn"
-                                                        onClick={() => handleAssignEquipment(eqData.id || eq.id)}
+                                <div className="assign-equipment-table-container">
+                                    <table className="assign-equipment-table">
+                                        <thead>
+                                        <tr>
+                                            <th>{t('common.type')}</th>
+                                            <th>{t('common.model')}</th>
+                                            <th>{t('common.status')}</th>
+                                            <th>{t('common.action')}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {availableEquipment.map((eq) => {
+                                            const eqData = eq.equipment || {};
+                                            const equipmentId = eqData.id || eq.id;
+                                            const equipmentType = eqData.type || eq.type;
+                                            const modelNumber = eqData.modelNumber || eq.modelNumber;
+                                            const status = eqData.status || eq.status;
+
+                                            return (
+                                                <tr key={equipmentId}>
+                                                    <td
+                                                        className="assign-equipment-type"
+                                                        data-label={t('common.type')}
                                                     >
-                                                        {t('site.assign')}
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                    </tbody>
-                                </table>
+                                                        {equipmentType}
+                                                    </td>
+                                                    <td
+                                                        className="assign-equipment-model"
+                                                        data-label={t('common.model')}
+                                                    >
+                                                        {modelNumber}
+                                                    </td>
+                                                    <td data-label={t('common.status')}>
+                                                <span
+                                                    className={`assign-equipment-status status-${status?.toLowerCase().replace(/\s+/g, '-')}`}
+                                                >
+                                                    {status}
+                                                </span>
+                                                    </td>
+                                                    <td data-label={t('common.action')}>
+                                                        <button
+                                                            className="assign-equipment-btn"
+                                                            onClick={() => handleAssignEquipment(equipmentId)}
+                                                        >
+                                                            {t('site.assign')}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                        </tbody>
+                                    </table>
+                                </div>
                             )}
                         </div>
                     </div>
