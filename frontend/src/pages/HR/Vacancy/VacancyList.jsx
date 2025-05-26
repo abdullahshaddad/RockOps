@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaEdit, FaTrashAlt, FaEye, FaPlus } from "react-icons/fa";
 import './VacancyList.scss';
+import DataTable from '../../../components/common/DataTable/DataTable';
 import AddVacancyModal from './AddVacancyModal';
 import EditVacancyModal from './EditVacancyModal';
-import {FaEdit, FaTrashAlt} from "react-icons/fa";
 
 const VacancyList = () => {
     const navigate = useNavigate();
     const [vacancies, setVacancies] = useState([]);
-    const [filteredVacancies, setFilteredVacancies] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
-    const [priorityFilter, setPriorityFilter] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedVacancy, setSelectedVacancy] = useState(null);
@@ -36,13 +33,36 @@ const VacancyList = () => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            const data = await response.json();
-            setVacancies(data);
-            setFilteredVacancies(data);
-            setLoading(false);
+            // Get the raw response text first for debugging
+            const responseText = await response.text();
+            console.log('Raw response length:', responseText.length);
+
+            // Check if response looks like valid JSON
+            if (!responseText.trim().startsWith('[') && !responseText.trim().startsWith('{')) {
+                throw new Error('Response is not valid JSON format');
+            }
+
+            try {
+                const data = JSON.parse(responseText);
+                console.log('Successfully parsed vacancies:', data?.length || 0, 'items');
+
+                // Ensure data is an array
+                const vacanciesArray = Array.isArray(data) ? data : [];
+                setVacancies(vacanciesArray);
+                setLoading(false);
+            } catch (jsonError) {
+                console.error('JSON Parse Error:', jsonError);
+                console.error('Problematic response excerpt:', responseText.substring(0, 1000));
+
+                // Try to use empty array as fallback
+                setVacancies([]);
+                setError(`Data format error: ${jsonError.message}. Please check the server response.`);
+                setLoading(false);
+            }
         } catch (error) {
             console.error('Error fetching vacancies:', error);
             setError(error.message);
+            setVacancies([]); // Set empty array on error
             setLoading(false);
         }
     };
@@ -76,31 +96,46 @@ const VacancyList = () => {
         fetchJobPositions();
     }, []);
 
-    // Filter vacancies based on search term and filters
-    useEffect(() => {
-        let result = vacancies;
+    // Format date for display (YYYY-MM-DD to DD/MM/YYYY)
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString();
+    };
 
-        if (searchTerm) {
-            const lowerSearchTerm = searchTerm.toLowerCase();
-            result = result.filter(
-                vacancy =>
-                    (vacancy.title && vacancy.title.toLowerCase().includes(lowerSearchTerm)) ||
-                    (vacancy.description && vacancy.description.toLowerCase().includes(lowerSearchTerm)) ||
-                    (vacancy.jobPosition && vacancy.jobPosition.positionName &&
-                        vacancy.jobPosition.positionName.toLowerCase().includes(lowerSearchTerm))
-            );
-        }
+    // Get status badge class based on status
+    const getStatusBadge = (status) => {
+        const statusColors = {
+            'OPEN': 'success',
+            'CLOSED': 'danger',
+            'FILLED': 'info'
+        };
 
-        if (statusFilter) {
-            result = result.filter(vacancy => vacancy.status === statusFilter);
-        }
+        const colorClass = statusColors[status] || 'warning';
 
-        if (priorityFilter) {
-            result = result.filter(vacancy => vacancy.priority === priorityFilter);
-        }
+        return (
+            <span className={`status-badge status-badge--${colorClass}`}>
+                {status}
+            </span>
+        );
+    };
 
-        setFilteredVacancies(result);
-    }, [searchTerm, statusFilter, priorityFilter, vacancies]);
+    // Get priority badge class based on priority
+    const getPriorityBadge = (priority) => {
+        const priorityColors = {
+            'HIGH': 'danger',
+            'MEDIUM': 'warning',
+            'LOW': 'success'
+        };
+
+        const colorClass = priorityColors[priority] || 'warning';
+
+        return (
+            <span className={`priority-badge priority-badge--${colorClass}`}>
+                {priority || 'MEDIUM'}
+            </span>
+        );
+    };
 
     // Handle adding a new vacancy
     const handleAddVacancy = async (newVacancy) => {
@@ -166,9 +201,7 @@ const VacancyList = () => {
     };
 
     // Delete a vacancy
-    const handleDeleteVacancy = async (vacancyId, e) => {
-        e.stopPropagation();
-
+    const handleDeleteVacancy = async (vacancyId) => {
         if (!window.confirm('Are you sure you want to delete this vacancy?')) {
             return;
         }
@@ -201,177 +234,229 @@ const VacancyList = () => {
     };
 
     // Open edit modal with vacancy data
-    const handleEditClick = (vacancy, e) => {
-        e.stopPropagation();
+    const handleEditClick = (vacancy) => {
         setSelectedVacancy(vacancy);
         setShowEditModal(true);
     };
 
-    // Format date for display (YYYY-MM-DD to DD/MM/YYYY)
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString();
-    };
-
-    // Get status badge class based on status
-    const getStatusBadgeClass = (status) => {
-        switch (status) {
-            case 'OPEN':
-                return 'status-badge-success';
-            case 'CLOSED':
-                return 'status-badge-danger';
-            case 'FILLED':
-                return 'status-badge-info';
-            default:
-                return 'status-badge-warning';
-        }
-    };
-
-    // Get priority badge class based on priority
-    const getPriorityBadgeClass = (priority) => {
-        switch (priority) {
-            case 'HIGH':
-                return 'priority-badge-high';
-            case 'MEDIUM':
-                return 'priority-badge-medium';
-            case 'LOW':
-                return 'priority-badge-low';
-            default:
-                return 'priority-badge-medium';
-        }
+    // Navigate to vacancy details page
+    const handleRowClick = (vacancy) => {
+        navigate(`/hr/vacancies/${vacancy.id}`);
     };
 
     // Navigate to vacancy details page
-    const handleRowClick = (vacancyId) => {
-        navigate(`/hr/vacancies/${vacancyId}`);
+    const handleViewClick = (vacancy) => {
+        navigate(`/hr/vacancies/${vacancy.id}`);
     };
+
+    // Define columns for DataTable
+    const columns = [
+        {
+            header: 'Title',
+            accessor: 'title',
+            width: '250px',
+            render: (vacancy) => (
+                <div className="vacancy-title">
+                    <div className="vacancy-title__primary">
+                        {vacancy.title}
+                    </div>
+                    <div className="vacancy-title__secondary">
+                        {vacancy.description && vacancy.description.length > 50
+                            ? `${vacancy.description.substring(0, 50)}...`
+                            : vacancy.description || 'No description'}
+                    </div>
+                </div>
+            )
+        },
+        {
+            header: 'Position',
+            accessor: 'jobPosition.positionName',
+            render: (vacancy) => (
+                <div className="vacancy-position">
+                    <div className="vacancy-position__title">
+                        {vacancy.jobPosition ? vacancy.jobPosition.positionName : 'N/A'}
+                    </div>
+                    <div className="vacancy-position__department">
+                        {vacancy.jobPosition ? vacancy.jobPosition.department : 'N/A'}
+                    </div>
+                </div>
+            )
+        },
+        {
+            header: 'Status',
+            accessor: 'status',
+            width: '120px',
+            render: (vacancy) => getStatusBadge(vacancy.status)
+        },
+        {
+            header: 'Priority',
+            accessor: 'priority',
+            width: '120px',
+            render: (vacancy) => getPriorityBadge(vacancy.priority)
+        },
+        {
+            header: 'Positions Available',
+            accessor: 'remainingPositions',
+            width: '150px',
+            render: (vacancy) => {
+                const total = vacancy.numberOfPositions || 1;
+                const hired = vacancy.hiredCount || 0;
+                const remaining = Math.max(0, total - hired);
+                const percentage = total > 0 ? (hired / total) * 100 : 0;
+
+                return (
+                    <div className="position-info">
+                        <div className="position-info__numbers">
+                            <span className="remaining">{remaining}</span>
+                            <span className="separator">/</span>
+                            <span className="total">{total}</span>
+                        </div>
+                        <div className="position-info__bar">
+                            <div
+                                className="position-progress"
+                                style={{ width: `${percentage}%` }}
+                            ></div>
+                        </div>
+                        <div className="position-info__status">
+                            {remaining === 0 ? 'Full' : `${remaining} left`}
+                        </div>
+                    </div>
+                );
+            }
+        },
+        {
+            header: 'Posted Date',
+            accessor: 'postingDate',
+            width: '120px',
+            render: (vacancy) => formatDate(vacancy.postingDate)
+        },
+        {
+            header: 'Closing Date',
+            accessor: 'closingDate',
+            width: '120px',
+            render: (vacancy) => formatDate(vacancy.closingDate)
+        }
+    ];
+
+    // Define filterable columns
+    const filterableColumns = [
+        { header: 'Title', accessor: 'title' },
+        { header: 'Description', accessor: 'description' },
+        { header: 'Position', accessor: 'jobPosition.positionName' }
+    ];
+
+    // Get unique values for filters
+    const uniqueStatuses = [...new Set(vacancies.map(v => v.status).filter(Boolean))];
+    const uniquePriorities = [...new Set(vacancies.map(v => v.priority).filter(Boolean))];
+    const uniqueDepartments = [...new Set(vacancies
+        .map(v => v.jobPosition?.department)
+        .filter(Boolean))];
+
+    // Define custom filters
+    const customFilters = [
+        {
+            label: 'Status',
+            component: (
+                <select className="filter-select">
+                    <option value="">All Statuses</option>
+                    {uniqueStatuses.map(status => (
+                        <option key={status} value={status}>{status}</option>
+                    ))}
+                </select>
+            )
+        },
+        {
+            label: 'Priority',
+            component: (
+                <select className="filter-select">
+                    <option value="">All Priorities</option>
+                    {uniquePriorities.map(priority => (
+                        <option key={priority} value={priority}>{priority}</option>
+                    ))}
+                </select>
+            )
+        },
+        {
+            label: 'Department',
+            component: (
+                <select className="filter-select">
+                    <option value="">All Departments</option>
+                    {uniqueDepartments.map(dept => (
+                        <option key={dept} value={dept}>{dept}</option>
+                    ))}
+                </select>
+            )
+        }
+    ];
+
+    // Define actions for each row
+    const actions = [
+        {
+            label: 'View Details',
+            icon: <FaEye />,
+            className: 'primary',
+            onClick: (vacancy) => handleViewClick(vacancy)
+        },
+        {
+            label: 'Edit',
+            icon: <FaEdit />,
+            className: 'warning',
+            onClick: (vacancy) => handleEditClick(vacancy)
+        },
+        {
+            label: 'Delete',
+            icon: <FaTrashAlt />,
+            className: 'danger',
+            onClick: (vacancy) => handleDeleteVacancy(vacancy.id)
+        }
+    ];
+
+    // If there's an error fetching data and not loading
+    if (error && !loading) {
+        return (
+            <div className="error-container">
+                <p>Error: {error}</p>
+                <button onClick={fetchVacancies}>Try Again</button>
+            </div>
+        );
+    }
 
     return (
         <div className="vacancy-container">
             <div className="departments-header">
-                <h1>Job Vacancies</h1>
+                <div className="vacancy-header__content">
+                    <h1 className="vacancy-header__title">Job Vacancies</h1>
+                    <p className="vacancy-header__subtitle">
+                        Manage job postings and recruitment opportunities
+                    </p>
+                </div>
                 <button
-                    className="primary-button"
+                    className="btn btn-primary"
                     onClick={() => setShowAddModal(true)}
                 >
-                    Post New Vacancy
+                    <FaPlus />
+                    <span>Post New Vacancy</span>
                 </button>
             </div>
 
-            <div className="filters-container">
-                <div className="search-container">
-                    <input
-                        type="text"
-                        placeholder="Search vacancies..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-
-                <div className="filter-selects">
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option value="">All Statuses</option>
-                        <option value="OPEN">Open</option>
-                        <option value="CLOSED">Closed</option>
-                        <option value="FILLED">Filled</option>
-                    </select>
-
-                    <select
-                        value={priorityFilter}
-                        onChange={(e) => setPriorityFilter(e.target.value)}
-                    >
-                        <option value="">All Priorities</option>
-                        <option value="HIGH">High</option>
-                        <option value="MEDIUM">Medium</option>
-                        <option value="LOW">Low</option>
-                    </select>
-                </div>
-            </div>
-
-            {loading ? (
-                <div className="loading-container">
-                    <div className="loader"></div>
-                    <p>Loading vacancies...</p>
-                </div>
-            ) : error ? (
-                <div className="error-container">
-                    <p>Error: {error}</p>
-                    <button onClick={fetchVacancies}>Try Again</button>
-                </div>
-            ) : (
-                <>
-                    {filteredVacancies.length > 0 ? (
-                        <div className="table-container">
-                            <table className="vacancies-table">
-                                <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Position</th>
-                                    <th>Department</th>
-                                    <th>Status</th>
-                                    <th>Priority</th>
-                                    <th>Posted</th>
-                                    <th>Closing</th>
-                                    <th>Positions</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {filteredVacancies.map(vacancy => (
-                                    <tr
-                                        key={vacancy.id}
-                                        onClick={() => handleRowClick(vacancy.id)}
-                                        className="clickable-row"
-                                    >
-                                        <td className="title-cell">{vacancy.title}</td>
-                                        <td>{vacancy.jobPosition ? vacancy.jobPosition.positionName : 'N/A'}</td>
-                                        <td>{vacancy.jobPosition ? vacancy.jobPosition.department : 'N/A'}</td>
-                                        <td>
-                                                <span className={`status-badge ${getStatusBadgeClass(vacancy.status)}`}>
-                                                    {vacancy.status}
-                                                </span>
-                                        </td>
-                                        <td>
-                                                <span className={`priority-badge ${getPriorityBadgeClass(vacancy.priority)}`}>
-                                                    {vacancy.priority || 'MEDIUM'}
-                                                </span>
-                                        </td>
-                                        <td>{formatDate(vacancy.postingDate)}</td>
-                                        <td>{formatDate(vacancy.closingDate)}</td>
-                                        <td className="center-text">{vacancy.numberOfPositions || 1}</td>
-                                        <td className="action-buttons">
-
-                                            <button
-                                                className="table-action-button table-edit-button"
-                                                title="Edit vacancy"
-                                                onClick={(e) => handleEditClick(vacancy, e)}
-                                            >
-                                                <FaEdit />
-                                            </button>
-                                            <button
-                                                className="table-action-button positions-delete-button"
-                                                title="Delete vacancy"
-                                                onClick={(e) => handleDeleteVacancy(vacancy.id, e)}
-                                            >
-                                                <FaTrashAlt />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <div className="no-results">
-                            <p>No vacancies found matching your search criteria.</p>
-                        </div>
-                    )}
-                </>
-            )}
+            {/* DataTable Component */}
+            <DataTable
+                data={vacancies}
+                columns={columns}
+                loading={loading}
+                tableTitle=""
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={filterableColumns}
+                customFilters={customFilters}
+                onRowClick={handleRowClick}
+                actions={actions}
+                itemsPerPageOptions={[10, 25, 50, 100]}
+                defaultItemsPerPage={25}
+                defaultSortField="title"
+                defaultSortDirection="asc"
+                className="vacancies-datatable"
+            />
 
             {showAddModal && (
                 <AddVacancyModal

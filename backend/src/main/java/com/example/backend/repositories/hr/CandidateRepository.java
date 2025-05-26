@@ -1,7 +1,7 @@
 package com.example.backend.repositories.hr;
 
 import com.example.backend.models.hr.Candidate;
-import com.example.backend.models.Vacancy;
+import com.example.backend.models.hr.Vacancy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
