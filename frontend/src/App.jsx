@@ -117,7 +117,7 @@ function App() {
 
 
                                     {/* Warehouse Management Routes */}
-                                    <Route path="/warehouses" element={<RoleRoute allowedRoles={["USER", "SITE_ADMIN", "PROCUREMENT", "WAREHOUSE_MANAGER", "SECERTARY", "EQUIPMENT_MANAGER", "HR_MANAGER", "HR_EMPLOYEE"]}><WarehousesList/></RoleRoute>}/>
+                                    <Route path="/warehouses" element={<RoleRoute allowedRoles={allRoles}><WarehousesList/></RoleRoute>}/>
                                     <Route path="/warehouses/:id" element={<WarehouseDetails/>}/>
                                     <Route path="/warehouses/warehouse-details/:id" element={<WarehouseInformation/>}/>
 
