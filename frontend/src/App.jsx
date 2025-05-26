@@ -96,9 +96,9 @@ function App() {
                                     </Route>
                                     <Route path="hr/employee-details/:id"
                                            element={<RoleRoute
-                                               allowedRoles={allRoles}><EmployeeDetails/></RoleRoute>}/>
+                                               allowedRoles={allRoles}><EmployeeDetails/></RoleRoute>}
+                                    />
                                   
-
 
                                     {/* HR Management Routes */}
                                     <Route path="/hr" element={<RoleRoute
