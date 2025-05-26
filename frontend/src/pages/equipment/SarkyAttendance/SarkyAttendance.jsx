@@ -1,10 +1,10 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { equipmentService } from '../../../services/equipmentService';
 import { sarkyService } from '../../../services/sarkyService';
-import { useSnackbar } from '../../../Contexts/SnackbarContext';
+import { workTypeService } from '../../../services/workTypeService';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
 import { FaCalendarPlus, FaTools, FaClock, FaUser, FaEdit, FaTrash, FaSave } from 'react-icons/fa';
 import { BsCalendarPlus } from 'react-icons/bs';
-import axios from 'axios';
 import './SarkyAttendance.scss';
 
 const SarkyAttendance = forwardRef(({ equipmentId }, ref) => {
@@ -41,11 +41,6 @@ const SarkyAttendance = forwardRef(({ equipmentId }, ref) => {
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 
-    const token = localStorage.getItem("token");
-    const axiosInstance = axios.create({
-        headers: { Authorization: `Bearer ${token}` }
-    });
-
     // Expose refresh method to parent
     useImperativeHandle(ref, () => ({
         refreshData: () => {
@@ -73,7 +68,7 @@ const SarkyAttendance = forwardRef(({ equipmentId }, ref) => {
 
         const fetchWorkTypes = async () => {
             try {
-                const response = await axiosInstance.get('http://localhost:8080/api/v1/worktypes');
+                const response = await workTypeService.getAll();
                 setWorkTypes(response.data);
             } catch (error) {
                 console.error("Error fetching work types:", error);
@@ -236,15 +231,7 @@ const SarkyAttendance = forwardRef(({ equipmentId }, ref) => {
 
             if (entry.isNew) {
                 // Create new entry
-                const response = await axiosInstance.post(
-                    `http://localhost:8080/api/v1/equipment/${equipmentId}/sarky`,
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    }
-                );
+                const response = await sarkyService.create(equipmentId, formData);
                 
                 // Update the entry with the real ID from the server
                 setSarkyData(prevData => 
@@ -263,15 +250,7 @@ const SarkyAttendance = forwardRef(({ equipmentId }, ref) => {
                 showSuccess("Sarky entry saved successfully");
             } else {
                 // Update existing entry
-                await axiosInstance.put(
-                    `http://localhost:8080/api/v1/sarky/${entry.id}`,
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    }
-                );
+                await sarkyService.update(entry.id, formData);
                 
                 showSuccess("Sarky entry updated successfully");
             }
@@ -348,15 +327,7 @@ const SarkyAttendance = forwardRef(({ equipmentId }, ref) => {
 
                     if (entry.isNew) {
                         // Create new entry
-                        const response = await axiosInstance.post(
-                            `http://localhost:8080/api/v1/equipment/${equipmentId}/sarky`,
-                            formData,
-                            {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data'
-                                }
-                            }
-                        );
+                        const response = await sarkyService.create(equipmentId, formData);
                         
                         // Update the entry with the real ID from the server
                         setSarkyData(prevData => 
@@ -373,15 +344,7 @@ const SarkyAttendance = forwardRef(({ equipmentId }, ref) => {
                         );
                     } else {
                         // Update existing entry
-                        await axiosInstance.put(
-                            `http://localhost:8080/api/v1/sarky/${entry.id}`,
-                            formData,
-                            {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data'
-                                }
-                            }
-                        );
+                        await sarkyService.update(entry.id, formData);
                     }
                     
                     successCount++;
@@ -501,7 +464,7 @@ const SarkyAttendance = forwardRef(({ equipmentId }, ref) => {
                     <label>Equipment:</label>
                     <input 
                         type="text" 
-                        value={`${equipmentData.name} - ${equipmentData.type?.name || 'Unknown Type'}`}
+                        value={`${equipmentData.name} - ${equipmentData.typeName || 'Unknown Type'}`}
                         disabled
                         className="equipment-display"
                     />

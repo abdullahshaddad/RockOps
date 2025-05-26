@@ -29,6 +29,15 @@ public class WorkTypeService {
     }
 
     /**
+     * Get all work types (both active and inactive) for management interface
+     */
+    public List<WorkTypeDTO> getAllWorkTypesForManagement() {
+        return workTypeRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Get work type by ID
      */
     public WorkTypeDTO getWorkTypeById(UUID id) {
