@@ -1,11 +1,11 @@
 package com.example.backend.controllers.site;
 
-import com.example.backend.models.Warehouse;
 import com.example.backend.models.equipment.Equipment;
 import com.example.backend.models.finance.FixedAssets;
 import com.example.backend.models.hr.Employee;
 import com.example.backend.models.site.Site;
 import com.example.backend.models.site.SitePartner;
+import com.example.backend.models.warehouse.Warehouse;
 import com.example.backend.services.MinioService;
 import com.example.backend.services.site.SiteAdminService;
 import com.fasterxml.jackson.core.type.TypeReference;

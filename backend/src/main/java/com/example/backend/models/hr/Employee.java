@@ -2,7 +2,7 @@ package com.example.backend.models.hr;
 
 import com.example.backend.models.equipment.EquipmentType;
 import com.example.backend.models.site.Site;
-import com.example.backend.models.Warehouse;
+import com.example.backend.models.warehouse.Warehouse;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
