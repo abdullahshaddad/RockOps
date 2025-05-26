@@ -49,15 +49,14 @@ $scrapped-color: #e74c3c;
 
 // Modal container
 .equipment-modal {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
   width: 100%;
   max-width: 900px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-  0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-md);
   position: relative;
   animation: modalFadeIn 0.3s ease-in-out;
 
@@ -79,19 +78,19 @@ $scrapped-color: #e74c3c;
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid var(--border-color);
 
   h2 {
     margin: 0;
     font-size: 1.5rem;
-    font-weight: 600;
-    color: $text-primary;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-primary);
   }
 
   .equipment-modal-close {
     background: transparent;
     border: none;
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     cursor: pointer;
     width: 32px;
     height: 32px;
@@ -100,11 +99,11 @@ $scrapped-color: #e74c3c;
     justify-content: center;
     padding: 0;
     border-radius: 50%;
-    transition: all 0.2s ease;
+    transition: all var(--transition-fast) ease;
 
     &:hover {
-      background-color: rgba($primary-color, 0.1);
-      color: $primary-color;
+      background-color: rgba(72, 128, 255, 0.1);
+      color: var(--color-primary);
     }
 
     svg {
@@ -120,31 +119,31 @@ $scrapped-color: #e74c3c;
   align-items: center;
   gap: 12px;
   padding: 14px 24px;
-  background-color: rgba($primary-color, 0.08);
-  border-bottom: 1px solid rgba($primary-color, 0.2);
+  background-color: rgba(72, 128, 255, 0.08);
+  border-bottom: 1px solid rgba(72, 128, 255, 0.2);
 
   .guidance-icon {
     font-size: 24px;
-    color: $primary-color;
+    color: var(--color-primary);
     flex-shrink: 0;
   }
 
   .guidance-text {
     p {
       margin: 0;
-      color: $text-primary;
+      color: var(--color-text-primary);
       font-size: 0.875rem;
       line-height: 1.4;
 
       &:last-child {
         margin-top: 4px;
-        color: $text-secondary;
+        color: var(--color-text-secondary);
         font-size: 0.8rem;
       }
     }
 
     .required {
-      color: $danger-color;
+      color: var(--color-danger);
       font-weight: bold;
     }
   }
@@ -155,20 +154,20 @@ $scrapped-color: #e74c3c;
   display: flex;
   gap: 4px;
   padding: 0 24px;
-  border-bottom: 1px solid $border-color;
-  background-color: #f9fafb;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--color-surface-hover);
 }
 
 .equipment-modal-tab {
   padding: 12px 16px;
   border: none;
   background: transparent;
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   font-weight: 500;
   font-size: 0.95rem;
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast) ease;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -176,25 +175,25 @@ $scrapped-color: #e74c3c;
   min-width: 160px;
 
   &:hover {
-    color: $primary-color;
+    color: var(--color-primary);
   }
 
   &.active {
-    color: $primary-color;
-    border-bottom-color: $primary-color;
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
   }
 
   &.valid {
     &.active {
-      color: $primary-color;
-      border-bottom-color: $primary-color;
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
     }
   }
 
   &.invalid {
     &.active {
-      color: $primary-color;
-      border-bottom-color: $primary-color;
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
     }
   }
 
@@ -207,11 +206,11 @@ $scrapped-color: #e74c3c;
     justify-content: center;
 
     &.valid {
-      color: $success-color;
+      color: var(--color-success);
     }
 
     &.invalid {
-      color: $danger-color;
+      color: var(--color-danger);
     }
   }
 }
@@ -220,12 +219,12 @@ $scrapped-color: #e74c3c;
 .equipment-validation-hint {
   margin: 16px 24px 0;
   padding: 10px 16px;
-  background-color: rgba($warning-color, 0.1);
-  border-radius: 6px;
+  background-color: rgba(255, 152, 0, 0.1);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   gap: 8px;
-  color: darken($warning-color, 15%);
+  color: var(--color-warning);
   font-size: 0.875rem;
   animation: fadeIn 0.3s ease;
 
@@ -240,12 +239,12 @@ $scrapped-color: #e74c3c;
 .equipment-modal-error {
   margin: 16px 24px 0;
   padding: 12px 16px;
-  background-color: rgba($danger-color, 0.1);
-  border-radius: 6px;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   gap: 8px;
-  color: $danger-color;
+  color: var(--color-danger);
   font-size: 0.875rem;
 
   svg {
@@ -313,7 +312,7 @@ $scrapped-color: #e74c3c;
   label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: $text-primary;
+    color: var(--color-text-primary);
     margin-bottom: 6px;
   }
 
@@ -321,22 +320,26 @@ $scrapped-color: #e74c3c;
   select,
   textarea {
     padding: 10px 12px;
-    border: 1px solid $border-color;
-    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
     font-size: 0.875rem;
-    color: $text-primary;
-    transition: all 0.2s;
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+    transition: all var(--transition-fast);
 
     &:focus {
       outline: none;
-      border-color: $primary-color;
-      box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(72, 128, 255, 0.1);
     }
 
     &::placeholder {
-      color: #9ca3af;
+      color: var(--color-text-secondary);
     }
 
+    &.invalid-field {
+      border-color: var(--color-danger);
+    }
   }
 
   textarea {
@@ -366,16 +369,16 @@ $scrapped-color: #e74c3c;
     gap: 8px;
     padding: 8px 16px;
     border: none;
-    background-color: rgba($primary-color, 0.1);
-    color: $primary-color;
-    border-radius: 6px;
+    background-color: rgba(72, 128, 255, 0.1);
+    color: var(--color-primary);
+    border-radius: var(--radius-sm);
     font-weight: 500;
     font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
 
     &:hover {
-      background-color: rgba($primary-color, 0.2);
+      background-color: rgba(72, 128, 255, 0.2);
     }
 
     svg {
@@ -399,15 +402,15 @@ $scrapped-color: #e74c3c;
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background-color: #f3f4f6;
-    border-radius: 6px;
+    background-color: var(--color-surface-hover);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 0.875rem;
-    color: $text-secondary;
-    transition: all 0.2s;
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
 
     &:hover {
-      background-color: #e5e7eb;
+      background-color: var(--border-color);
     }
 
     svg {
@@ -419,9 +422,9 @@ $scrapped-color: #e74c3c;
   .equipment-image-preview {
     width: 60px;
     height: 60px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    border: 1px solid $border-color;
+    border: 1px solid var(--border-color);
 
     img {
       width: 100%;
@@ -437,9 +440,9 @@ $scrapped-color: #e74c3c;
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-top: 1px solid $border-color;
-  background-color: #f9fafb;
-  border-radius: 0 0 12px 12px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--color-surface-hover);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
 
   .form-completion-status {
     display: flex;
@@ -449,20 +452,20 @@ $scrapped-color: #e74c3c;
     .completion-indicator {
       width: 150px;
       height: 6px;
-      background-color: rgba($text-secondary, 0.1);
+      background-color: rgba(153, 153, 153, 0.1);
       border-radius: 10px;
       overflow: hidden;
 
       .completion-bar {
         height: 100%;
-        background-color: $success-color;
+        background-color: var(--color-success);
         transition: width 0.3s ease;
       }
     }
 
     span {
       font-size: 0.75rem;
-      color: $text-secondary;
+      color: var(--color-text-secondary);
     }
   }
 
@@ -472,11 +475,11 @@ $scrapped-color: #e74c3c;
 
     button {
       padding: 10px 20px;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       font-weight: 500;
       font-size: 0.875rem;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all var(--transition-fast);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -490,14 +493,14 @@ $scrapped-color: #e74c3c;
     }
 
     .equipment-modal-clear {
-      background-color: white;
-      border: 1px solid $border-color;
-      color: $text-secondary;
+      background-color: var(--color-surface);
+      border: 1px solid var(--border-color);
+      color: var(--color-text-secondary);
 
       &:hover:not(:disabled) {
-        background-color: rgba($danger-color, 0.1);
-        color: $danger-color;
-        border-color: rgba($danger-color, 0.3);
+        background-color: rgba(244, 67, 54, 0.1);
+        color: var(--color-danger);
+        border-color: rgba(244, 67, 54, 0.3);
       }
 
       svg {
@@ -506,23 +509,23 @@ $scrapped-color: #e74c3c;
     }
 
     .equipment-modal-cancel {
-      background-color: white;
-      border: 1px solid $border-color;
-      color: $text-secondary;
+      background-color: var(--color-surface);
+      border: 1px solid var(--border-color);
+      color: var(--color-text-secondary);
 
       &:hover:not(:disabled) {
-        background-color: #f3f4f6;
-        color: $text-primary;
+        background-color: var(--color-surface-hover);
+        color: var(--color-text-primary);
       }
     }
 
     .equipment-modal-submit {
-      background-color: $primary-color;
-      border: 1px solid $primary-color;
+      background-color: var(--color-primary);
+      border: 1px solid var(--color-primary);
       color: white;
 
       &:hover:not(:disabled) {
-        background-color: darken($primary-color, 5%);
+        background-color: var(--color-primary-dark);
       }
     }
   }
@@ -531,7 +534,7 @@ $scrapped-color: #e74c3c;
 // Required field indicator
 .required-field:after {
   content: '*';
-  color: $danger-color;
+  color: var(--color-danger);
   margin-left: 4px;
   display: inline-block;
 }
@@ -540,10 +543,10 @@ $scrapped-color: #e74c3c;
 .equipment-validation-warning {
   margin: 8px 24px;
   padding: 12px 16px;
-  border-radius: 6px;
-  background-color: #fff8e1;
-  border: 1px solid #ffd54f;
-  color: #f57c00;
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 152, 0, 0.1);
+  border: 1px solid var(--color-warning);
+  color: var(--color-warning);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -562,16 +565,21 @@ $scrapped-color: #e74c3c;
   display: flex;
   align-items: flex-start;
   gap: 6px;
-  color: #64748b;
+  color: var(--color-text-tertiary);
 
   svg {
     margin-top: 2px;
     font-size: 12px;
     flex-shrink: 0;
+    color: var(--color-info);
   }
 
   &.warning {
-    color: #f59e0b;
+    color: var(--color-warning);
+
+    svg {
+      color: var(--color-warning);
+    }
   }
 
   span {
@@ -582,7 +590,7 @@ $scrapped-color: #e74c3c;
 
 // Disabled fields styling
 select:disabled {
-  background-color: #f1f5f9;
+  background-color: var(--color-surface-hover);
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -608,11 +616,11 @@ select:disabled {
   align-items: center;
 
   &.confirm {
-    background-color: $danger-color;
+    background-color: var(--color-danger);
     color: white;
 
     &:hover {
-      background-color: darken($danger-color, 5%);
+      background-color: #d32f2f;
     }
   }
 
@@ -621,7 +629,102 @@ select:disabled {
     color: white;
 
     &:hover {
-      background-color: darken(#6c757d, 5%);
+      background-color: #5a6268;
+    }
+  }
+}
+
+// Custom date input styling
+.date-input-container {
+  position: relative;
+
+  input[type="date"] {
+    width: 100%;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 2;
+    cursor: pointer;
+  }
+
+  .date-display {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-fast);
+    position: relative;
+    z-index: 1;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+
+    &:after {
+      content: "📅";
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+  }
+
+  input[type="date"]:focus + .date-display {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(72, 128, 255, 0.2);
+  }
+
+  &.invalid .date-display {
+    border-color: var(--color-danger);
+  }
+}
+
+// Style number inputs to prevent spinner arrows in some browsers
+input[type="number"] {
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+// Validation summary
+.equipment-validation-summary {
+  margin: 16px 24px;
+  padding: 16px;
+  background-color: rgba(244, 67, 54, 0.05);
+  border: 1px solid rgba(244, 67, 54, 0.2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--color-danger);
+  font-size: 0.875rem;
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+  }
+
+  strong {
+    color: var(--color-danger);
+  }
+
+  ul {
+    margin: 8px 0 0 0;
+    padding-left: 16px;
+
+    li {
+      margin-bottom: 4px;
+      line-height: 1.4;
     }
   }
 }
@@ -694,179 +797,5 @@ select:disabled {
   .equipment-validation-warning {
     margin: 12px 16px;
     padding: 10px 12px;
-  }
-}
-/* Add these styles to your EquipmentModal.scss file */
-
-/* Field hints */
-.field-hint {
-  display: flex;
-  align-items: center;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--color-text-tertiary);
-
-  svg {
-    font-size: 0.9rem;
-    margin-right: 0.5rem;
-    color: var(--color-info);
-  }
-
-  &.warning {
-    color: var(--color-warning);
-
-    svg {
-      color: var(--color-warning);
-    }
-  }
-}
-
-/* Style date inputs to show the formatted date */
-input[type="date"] {
-  position: relative;
-
-  &::-webkit-calendar-picker-indicator {
-    position: absolute;
-    right: 10px;
-    cursor: pointer;
-  }
-}
-
-/* Style number inputs to prevent spinner arrows in some browsers */
-input[type="number"] {
-  -moz-appearance: textfield;
-
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-}
-
-/* Add hint styling for date format guidance */
-.equipment-modal-form-group .field-hint {
-  font-style: italic;
-}
-
-/* Add these styles to your EquipmentModal.scss file */
-
-/* Custom date input styling */
-.date-input-container {
-  position: relative;
-
-  input[type="date"] {
-    width: 100%;
-    opacity: 0; /* Hide the actual input but keep it functional */
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    z-index: 2;
-    cursor: pointer;
-  }
-
-  .date-display {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    background-color: var(--color-surface);
-    color: var(--color-text-primary);
-    transition: border-color var(--transition-fast);
-    position: relative;
-    z-index: 1;
-    min-height: 45px; /* Match input height */
-    display: flex;
-    align-items: center;
-
-    &:after {
-      content: "📅";
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-    }
-  }
-
-  input[type="date"]:focus + .date-display {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(72, 128, 255, 0.2);
-  }
-
-  &.invalid .date-display {
-    border-color: var(--color-danger);
-  }
-}
-
-/* Field hints */
-.field-hint {
-  display: flex;
-  align-items: center;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--color-text-tertiary);
-
-  svg {
-    font-size: 0.9rem;
-    margin-right: 0.5rem;
-    color: var(--color-info);
-  }
-
-  &.warning {
-    color: var(--color-warning);
-
-    svg {
-      color: var(--color-warning);
-    }
-  }
-}
-
-/* Style number inputs to prevent spinner arrows in some browsers */
-input[type="number"] {
-  -moz-appearance: textfield;
-
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-}
-
-/* Add hint styling for date format guidance */
-.equipment-modal-form-group .field-hint {
-  font-style: italic;
-}
-.equipment-validation-summary {
-  margin: 16px 24px;
-  padding: 16px;
-  background-color: rgba($danger-color, 0.05);
-  border: 1px solid rgba($danger-color, 0.2);
-  border-radius: 8px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  color: $danger-color;
-  font-size: 0.875rem;
-
-  svg {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-  }
-
-  strong {
-    color: darken($danger-color, 10%);
-  }
-
-  ul {
-    margin: 8px 0 0 0;
-    padding-left: 16px;
-
-    li {
-      margin-bottom: 4px;
-      line-height: 1.4;
-    }
   }
 }

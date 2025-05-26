@@ -4,8 +4,14 @@ import './EmployeesList.css';
 import DataTable from '../../../components/common/DataTable/DataTable';
 import AddEmployeeModal from './AddEmployeeModal';
 import EditEmployeeModal from './EditEmployeeModal';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
+import { employeeService } from '../../../services/employeeService';
+import { hrEmployeeService } from '../../../services/hrEmployeeService';
+import { departmentService } from '../../../services/departmentService';
+import { jobPositionService } from '../../../services/jobPositionService';
 
 const EmployeesList = () => {
+    const { showSuccess, showError } = useSnackbar();
     const [employees, setEmployees] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -29,20 +35,8 @@ const EmployeesList = () => {
     const fetchEmployees = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/api/v1/employees`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
+            const response = await employeeService.getAll();
+            const data = response.data;
 
             // DEBUG: Log the first employee to see what status values we're getting
             if (data && data.length > 0) {
@@ -70,7 +64,9 @@ const EmployeesList = () => {
 
         } catch (error) {
             console.error('Error fetching employees:', error);
-            setError(error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to load employees';
+            setError(errorMessage);
+            showError('Failed to load employees. Please try again.');
             setLoading(false);
         }
     };
@@ -221,29 +217,18 @@ const EmployeesList = () => {
     // Fetch job positions for the dropdown
     const fetchJobPositions = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/api/v1/job-positions`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setJobPositions(data);
+            const response = await jobPositionService.getAll();
+            setJobPositions(response.data);
         } catch (error) {
             console.error('Error fetching job positions:', error);
+            showError('Failed to load job positions');
         }
     };
 
     // Fetch sites for the dropdown
     const fetchSites = async () => {
         try {
+            // Note: You'll need to create a site service or use the appropriate endpoint
             const token = localStorage.getItem('token');
             const response = await fetch('http://localhost:8080/api/v1/site', {
                 method: 'GET',
@@ -261,6 +246,7 @@ const EmployeesList = () => {
             setSites(data);
         } catch (error) {
             console.error('Error fetching sites:', error);
+            showError('Failed to load sites');
         }
     };
 
@@ -319,7 +305,6 @@ const EmployeesList = () => {
     const handleAddEmployee = async (employeeData, photoFile, idFrontFile, idBackFile) => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
 
             console.log("Employee data being sent:", employeeData);
 
@@ -352,39 +337,22 @@ const EmployeesList = () => {
                 console.log(pair[0], pair[1] instanceof Blob ? `Blob: ${pair[1].type}, size: ${pair[1].size}` : pair[1]);
             }
 
-            // Make API request
-            const response = await fetch('http://localhost:8080/api/v1/hr/employee', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                    // Don't manually set Content-Type for FormData
-                },
-                body: formData
-            });
-
-            console.log('Response status:', response.status);
-
-            // Handle response
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Full error response:', errorText);
-                throw new Error(errorText || response.statusText);
-            }
-
-            const result = await response.json();
-            console.log('Employee added successfully:', result);
+            // Make API request using HR employee service
+            const response = await hrEmployeeService.employee.create(formData);
+            console.log('Employee added successfully:', response.data);
 
             // Refresh the employee list
             await fetchEmployees();
             setShowAddModal(false);
 
             // Show success message
-            alert('Employee added successfully!');
+            showSuccess('Employee added successfully!');
 
         } catch (error) {
             console.error('Error adding employee:', error);
-            setError(`Failed to add employee: ${error.message}`);
-            alert(`Failed to add employee. Please try again.`);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to add employee';
+            setError(`Failed to add employee: ${errorMessage}`);
+            showError('Failed to add employee. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -394,7 +362,6 @@ const EmployeesList = () => {
     const handleEditEmployee = async (updatedEmployee, photoFile, idFrontFile, idBackFile) => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
 
             // Create FormData for multipart/form-data request
             const formData = new FormData();
@@ -407,34 +374,28 @@ const EmployeesList = () => {
             if (idFrontFile) formData.append('idFrontImage', idFrontFile);
             if (idBackFile) formData.append('idBackImage', idBackFile);
 
-            // Fixed the URL by removing the $ symbol
-            const response = await fetch(`http://localhost:8080/api/v1/hr/employee/${selectedEmployee.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                    // No Content-Type header with FormData, browser sets it automatically with boundary
-                },
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            // Use HR employee service for update
+            const response = await hrEmployeeService.employee.update(selectedEmployee.id, formData);
 
             // Refresh the employee list
             await fetchEmployees();
             setShowEditModal(false);
             setSelectedEmployee(null);
 
+            // Show success message
+            showSuccess('Employee updated successfully!');
+
         } catch (error) {
             console.error('Error updating employee:', error);
-            setError(error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to update employee';
+            setError(`Failed to update employee: ${errorMessage}`);
+            showError('Failed to update employee. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
-    // Delete an employee
+    // Handle deleting an employee
     const handleDeleteEmployee = async (employeeId) => {
         if (!window.confirm('Are you sure you want to delete this employee?')) {
             return;
@@ -442,26 +403,21 @@ const EmployeesList = () => {
 
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
 
-            const response = await fetch(`http://localhost:8080/api/v1/hr/employee/${employeeId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            // Use HR employee service for delete
+            await hrEmployeeService.employee.delete(employeeId);
 
             // Refresh the employee list
             await fetchEmployees();
 
+            // Show success message
+            showSuccess('Employee deleted successfully!');
+
         } catch (error) {
             console.error('Error deleting employee:', error);
-            setError(error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to delete employee';
+            setError(`Failed to delete employee: ${errorMessage}`);
+            showError('Failed to delete employee. Please try again.');
         } finally {
             setLoading(false);
         }
