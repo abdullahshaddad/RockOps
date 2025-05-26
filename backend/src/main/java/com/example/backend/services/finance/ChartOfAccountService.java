@@ -6,7 +6,7 @@ import com.example.backend.exceptions.DuplicateResourceException;
 import com.example.backend.exceptions.ResourceNotFoundException;
 import com.example.backend.models.finance.AccountType;
 import com.example.backend.models.finance.ChartOfAccount;
-import com.example.backend.models.User;
+import com.example.backend.models.user.User;
 import com.example.backend.repositories.finance.ChartOfAccountRepository;
 import com.example.backend.repositories.UserRepository;
 import jakarta.transaction.Transactional;

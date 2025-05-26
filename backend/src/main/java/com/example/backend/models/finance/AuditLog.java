@@ -1,6 +1,6 @@
 package com.example.backend.models.finance;
 
-import com.example.backend.models.User;
+import com.example.backend.models.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;

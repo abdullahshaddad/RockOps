@@ -4,7 +4,7 @@ import com.example.backend.dto.finance.JournalEntryLineDTO;
 import com.example.backend.dto.finance.JournalEntryLineResponseDTO;
 import com.example.backend.dto.finance.JournalEntryRequestDTO;
 import com.example.backend.dto.finance.JournalEntryResponseDTO;
-import com.example.backend.models.User;
+import com.example.backend.models.user.User;
 import com.example.backend.models.finance.AuditAction;
 import com.example.backend.models.finance.JournalEntry;
 import com.example.backend.models.finance.JournalEntryLine;

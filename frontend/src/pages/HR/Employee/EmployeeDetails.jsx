@@ -135,50 +135,44 @@ const EmployeeDetails = () => {
 
     return (
         <div className="employee-details-container">
-            <div className="employee-details-header">
-                <button className="back-button" onClick={() => navigate('/hr/employees')}>
-                    <span className="back-icon">←</span> Back to List
-                </button>
-                <div className="header-actions">
-                    <button className="edit-button" onClick={() => navigate(`/hr/employees/edit/${id}`)}>
-                        Edit Employee
-                    </button>
-                </div>
-            </div>
-
             <div className="employee-details-content">
-                <div className="employee-profile-section">
-                    <div className="profile-photo">
+                {/* Minimal Info Bar */}
+                <div className="employee-info-bar">
+                    <div className="employee-details-avatar">
                         <img
-                            src={employee.photoUrl || 'https://via.placeholder.com/200?text=No+Photo'}
+                            src={employee.photoUrl || 'https://via.placeholder.com/48?text=?'}
                             alt={`${employee.firstName} ${employee.lastName}`}
                         />
-                        <div className={`status-badge ${employee.status?.toLowerCase() || 'active'}`}>
-                            {employee.status || 'Active'}
+                        <div className={`employee-status-indicator ${employee.status?.toLowerCase() || 'active'}`}></div>
+                    </div>
+
+                    <div className="employee-basic-info">
+                        <h1 className="employee-name">
+                            {employee.fullName || `${employee.firstName} ${employee.middleName ? employee.middleName + ' ' : ''}${employee.lastName}`}
+                        </h1>
+                        <div className="employee-meta">
+                            <span className="position">{getPosition()}</span>
+                            <span className="separator">•</span>
+                            <span className="department">{getDepartment()}</span>
+                            <span className="separator">•</span>
+                            <span className="site">{getSiteName()}</span>
                         </div>
                     </div>
-                    <div className="profile-info">
-                        <h1>{employee.fullName || `${employee.firstName} ${employee.middleName ? employee.middleName + ' ' : ''}${employee.lastName}`}</h1>
-                        <h2 className="position">{getPosition()}</h2>
-                        <p className="department">{getDepartment()}</p>
 
-                        <div className="quick-info">
-                            <div className="info-item">
-                                <span className="icon email-icon">✉️</span>
-                                <span>{employee.email || 'No email provided'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="icon phone-icon">📱</span>
-                                <span>{employee.phoneNumber || 'No phone provided'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="icon location-icon">📍</span>
-                                <span>{getSiteName()}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="icon hire-icon">📆</span>
-                                <span>Hired: {formatDate(employee.hireDate)}</span>
-                            </div>
+                    <div className="employee-quick-stats">
+                        <div className="stat-item">
+                            <span className="stat-label">Status</span>
+                            <span className={`stat-value status-badge ${employee.status?.toLowerCase() || 'active'}`}>
+                                {employee.status || 'Active'}
+                            </span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="stat-label">Employee ID</span>
+                            <span className="stat-value">#{employee.id}</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="stat-label">Hire Date</span>
+                            <span className="stat-value">{formatDate(employee.hireDate)}</span>
                         </div>
                     </div>
                 </div>
