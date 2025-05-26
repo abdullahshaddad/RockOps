@@ -12,7 +12,7 @@ const SiteEquipmentTab = ({siteId}) => {
     const [availableEquipment, setAvailableEquipment] = useState([]);
     const {currentUser} = useAuth();
 
-    const isSiteAdmin = currentUser?.role === "SITE_ADMIN";
+    const isSiteAdmin = currentUser?.role === "SITE_ADMIN" || currentUser?.role === "ADMIN";
 
     // Define columns for DataTable
     const columns = [
@@ -52,14 +52,17 @@ const SiteEquipmentTab = ({siteId}) => {
             sortable: true
         },
         {
-            header: 'Action',
-            accessor: 'action',
+            header: 'Actions',
+            accessor: 'actions',
             sortable: false,
             render: (row) => (
                 isSiteAdmin && (
                     <button
                         className="btn-danger"
-                        onClick={() => handleUnassignEquipment(row.equipmentID)}
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            handleUnassignEquipment(row.equipmentID);
+                        }}
                     >
                         Unassign
                     </button>
