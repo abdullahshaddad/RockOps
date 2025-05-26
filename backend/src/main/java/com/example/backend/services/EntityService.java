@@ -1,9 +1,9 @@
 package com.example.backend.services;
 
 import com.example.backend.models.PartyType;
-import com.example.backend.models.Warehouse;
+import com.example.backend.models.warehouse.Warehouse;
 import com.example.backend.repositories.site.SiteRepository;
-import com.example.backend.repositories.WarehouseRepository;
+import com.example.backend.repositories.warehouse.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

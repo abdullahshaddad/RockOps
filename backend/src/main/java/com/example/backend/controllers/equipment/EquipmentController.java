@@ -3,7 +3,7 @@ package com.example.backend.controllers.equipment;
 import com.example.backend.dto.equipment.*;
 import com.example.backend.dto.hr.EmployeeSummaryDTO;
 import com.example.backend.models.equipment.Consumable;
-import com.example.backend.models.ItemStatus;
+import com.example.backend.models.warehouse.ItemStatus;
 import com.example.backend.services.equipment.ConsumablesService;
 import com.example.backend.services.equipment.EquipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,6 +137,14 @@ public class EquipmentController {
     }
 
     /**
+     * Get all drivers who can operate a specific equipment type for sarky logs (includes already assigned drivers)
+     */
+    @GetMapping("/type/{typeId}/sarky-drivers")
+    public ResponseEntity<List<EmployeeSummaryDTO>> getDriversForSarkyByEquipmentType(@PathVariable UUID typeId) {
+        return ResponseEntity.ok(equipmentService.getDriversForSarkyByEquipmentType(typeId));
+    }
+
+    /**
      * Check if an employee can be assigned as a driver for a specific equipment
      */
     @GetMapping("/{equipmentId}/check-driver-compatibility/{employeeId}")
@@ -161,7 +169,7 @@ public class EquipmentController {
                 break;
             case "shortage":
                 // Items marked as STOLEN (underage)
-                consumables = consumableService.getConsumablesByEquipmentIdAndStatus(equipmentId, ItemStatus.STOLEN);
+                consumables = consumableService.getConsumablesByEquipmentIdAndStatus(equipmentId, ItemStatus.MISSING);
                 break;
             case "surplus":
                 // Items marked as OVERRECEIVED (overage)

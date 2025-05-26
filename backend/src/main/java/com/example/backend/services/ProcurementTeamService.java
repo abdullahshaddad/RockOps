@@ -1,12 +1,12 @@
 package com.example.backend.services;
 
-import com.example.backend.models.ItemCategory;
-import com.example.backend.models.Merchant;
-import com.example.backend.models.MerchantType;
+import com.example.backend.models.merchant.Merchant;
+import com.example.backend.models.merchant.MerchantType;
 import com.example.backend.models.site.Site;
-import com.example.backend.repositories.ItemCategoryRepository;
-import com.example.backend.repositories.MerchantRepository;
+import com.example.backend.models.warehouse.ItemCategory;
+import com.example.backend.repositories.merchant.MerchantRepository;
 import com.example.backend.repositories.site.SiteRepository;
+import com.example.backend.repositories.warehouse.ItemCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

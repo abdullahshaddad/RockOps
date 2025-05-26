@@ -6,7 +6,8 @@ import com.example.backend.dto.equipment.EquipmentStatusUpdateDTO;
 import com.example.backend.dto.equipment.EquipmentUpdateDTO;
 import com.example.backend.dto.hr.EmployeeSummaryDTO;
 import com.example.backend.exceptions.ResourceNotFoundException;
-import com.example.backend.models.Merchant;
+import com.example.backend.models.merchant.Merchant;
+import com.example.backend.repositories.merchant.MerchantRepository;
 import com.example.backend.services.MinioService;
 import com.example.backend.repositories.equipment.EquipmentBrandRepository;
 import com.example.backend.repositories.equipment.EquipmentRepository;
@@ -17,7 +18,6 @@ import com.example.backend.models.equipment.EquipmentStatus;
 import com.example.backend.models.equipment.EquipmentType;
 import com.example.backend.models.hr.Employee;
 import com.example.backend.models.site.Site;
-import com.example.backend.repositories.*;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.site.SiteRepository;
 import lombok.Data;
@@ -654,6 +654,25 @@ public class EquipmentService {
                 .collect(Collectors.toList());
     }
 
+    public List<EmployeeSummaryDTO> getDriversForSarkyByEquipmentType(UUID equipmentTypeId) {
+        EquipmentType equipmentType = equipmentTypeRepository.findById(equipmentTypeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipment type not found with id: " + equipmentTypeId));
+
+        // Find all employees who can drive this equipment type (no assignment restrictions)
+        List<Employee> allEmployees = employeeRepository.findAll();
+        List<Employee> eligibleDrivers = allEmployees.stream()
+                .filter(employee ->
+                        // Make sure employee is active
+                        "ACTIVE".equals(employee.getStatus()) &&
+                                // Check if they can drive this equipment type
+                                employee.canDrive(equipmentType))
+                .collect(Collectors.toList());
+
+        // Convert to EmployeeSummaryDTO
+        return eligibleDrivers.stream()
+                .map(this::convertToSummaryDTO)
+                .collect(Collectors.toList());
+    }
 
     // Helper method to convert Employee to EmployeeSummaryDTO
     private EmployeeSummaryDTO convertToSummaryDTO(Employee employee) {

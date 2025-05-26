@@ -1,6 +1,6 @@
 package com.example.backend.models.equipment;
 
-import com.example.backend.models.ItemType;
+import com.example.backend.models.warehouse.ItemType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
