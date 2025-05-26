@@ -143,11 +143,11 @@ const EquipmentModal = ({ isOpen, onClose, onSave, equipmentToEdit = null }) => 
     // Clear form data with snackbar confirmation
     const handleClearForm = () => {
         if (formTouched) {
-            showWarning("Are you sure you want to clear all form data?", 8000);
+            showWarning("Are you sure you want to clear all form data?", 0, true);
 
             // Create action buttons for the snackbar
             setTimeout(() => {
-                const snackbar = document.querySelector('.global-snackbar');
+                const snackbar = document.querySelector('.global-notification');
                 if (snackbar) {
                     const actionContainer = document.createElement('div');
                     actionContainer.className = 'snackbar-actions';
@@ -158,7 +158,7 @@ const EquipmentModal = ({ isOpen, onClose, onSave, equipmentToEdit = null }) => 
                     yesButton.className = 'snackbar-action-button confirm';
                     yesButton.onclick = () => {
                         performClearForm();
-                        hideSnackbarActions();
+                        hideSnackbar();
                     };
 
                     // No button
@@ -166,7 +166,7 @@ const EquipmentModal = ({ isOpen, onClose, onSave, equipmentToEdit = null }) => 
                     noButton.innerText = 'NO';
                     noButton.className = 'snackbar-action-button cancel';
                     noButton.onclick = () => {
-                        hideSnackbarActions();
+                        hideSnackbar();
                     };
 
                     actionContainer.appendChild(yesButton);

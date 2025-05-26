@@ -3,9 +3,12 @@ import { FiPlus, FiEdit, FiTrash2 } from 'react-icons/fi';
 import AddPositionForm from './components/AddPositionForm.jsx';
 import EditPositionForm from './components/EditPositionForm.jsx';
 import DataTable from '../../../components/common/DataTable/DataTable';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
+import { jobPositionService } from '../../../services/jobPositionService';
 import './PositionsList.scss';
 
 const PositionsList = () => {
+    const { showSuccess, showError } = useSnackbar();
     const [positions, setPositions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -21,24 +24,14 @@ const PositionsList = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch('http://localhost:8080/api/v1/job-positions', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP ${response.status}: Failed to fetch positions`);
-            }
-
-            const data = await response.json();
+            const response = await jobPositionService.getAll();
+            const data = response.data;
             setPositions(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Error fetching positions:', err);
-            setError(err.message || 'Failed to load positions');
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to load positions';
+            setError(errorMessage);
+            showError('Failed to load positions. Please try again.');
             setPositions([]);
         } finally {
             setLoading(false);
@@ -48,25 +41,16 @@ const PositionsList = () => {
     const handleAddPosition = async (formData) => {
         try {
             setError(null);
-            const response = await fetch('http://localhost:8080/api/v1/job-positions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP ${response.status}: Failed to add position`);
-            }
+            const response = await jobPositionService.create(formData);
 
             await fetchPositions();
             setShowAddForm(false);
+            showSuccess('Job position created successfully!');
         } catch (err) {
             console.error('Error adding position:', err);
-            setError(err.message || 'Failed to add position');
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to add position';
+            setError(errorMessage);
+            showError('Failed to add position. Please try again.');
             throw err; // Re-throw to let form handle it
         }
     };
@@ -74,26 +58,17 @@ const PositionsList = () => {
     const handleEditPosition = async (formData) => {
         try {
             setError(null);
-            const response = await fetch(`http://localhost:8080/api/v1/job-positions/${selectedPosition.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP ${response.status}: Failed to update position`);
-            }
+            const response = await jobPositionService.update(selectedPosition.id, formData);
 
             await fetchPositions();
             setShowEditForm(false);
             setSelectedPosition(null);
+            showSuccess('Job position updated successfully!');
         } catch (err) {
             console.error('Error updating position:', err);
-            setError(err.message || 'Failed to update position');
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to update position';
+            setError(errorMessage);
+            showError('Failed to update position. Please try again.');
             throw err; // Re-throw to let form handle it
         }
     };
@@ -105,24 +80,15 @@ const PositionsList = () => {
 
         try {
             setError(null);
-            // Note: Check if the endpoint should be /job-positions or /positions
-            const response = await fetch(`http://localhost:8080/api/v1/job-positions/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP ${response.status}: Failed to delete position`);
-            }
+            await jobPositionService.delete(id);
 
             await fetchPositions();
+            showSuccess('Job position deleted successfully!');
         } catch (err) {
             console.error('Error deleting position:', err);
-            setError(err.message || 'Failed to delete position');
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to delete position';
+            setError(errorMessage);
+            showError('Failed to delete position. Please try again.');
         }
     };
 

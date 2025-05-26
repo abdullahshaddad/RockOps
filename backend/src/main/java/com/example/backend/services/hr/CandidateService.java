@@ -2,7 +2,7 @@ package com.example.backend.services.hr;
 
 import com.example.backend.services.MinioService;
 import com.example.backend.models.hr.Candidate;
-import com.example.backend.models.Vacancy;
+import com.example.backend.models.hr.Vacancy;
 import com.example.backend.repositories.hr.CandidateRepository;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.VacancyRepository;
