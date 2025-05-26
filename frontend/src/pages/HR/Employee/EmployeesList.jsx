@@ -43,6 +43,14 @@ const EmployeesList = () => {
             }
 
             const data = await response.json();
+
+            // DEBUG: Log the first employee to see what status values we're getting
+            if (data && data.length > 0) {
+                console.log('First employee data:', data[0]);
+                console.log('Status field:', data[0].status);
+                console.log('Status type:', typeof data[0].status);
+            }
+
             setEmployees(data);
             setFilteredEmployees(data);
             setLoading(false);
@@ -66,6 +74,149 @@ const EmployeesList = () => {
             setLoading(false);
         }
     };
+
+    // ... (keep all other functions the same until getStatusBadge)
+
+    // Get status badge styling - IMPROVED
+    const getStatusBadge = (status) => {
+        console.log('getStatusBadge called with:', status, 'Type:', typeof status); // DEBUG
+
+        const statusColors = {
+            'ACTIVE': 'success',
+            'INACTIVE': 'secondary',
+            'INVITED': 'info',
+            'ON_LEAVE': 'warning',
+            'SUSPENDED': 'danger',
+            'TERMINATED': 'danger'
+        };
+
+        // Handle null, undefined, or empty status
+        const displayStatus = status || 'ACTIVE'; // Default to ACTIVE if no status
+        const colorClass = statusColors[displayStatus] || 'secondary';
+
+        return (
+            <span className={`status-badge status-badge--${colorClass}`}>
+                {displayStatus}
+            </span>
+        );
+    };
+
+    // Helper function to safely get department name
+    const getDepartmentName = (employee) => {
+        if (!employee.jobPositionDepartment) return 'N/A';
+
+        // If department is an object, get its name property
+        if (typeof employee.jobPositionDepartment === 'object' && employee.jobPositionDepartment.name) {
+            return employee.jobPositionDepartment.name;
+        }
+
+        // If department is already a string
+        if (typeof employee.jobPositionDepartment === 'string') {
+            return employee.jobPositionDepartment;
+        }
+
+        return 'N/A';
+    };
+
+    // Define columns for DataTable
+    const columns = [
+        {
+            header: 'Photo',
+            accessor: 'photoUrl',
+            sortable: false,
+            width: '80px',
+            render: (employee, photoUrl) => (
+                <div className="employee-avatar">
+                    {photoUrl ? (
+                        <img
+                            src={photoUrl}
+                            alt={`${employee.firstName} ${employee.lastName}`}
+                            onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                            }}
+                        />
+                    ) : (
+                        <div className="employee-avatar__placeholder">
+                            <FaUser />
+                        </div>
+                    )}
+                    <div className="employee-avatar__placeholder" style={{ display: 'none' }}>
+                        <FaUser />
+                    </div>
+                </div>
+            )
+        },
+        {
+            header: 'Name',
+            accessor: 'fullName',
+            render: (employee) => (
+                <div className="employee-name">
+                    <div className="employee-name__primary">
+                        {employee.fullName || `${employee.firstName} ${employee.lastName}`}
+                    </div>
+                    <div className="employee-name__secondary">
+                        {employee.email}
+                    </div>
+                </div>
+            )
+        },
+        {
+            header: 'Position',
+            accessor: 'position',
+            render: (employee) => (
+                <div className="employee-position">
+                    <div className="employee-position__title">
+                        {employee.position || employee.jobPositionName || 'N/A'}
+                    </div>
+                    <div className="employee-position__department">
+                        {getDepartmentName(employee)}
+                    </div>
+                </div>
+            )
+        },
+        {
+            header: 'Status',
+            accessor: 'status',
+            render: (employee) => {
+                console.log('Rendering status for employee:', employee.firstName, 'Status:', employee.status); // DEBUG
+                return getStatusBadge(employee.status);
+            }
+        },
+        {
+            header: 'Type',
+            accessor: 'contractType',
+            render: (employee) => (
+                <span className="contract-type">
+                    {employee.contractType ? employee.contractType.replace('_', ' ') : 'N/A'}
+                </span>
+            )
+        },
+        {
+            header: 'Salary',
+            accessor: 'monthlySalary',
+            render: (employee) => (
+                <div className="salary-info">
+                    <div className="salary-info__monthly">
+                        {formatCurrency(employee.monthlySalary)}
+                    </div>
+                    <div className="salary-info__period">per month</div>
+                </div>
+            )
+        },
+        {
+            header: 'Site',
+            accessor: 'siteName',
+            render: (employee) => employee.siteName || 'N/A'
+        },
+        {
+            header: 'Hire Date',
+            accessor: 'hireDate',
+            render: (employee) => formatDate(employee.hireDate)
+        }
+    ];
+
+    // ... (rest of the functions remain the same)
 
     // Fetch job positions for the dropdown
     const fetchJobPositions = async () => {
@@ -342,136 +493,6 @@ const EmployeesList = () => {
         if (!dateString) return '-';
         return new Date(dateString).toLocaleDateString();
     };
-
-    // Get status badge styling
-    const getStatusBadge = (status) => {
-        const statusColors = {
-            'ACTIVE': 'success',
-            'INACTIVE': 'secondary',
-            'INVITED': 'info',
-            'ON_LEAVE': 'warning',
-            'SUSPENDED': 'danger',
-            'TERMINATED': 'danger'
-        };
-
-        return (
-            <span className={`status-badge status-badge--${statusColors[status] || 'secondary'}`}>
-                {status || 'N/A'}
-            </span>
-        );
-    };
-
-    // Helper function to safely get department name
-    const getDepartmentName = (employee) => {
-        if (!employee.jobPositionDepartment) return 'N/A';
-
-        // If department is an object, get its name property
-        if (typeof employee.jobPositionDepartment === 'object' && employee.jobPositionDepartment.name) {
-            return employee.jobPositionDepartment.name;
-        }
-
-        // If department is already a string
-        if (typeof employee.jobPositionDepartment === 'string') {
-            return employee.jobPositionDepartment;
-        }
-
-        return 'N/A';
-    };
-
-    // Define columns for DataTable
-    const columns = [
-        {
-            header: 'Photo',
-            accessor: 'photoUrl',
-            sortable: false,
-            width: '80px',
-            render: (employee, photoUrl) => (
-                <div className="employee-avatar">
-                    {photoUrl ? (
-                        <img
-                            src={photoUrl}
-                            alt={`${employee.firstName} ${employee.lastName}`}
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                            }}
-                        />
-                    ) : (
-                        <div className="employee-avatar__placeholder">
-                            <FaUser />
-                        </div>
-                    )}
-                    <div className="employee-avatar__placeholder" style={{ display: 'none' }}>
-                        <FaUser />
-                    </div>
-                </div>
-            )
-        },
-        {
-            header: 'Name',
-            accessor: 'fullName',
-            render: (employee) => (
-                <div className="employee-name">
-                    <div className="employee-name__primary">
-                        {employee.fullName || `${employee.firstName} ${employee.lastName}`}
-                    </div>
-                    <div className="employee-name__secondary">
-                        {employee.email}
-                    </div>
-                </div>
-            )
-        },
-        {
-            header: 'Position',
-            accessor: 'position',
-            render: (employee) => (
-                <div className="employee-position">
-                    <div className="employee-position__title">
-                        {employee.position || employee.jobPositionName || 'N/A'}
-                    </div>
-                    <div className="employee-position__department">
-                        {getDepartmentName(employee)}
-                    </div>
-                </div>
-            )
-        },
-        {
-            header: 'Status',
-            accessor: 'status',
-            render: (employee) => getStatusBadge(employee.status)
-        },
-        {
-            header: 'Type',
-            accessor: 'contractType',
-            render: (employee) => (
-                <span className="contract-type">
-                    {employee.contractType ? employee.contractType.replace('_', ' ') : 'N/A'}
-                </span>
-            )
-        },
-        {
-            header: 'Salary',
-            accessor: 'monthlySalary',
-            render: (employee) => (
-                <div className="salary-info">
-                    <div className="salary-info__monthly">
-                        {formatCurrency(employee.monthlySalary)}
-                    </div>
-                    <div className="salary-info__period">per month</div>
-                </div>
-            )
-        },
-        {
-            header: 'Site',
-            accessor: 'siteName',
-            render: (employee) => employee.siteName || 'N/A'
-        },
-        {
-            header: 'Hire Date',
-            accessor: 'hireDate',
-            render: (employee) => formatDate(employee.hireDate)
-        }
-    ];
 
     // Define filterable columns
     const filterableColumns = [
