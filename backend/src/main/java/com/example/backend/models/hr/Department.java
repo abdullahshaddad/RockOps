@@ -34,14 +34,7 @@ public class Department {
     @Builder.Default
     private List<JobPosition> jobPositions = new ArrayList<>();
 
-//    // Custom methods
-//    public void addJobPosition(JobPosition jobPosition) {
-//        if (jobPositions == null) {
-//            jobPositions = new ArrayList<>();
-//        }
-//        jobPositions.add(jobPosition);
-//        jobPosition.setDepartment(String.valueOf(this));
-//    }
+
 
     public void removeJobPosition(JobPosition jobPosition) {
         if (jobPositions != null) {

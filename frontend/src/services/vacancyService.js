@@ -26,5 +26,25 @@ export const vacancyService = {
     // Delete vacancy
     delete: (id) => {
         return apiClient.delete(VACANCY_ENDPOINTS.DELETE(id));
+    },
+
+    // Get vacancy statistics
+    getStatistics: (id) => {
+        return apiClient.get(VACANCY_ENDPOINTS.STATISTICS(id));
+    },
+
+    // Get potential candidates
+    getPotentialCandidates: () => {
+        return apiClient.get(VACANCY_ENDPOINTS.POTENTIAL_CANDIDATES);
+    },
+
+    // Hire a candidate
+    hireCandidate: (candidateId) => {
+        return apiClient.post(VACANCY_ENDPOINTS.HIRE_CANDIDATE(candidateId));
+    },
+
+    // Move candidates to potential list
+    moveToPotential: (vacancyId) => {
+        return apiClient.post(VACANCY_ENDPOINTS.MOVE_TO_POTENTIAL(vacancyId));
     }
 }; 
