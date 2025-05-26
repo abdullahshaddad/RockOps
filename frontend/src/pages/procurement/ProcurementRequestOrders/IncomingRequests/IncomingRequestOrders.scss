@@ -1,0 +1,106 @@
+.incoming-requests-container {
+  margin-bottom: 24px;
+}
+
+.incoming-requests-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.incoming-requests-search {
+  position: relative;
+  width: 300px;
+
+  input {
+    width: 100%;
+    padding: 10px 40px 10px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1f2937;
+    background-color: white;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background-color: white;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+
+  .incoming-requests-search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #9ca3af;
+    pointer-events: none;
+  }
+}
+
+.incoming-requests-table {
+  // Style overrides for this specific table instance
+
+  // Adding the gray border to the header cells
+  :global(.custom-table-header-cell) {
+    background-color: #f1f3f5;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  // Adjusting the row hover style to match screenshots
+  :global(.custom-table-row:hover) {
+    background-color: #f9fafb;
+  }
+
+  // Ensuring action buttons match the style in screenshots
+  :global(.custom-table-action-button) {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &.approve {
+      color: #10b981;
+      background-color: rgba(16, 185, 129, 0.1);
+    }
+
+    &.edit {
+      color: #3b82f6;
+      background-color: rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  // Date cell formatting
+  .date-cell {
+    white-space: nowrap;
+    color: #6b7280;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .incoming-requests-search {
+    width: 100%;
+  }
+}

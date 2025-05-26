@@ -1,13 +1,13 @@
 package com.example.backend.services.site;
 
-import com.example.backend.models.Merchant;
 import com.example.backend.models.Partner;
-import com.example.backend.models.Warehouse;
 import com.example.backend.models.equipment.Equipment;
 import com.example.backend.models.finance.FixedAssets;
 import com.example.backend.models.hr.Employee;
+import com.example.backend.models.merchant.Merchant;
 import com.example.backend.models.site.Site;
 import com.example.backend.models.site.SitePartner;
+import com.example.backend.models.warehouse.Warehouse;
 import com.example.backend.repositories.PartnerRepository;
 import com.example.backend.repositories.site.SiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;

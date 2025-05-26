@@ -1,9 +1,9 @@
 package com.example.backend.services.site;
 
+import com.example.backend.models.warehouse.Warehouse;
 import com.example.backend.repositories.equipment.EquipmentRepository;
 import com.example.backend.repositories.finance.FixedAssetRepository;
 import com.example.backend.models.Partner;
-import com.example.backend.models.Warehouse;
 import com.example.backend.models.equipment.Equipment;
 import com.example.backend.models.finance.FixedAssets;
 import com.example.backend.models.hr.Employee;
@@ -13,6 +13,7 @@ import com.example.backend.models.site.SitePartnerId;
 import com.example.backend.repositories.*;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.site.SiteRepository;
+import com.example.backend.repositories.warehouse.WarehouseRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
