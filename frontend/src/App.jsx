@@ -44,7 +44,7 @@ import ProcurementRequestOrders from "./pages/procurement/ProcurementRequestOrde
 import PurchaseOrders from "./pages/procurement/ProcurementPurchaseOrders/ProcurementPurchaseOrders/PurchaseOrders.jsx";
 import PurchaseOrderDetails
     from "./pages/procurement/ProcurementPurchaseOrders/PurchaseOrderDetails/PurchaseOrderDetails.jsx";
-import WorkTypeManagement from "./pages/equipment/EquipmentManagement/WorkTypeManagement.jsx";
+
 
 
 const AuthRedirect = () => {
