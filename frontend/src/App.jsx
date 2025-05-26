@@ -92,10 +92,12 @@ function App() {
                                                element={<RoleRoute allowedRoles={allRoles}><AllSites/></RoleRoute>}/>
                                         <Route path="details/:siteId"
                                                element={<RoleRoute allowedRoles={allRoles}><SiteDetails/></RoleRoute>}/>
-                                        <Route path="employee-details/:id"
-                                               element={<RoleRoute
-                                                   allowedRoles={allRoles}><EmployeeDetails/></RoleRoute>}/>
+
                                     </Route>
+                                    <Route path="hr/employee-details/:id"
+                                           element={<RoleRoute
+                                               allowedRoles={allRoles}><EmployeeDetails/></RoleRoute>}/>
+                                  
 
 
                                     {/* HR Management Routes */}

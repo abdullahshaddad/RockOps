@@ -121,7 +121,7 @@ public class SiteController
 
     @GetMapping("/unassigned-employees")
     public ResponseEntity<?> getUnassignedEmployees() {
-        List<Employee> unassignedEmployees = siteService.getUnassignedEmployees();
+            List<Employee> unassignedEmployees = siteService.getUnassignedEmployees();
         return ResponseEntity.ok(unassignedEmployees != null ? unassignedEmployees : Collections.emptyList());
     }
 

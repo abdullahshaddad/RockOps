@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './SiteDetails.scss';
+import { useAuth } from '../../../contexts/AuthContext.jsx';
 
 // Import tab components
 import SiteEquipmentTab from './tabs/SiteEquipmentTab';
@@ -13,10 +14,13 @@ import SitePartnersTab from './tabs/SitePartnersTab';
 const SiteDetails = () => {
     const { siteId } = useParams();
     const navigate = useNavigate();
+    const { currentUser } = useAuth();
     const [site, setSite] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('equipment');
+
+    const isAdminOrSiteAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'SITE_ADMIN';
 
     useEffect(() => {
         fetchSiteDetails();
@@ -174,12 +178,14 @@ const SiteDetails = () => {
                         >
                             Merchants
                         </button>
-                        <button
-                            className={`tab-button ${activeTab === 'partners' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('partners')}
-                        >
-                            Partners
-                        </button>
+                        {isAdminOrSiteAdmin && (
+                            <button
+                                className={`tab-button ${activeTab === 'partners' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('partners')}
+                            >
+                                Partners
+                            </button>
+                        )}
                     </div>
 
                     <div className="tab-content" data-active-tab={
@@ -194,7 +200,7 @@ const SiteDetails = () => {
                         {activeTab === 'warehouses' && <SiteWarehousesTab siteId={siteId} />}
                         {activeTab === 'fixedassets' && <SiteFixedAssetsTab siteId={siteId} />}
                         {activeTab === 'merchants' && <SiteMerchantsTab siteId={siteId} />}
-                        {activeTab === 'partners' && <SitePartnersTab siteId={siteId} />}
+                        {activeTab === 'partners' && isAdminOrSiteAdmin && <SitePartnersTab siteId={siteId} />}
                     </div>
                 </div>
             </div>

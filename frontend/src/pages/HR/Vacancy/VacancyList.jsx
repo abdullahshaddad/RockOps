@@ -3,47 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import './VacancyList.scss';
 import AddVacancyModal from './AddVacancyModal';
 import EditVacancyModal from './EditVacancyModal';
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import DataTable from '../../../components/common/DataTable/DataTable';
+import {FaEdit, FaTrashAlt, FaEye} from "react-icons/fa";
 import { useSnackbar } from '../../../contexts/SnackbarContext';
 import { vacancyService } from '../../../services/vacancyService';
 import { jobPositionService } from '../../../services/jobPositionService';
-import DataTable from '../../../components/common/DataTable/DataTable';
 
 const VacancyList = () => {
     const navigate = useNavigate();
     const { showSuccess, showError } = useSnackbar();
     const [vacancies, setVacancies] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [actionLoading, setActionLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [jobPositions, setJobPositions] = useState([]);
-    const [statistics, setStatistics] = useState({});
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedVacancy, setSelectedVacancy] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [jobPositions, setJobPositions] = useState([]);
+    const [statusFilter, setStatusFilter] = useState('');
+    const [priorityFilter, setPriorityFilter] = useState('');
 
     // Fetch vacancies data from the API
     const fetchVacancies = async () => {
         try {
             setLoading(true);
             const response = await vacancyService.getAll();
-            const data = Array.isArray(response.data) ? response.data : [];
+            const data = response.data;
             setVacancies(data);
-            
-            // Fetch statistics for each vacancy
-            const statsPromises = data.map(vacancy => 
-                vacancyService.getStatistics(vacancy.id)
-                    .then(res => ({ id: vacancy.id, stats: res.data }))
-                    .catch(() => ({ id: vacancy.id, stats: null }))
-            );
-            
-            const statsResults = await Promise.all(statsPromises);
-            const statsMap = statsResults.reduce((acc, { id, stats }) => {
-                acc[id] = stats;
-                return acc;
-            }, {});
-            
-            setStatistics(statsMap);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching vacancies:', error);
@@ -74,72 +59,93 @@ const VacancyList = () => {
     // Handle adding a new vacancy
     const handleAddVacancy = async (newVacancy) => {
         try {
-            setActionLoading(true);
-            await vacancyService.create(newVacancy);
+            setLoading(true);
+            console.log('Sending vacancy data:', newVacancy); // Debug log
+            const response = await vacancyService.create(newVacancy);
+
+            // Refresh the vacancy list
             await fetchVacancies();
             setShowAddModal(false);
             showSuccess('Vacancy created successfully!');
+
         } catch (error) {
             console.error('Error adding vacancy:', error);
+            console.error('Error response:', error.response); // Additional debug info
             const errorMessage = error.response?.data?.message || error.message || 'Failed to create vacancy';
-            showError(errorMessage);
+            setError(errorMessage);
+            showError('Failed to create vacancy. Please try again.');
         } finally {
-            setActionLoading(false);
+            setLoading(false);
         }
     };
 
     // Handle editing a vacancy
     const handleEditVacancy = async (updatedVacancy) => {
         try {
-            setActionLoading(true);
-            await vacancyService.update(selectedVacancy.id, updatedVacancy);
+            setLoading(true);
+            const response = await vacancyService.update(selectedVacancy.id, updatedVacancy);
+
+            // Refresh the vacancy list
             await fetchVacancies();
             setShowEditModal(false);
             setSelectedVacancy(null);
             showSuccess('Vacancy updated successfully!');
+
         } catch (error) {
             console.error('Error updating vacancy:', error);
             const errorMessage = error.response?.data?.message || error.message || 'Failed to update vacancy';
-            showError(errorMessage);
+            setError(errorMessage);
+            showError('Failed to update vacancy. Please try again.');
         } finally {
-            setActionLoading(false);
+            setLoading(false);
         }
     };
 
     // Delete a vacancy
-    const handleDeleteVacancy = async (vacancy) => {
+    const handleDeleteVacancy = async (vacancyId) => {
         if (!window.confirm('Are you sure you want to delete this vacancy?')) {
             return;
         }
 
         try {
-            setActionLoading(true);
-            await vacancyService.delete(vacancy.id);
+            setLoading(true);
+            await vacancyService.delete(vacancyId);
+
+            // Refresh the vacancy list
             await fetchVacancies();
             showSuccess('Vacancy deleted successfully!');
+
         } catch (error) {
             console.error('Error deleting vacancy:', error);
             const errorMessage = error.response?.data?.message || error.message || 'Failed to delete vacancy';
-            showError(errorMessage);
+            setError(errorMessage);
+            showError('Failed to delete vacancy. Please try again.');
         } finally {
-            setActionLoading(false);
+            setLoading(false);
         }
     };
 
-    // Format date for display
+    // Open edit modal with vacancy data
+    const handleEditClick = (vacancy) => {
+        setSelectedVacancy(vacancy);
+        setShowEditModal(true);
+    };
+
+    // Navigate to vacancy details page
+    const handleRowClick = (vacancy) => {
+        navigate(`/hr/vacancies/${vacancy.id}`);
+    };
+
+    // Format date for display (YYYY-MM-DD to DD/MM/YYYY)
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
+        return date.toLocaleDateString();
     };
 
     // Get status badge class based on status
     const getStatusBadgeClass = (status) => {
-        switch (status?.toUpperCase()) {
+        switch (status) {
             case 'OPEN':
                 return 'status-badge-success';
             case 'CLOSED':
@@ -153,7 +159,7 @@ const VacancyList = () => {
 
     // Get priority badge class based on priority
     const getPriorityBadgeClass = (priority) => {
-        switch (priority?.toUpperCase()) {
+        switch (priority) {
             case 'HIGH':
                 return 'priority-badge-high';
             case 'MEDIUM':
@@ -165,40 +171,35 @@ const VacancyList = () => {
         }
     };
 
-    // Get vacancy statistics
-    const getVacancyStats = (vacancyId) => {
-        const stats = statistics[vacancyId];
-        if (!stats) return null;
-        
-        return {
-            filled: stats.filledPercentage || 0,
-            remaining: stats.remainingPositions || 0,
-            total: stats.totalPositions || 0
-        };
-    };
-
-    // Table columns configuration
+    // Define columns for DataTable
     const columns = [
         {
             header: 'Title',
             accessor: 'title',
-            sortable: true,
-            cellStyle: (row) => ({ fontWeight: 500, color: '#2196F3' })
+            render: (row) => (
+                <div className="title-cell">
+                    <strong>{row.title}</strong>
+                </div>
+            )
         },
         {
             header: 'Position',
             accessor: 'jobPosition.positionName',
-            sortable: true
+            render: (row) => row.jobPosition ? row.jobPosition.positionName : 'N/A'
         },
         {
             header: 'Department',
-            accessor: 'jobPosition.department',
-            sortable: true
+            accessor: 'jobPosition.department.name',
+            render: (row) => {
+                if (row.jobPosition && row.jobPosition.department) {
+                    return row.jobPosition.department.name || 'N/A';
+                }
+                return 'N/A';
+            }
         },
         {
             header: 'Status',
             accessor: 'status',
-            sortable: true,
             render: (row) => (
                 <span className={`status-badge ${getStatusBadgeClass(row.status)}`}>
                     {row.status}
@@ -208,7 +209,6 @@ const VacancyList = () => {
         {
             header: 'Priority',
             accessor: 'priority',
-            sortable: true,
             render: (row) => (
                 <span className={`priority-badge ${getPriorityBadgeClass(row.priority)}`}>
                     {row.priority || 'MEDIUM'}
@@ -218,64 +218,97 @@ const VacancyList = () => {
         {
             header: 'Posted',
             accessor: 'postingDate',
-            sortable: true,
             render: (row) => formatDate(row.postingDate)
         },
         {
             header: 'Closing',
             accessor: 'closingDate',
-            sortable: true,
             render: (row) => formatDate(row.closingDate)
         },
         {
             header: 'Positions',
             accessor: 'numberOfPositions',
-            sortable: true,
-            render: (row) => row.numberOfPositions || 1
-        },
-        {
-            header: 'Progress',
-            accessor: 'id',
-            sortable: false,
-            render: (row) => {
-                const stats = getVacancyStats(row.id);
-                if (!stats) return null;
-                
-                return (
-                    <div className="progress-container">
-                        <div className="progress-bar">
-                            <div 
-                                className="progress-fill"
-                                style={{ width: `${stats.filled}%` }}
-                            />
-                        </div>
-                        <span className="progress-text">
-                            {stats.remaining}/{stats.total}
-                        </span>
-                    </div>
-                );
-            }
+            render: (row) => (
+                <div className="center-text">
+                    {row.numberOfPositions || 1}
+                </div>
+            )
         }
     ];
 
-    // Table actions configuration
+    // Define actions for DataTable
     const actions = [
+
         {
             label: 'Edit',
             icon: <FaEdit />,
-            onClick: (row) => {
-                setSelectedVacancy(row);
-                setShowEditModal(true);
-            },
-            className: 'table-edit-button'
+            onClick: (row) => handleEditClick(row),
+            className: 'primary'
         },
         {
             label: 'Delete',
             icon: <FaTrashAlt />,
-            onClick: handleDeleteVacancy,
-            className: 'positions-delete-button'
+            onClick: (row) => handleDeleteVacancy(row.id),
+            className: 'danger'
         }
     ];
+
+    // Define filterable columns
+    const filterableColumns = [
+        { header: 'Title', accessor: 'title' },
+        { header: 'Position', accessor: 'jobPosition.positionName' },
+        { header: 'Department', accessor: 'jobPosition.department.name' }
+    ];
+
+    // Custom filters for status and priority
+    const customFilters = [
+        {
+            label: 'Status',
+            component: (
+                <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="">All Statuses</option>
+                    <option value="OPEN">Open</option>
+                    <option value="CLOSED">Closed</option>
+                    <option value="FILLED">Filled</option>
+                </select>
+            )
+        },
+        {
+            label: 'Priority',
+            component: (
+                <select
+                    value={priorityFilter}
+                    onChange={(e) => setPriorityFilter(e.target.value)}
+                >
+                    <option value="">All Priorities</option>
+                    <option value="HIGH">High</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="LOW">Low</option>
+                </select>
+            )
+        }
+    ];
+
+    // Filter data based on custom filters
+    const filteredVacancies = vacancies.filter(vacancy => {
+        const statusMatch = !statusFilter || vacancy.status === statusFilter;
+        const priorityMatch = !priorityFilter || vacancy.priority === priorityFilter;
+        return statusMatch && priorityMatch;
+    });
+
+    if (error) {
+        return (
+            <div className="vacancy-container">
+                <div className="error-container">
+                    <p>Error: {error}</p>
+                    <button onClick={fetchVacancies}>Try Again</button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="vacancy-container">
@@ -284,24 +317,25 @@ const VacancyList = () => {
                 <button
                     className="primary-button"
                     onClick={() => setShowAddModal(true)}
-                    disabled={actionLoading}
                 >
-                    {actionLoading ? 'Posting...' : 'Post New Vacancy'}
+                    Post New Vacancy
                 </button>
             </div>
 
             <DataTable
-                data={vacancies}
+                data={filteredVacancies}
                 columns={columns}
                 actions={actions}
                 loading={loading}
-                tableTitle="Vacancies"
+                tableTitle=""
                 showSearch={true}
                 showFilters={true}
-                filterableColumns={columns.filter(col => col.sortable)}
-                onRowClick={(row) => navigate(`/hr/vacancies/${row.id}`)}
-                defaultSortField="postingDate"
-                defaultSortDirection="desc"
+                filterableColumns={filterableColumns}
+                customFilters={customFilters}
+                onRowClick={handleRowClick}
+                defaultItemsPerPage={10}
+                itemsPerPageOptions={[10, 25, 50]}
+                className="vacancy-data-table"
             />
 
             {showAddModal && (
@@ -309,7 +343,6 @@ const VacancyList = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddVacancy}
                     jobPositions={jobPositions}
-                    loading={actionLoading}
                 />
             )}
 
@@ -322,7 +355,6 @@ const VacancyList = () => {
                     }}
                     onSave={handleEditVacancy}
                     jobPositions={jobPositions}
-                    loading={actionLoading}
                 />
             )}
         </div>

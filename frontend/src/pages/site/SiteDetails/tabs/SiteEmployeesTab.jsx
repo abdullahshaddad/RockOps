@@ -3,10 +3,12 @@ import DataTable from "../../../../components/common/DataTable/DataTable.jsx";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../../../contexts/AuthContext.jsx";
 import { siteService } from "../../../../services/siteService";
+import { useNavigate } from "react-router-dom";
 import "../SiteDetails.scss";
 
 const SiteEmployeesTab = ({ siteId }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [employeeData, setEmployeeData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,6 +18,10 @@ const SiteEmployeesTab = ({ siteId }) => {
     const { currentUser } = useAuth();
 
     const isSiteAdmin = currentUser?.role === "SITE_ADMIN";
+
+    const handleRowClick = (row) => {
+        navigate(`/hr/employee-details/${row.employeeID}`);
+    };
 
     const columns = [
         {
@@ -55,7 +61,10 @@ const SiteEmployeesTab = ({ siteId }) => {
             render: (row) => (
                 <button
                     className="btn-danger"
-                    onClick={() => handleUnassignEmployee(row.employeeID)}
+                    onClick={(e) => {
+                        e.stopPropagation(); // Prevent row click when clicking the button
+                        handleUnassignEmployee(row.employeeID);
+                    }}
                 >
                     Unassign
                 </button>
@@ -205,6 +214,8 @@ const SiteEmployeesTab = ({ siteId }) => {
                         itemsPerPageOptions={[10, 25, 50, 100]}
                         defaultItemsPerPage={10}
                         tableTitle="Employees List"
+                        onRowClick={handleRowClick}
+                        rowClassName="clickable-row"
                     />
                 </div>
             )}

@@ -167,7 +167,7 @@ const VacancyDetails = () => {
                             </div>
                             <div className="info-item">
                                 <span className="info-label">Department</span>
-                                <span className="info-value">{vacancy.jobPosition ? vacancy.jobPosition.department : 'N/A'}</span>
+                                <span className="info-value">{vacancy.jobPosition ? vacancy.jobPosition.department.name : 'N/A'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">Posted Date</span>
