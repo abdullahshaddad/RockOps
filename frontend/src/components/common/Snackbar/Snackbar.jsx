@@ -63,7 +63,7 @@ const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000 })
     };
 
     return (
-        <div className={`global-Snackbar ${type}-Snackbar`}>
+        <div className={`global-notification ${type}-notification`}>
             {getIcon()}
             <span>{message}</span>
         </div>

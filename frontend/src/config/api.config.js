@@ -74,7 +74,30 @@ export const EMPLOYEE_ENDPOINTS = {
 // Site module endpoints
 export const SITE_ENDPOINTS = {
     BASE: '/api/v1/site',
-    BY_ID: (id) => `/api/site/${id}`
+    BY_ID: (id) => `/api/v1/site/${id}`,
+    PARTNERS: (siteId) => `/api/v1/site/${siteId}/partners`,
+    UNASSIGNED_PARTNERS: (siteId) => `/api/v1/site/${siteId}/unassigned-partners`,
+    EMPLOYEES: (siteId) => `/api/v1/site/${siteId}/employees`,
+    EQUIPMENT: (siteId) => `/api/v1/site/${siteId}/equipment`,
+    WAREHOUSES: (siteId) => `/api/v1/site/${siteId}/warehouses`,
+    MERCHANTS: (siteId) => `/api/v1/site/${siteId}/merchants`,
+    FIXED_ASSETS: (siteId) => `/api/v1/site/${siteId}/fixedassets`,
+    
+    // Site Admin endpoints
+    ADMIN: {
+        ADD_SITE: '/siteadmin/addsite',
+        UPDATE_SITE: (id) => `/siteadmin/updatesite/${id}`,
+        ADD_WAREHOUSE: (siteId) => `/siteadmin/${siteId}/add-warehouse`,
+        ASSIGN_EQUIPMENT: (siteId, equipmentId) => `/siteadmin/${siteId}/assign-equipment/${equipmentId}`,
+        REMOVE_EQUIPMENT: (siteId, equipmentId) => `/siteadmin/${siteId}/remove-equipment/${equipmentId}`,
+        ASSIGN_EMPLOYEE: (siteId, employeeId) => `/siteadmin/${siteId}/assign-employee/${employeeId}`,
+        REMOVE_EMPLOYEE: (siteId, employeeId) => `/siteadmin/${siteId}/remove-employee/${employeeId}`,
+        ASSIGN_WAREHOUSE: (siteId, warehouseId) => `/siteadmin/${siteId}/assign-warehouse/${warehouseId}`,
+        ASSIGN_FIXED_ASSET: (siteId, fixedAssetId) => `/siteadmin/${siteId}/assign-fixedAsset/${fixedAssetId}`,
+        ASSIGN_PARTNER: (siteId, partnerId) => `/siteadmin/${siteId}/assign-partner/${partnerId}`,
+        UPDATE_PARTNER_PERCENTAGE: (siteId, partnerId) => `/siteadmin/${siteId}/update-partner-percentage/${partnerId}`,
+        REMOVE_PARTNER: (siteId, partnerId) => `/siteadmin/${siteId}/remove-partner/${partnerId}`
+    }
 };
 
 // Merchant module endpoints
