@@ -25,6 +25,7 @@ import EquipmentMain from "./pages/equipment/EquipmentMain/EquipmentMain.jsx";
 import {SnackbarProvider} from "./contexts/SnackbarContext.jsx";
 import EquipmentBrandManagement from "./pages/equipment/EquipmentManagement/EquipmentBrandManagement.jsx";
 import EquipmentTypeManagement from "./pages/equipment/EquipmentManagement/EquipmentTypeManagement.jsx";
+import WorkTypeManagement from "./pages/equipment/EquipmentManagement/WorkTypeManagement.jsx";
 import ViewEquipmentData from "./pages/equipment/EquipmentInfo/ViewEquipmentData.jsx";
 import EquipmentDetails from "./pages/equipment/EquipmentDetails/EquipmentDetails.jsx";
 
@@ -119,6 +120,9 @@ function App() {
                                         <Route path=":id" element={<WarehouseDetails/>}/>
                                         <Route path="warehouse-details/:id" element={<WarehouseInformation/>}/>
                                     </Route>
+                                    <Route path="/warehouses" element={<RoleRoute allowedRoles={allRoles}><WarehousesList/></RoleRoute>}/>
+                                    <Route path="/warehouses/:id" element={<WarehouseDetails/>}/>
+                                    <Route path="/warehouses/warehouse-details/:id" element={<WarehouseInformation/>}/>
 
                                     {/* Merchant & Procurement Routes */}
                                     <Route path="/merchants" element={<RoleRoute allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN", "WAREHOUSE_MANAGER"]}><ProcurementMerchants/></RoleRoute>}/>
