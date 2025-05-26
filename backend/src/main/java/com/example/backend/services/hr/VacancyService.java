@@ -1,4 +1,4 @@
-package com.example.backend.services;
+package com.example.backend.services.hr;
 
 import com.example.backend.models.hr.Vacancy;
 import com.example.backend.models.hr.Candidate;
@@ -40,41 +40,64 @@ public class VacancyService {
 
     @Transactional
     public Vacancy createVacancy(Map<String, Object> vacancyData) {
-        Vacancy vacancy = new Vacancy();
-
-        vacancy.setTitle((String) vacancyData.get("title"));
-        vacancy.setDescription((String) vacancyData.get("description"));
-        vacancy.setRequirements((String) vacancyData.get("requirements"));
-        vacancy.setResponsibilities((String) vacancyData.get("responsibilities"));
-        vacancy.setStatus((String) vacancyData.get("status"));
-        vacancy.setPriority((String) vacancyData.get("priority"));
-        vacancy.setHiredCount(0); // Initialize hired count
-
-        // Handle dates
-        if (vacancyData.get("postingDate") != null) {
-            vacancy.setPostingDate(LocalDate.parse((String) vacancyData.get("postingDate")));
-        }
-        if (vacancyData.get("closingDate") != null) {
-            vacancy.setClosingDate(LocalDate.parse((String) vacancyData.get("closingDate")));
-        }
-
-        // Handle number of positions
-        if (vacancyData.get("numberOfPositions") != null) {
-            vacancy.setNumberOfPositions((Integer) vacancyData.get("numberOfPositions"));
-        }
-
-        // Handle job position
-        if (vacancyData.get("jobPosition") != null) {
-            Map<String, Object> jobPositionData = (Map<String, Object>) vacancyData.get("jobPosition");
-            if (jobPositionData.get("id") != null) {
-                String jobPositionId = (String) jobPositionData.get("id");
-                JobPosition jobPosition = jobPositionRepository.findById(UUID.fromString(jobPositionId))
-                        .orElseThrow(() -> new EntityNotFoundException("Job position not found"));
-                vacancy.setJobPosition(jobPosition);
+        try {
+            // Parse dates
+            LocalDate postingDate = null;
+            LocalDate closingDate = null;
+            
+            if (vacancyData.get("postingDate") != null) {
+                postingDate = LocalDate.parse((String) vacancyData.get("postingDate"));
             }
-        }
+            if (vacancyData.get("closingDate") != null) {
+                closingDate = LocalDate.parse((String) vacancyData.get("closingDate"));
+            }
 
-        return vacancyRepository.save(vacancy);
+            // Parse number of positions
+            Integer numberOfPositions = 1; // default value
+            if (vacancyData.get("numberOfPositions") != null) {
+                Object numPositions = vacancyData.get("numberOfPositions");
+                if (numPositions instanceof Integer) {
+                    numberOfPositions = (Integer) numPositions;
+                } else if (numPositions instanceof String) {
+                    numberOfPositions = Integer.parseInt((String) numPositions);
+                } else if (numPositions instanceof Number) {
+                    numberOfPositions = ((Number) numPositions).intValue();
+                }
+            }
+
+            // Handle job position
+            JobPosition jobPosition = null;
+            if (vacancyData.get("jobPosition") != null) {
+                Map<String, Object> jobPositionData = (Map<String, Object>) vacancyData.get("jobPosition");
+                if (jobPositionData.get("id") != null) {
+                    String jobPositionId = (String) jobPositionData.get("id");
+                    jobPosition = jobPositionRepository.findById(UUID.fromString(jobPositionId))
+                            .orElseThrow(() -> new EntityNotFoundException("Job position not found"));
+                }
+            }
+
+            // Use builder pattern
+            Vacancy vacancy = Vacancy.builder()
+                    .title((String) vacancyData.get("title"))
+                    .description((String) vacancyData.get("description"))
+                    .requirements((String) vacancyData.get("requirements"))
+                    .responsibilities((String) vacancyData.get("responsibilities"))
+                    .status((String) vacancyData.get("status"))
+                    .priority((String) vacancyData.get("priority"))
+                    .postingDate(postingDate)
+                    .closingDate(closingDate)
+                    .numberOfPositions(numberOfPositions)
+                    .jobPosition(jobPosition)
+                    .hiredCount(0)
+                    .build();
+
+            return vacancyRepository.save(vacancy);
+        } catch (Exception e) {
+            // Log the error for debugging
+            System.err.println("Error creating vacancy: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create vacancy: " + e.getMessage(), e);
+        }
     }
 
     @Transactional
