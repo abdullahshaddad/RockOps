@@ -108,4 +108,26 @@ public class CandidateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    // Update candidate status
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Candidate> updateCandidateStatus(
+            @PathVariable UUID id,
+            @RequestBody Map<String, String> statusUpdate) {
+        try {
+            String newStatus = statusUpdate.get("status");
+            if (newStatus == null || newStatus.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            Candidate updatedCandidate = candidateService.updateCandidateStatus(id, newStatus);
+            return ResponseEntity.ok(updatedCandidate);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
