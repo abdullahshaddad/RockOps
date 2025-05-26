@@ -68,7 +68,6 @@ $status-colors: (
 .equipment-main-container {
   padding: 1rem;
   background-color: var(--main-background-color);
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   gap: 0.75rem; // Reduced from 1.5rem

@@ -225,6 +225,9 @@
   border-radius: var(--radius-md);
   color: var(--color-text-tertiary);
   background-color: var(--color-surface);
+  grid-column: 1 / -1;
+
+
 }
 
 /* Modal Styles - Matching warehouse design */
