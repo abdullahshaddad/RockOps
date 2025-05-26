@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaUserPlus, FaEdit, FaTrash,  FaUser } from 'react-icons/fa';
-import './EmployeesList.css';
+import './EmployeesList.scss';
 import DataTable from '../../../components/common/DataTable/DataTable';
 import AddEmployeeModal from './AddEmployeeModal';
 import EditEmployeeModal from './EditEmployeeModal';
@@ -585,7 +585,7 @@ const EmployeesList = () => {
 
     return (
         <div className="employees-container">
-            <div className="employees-header">
+            <div className="departments-header">
                 <div className="employees-header__content">
                     <h1 className="employees-header__title">Employees Directory</h1>
                     <p className="employees-header__subtitle">

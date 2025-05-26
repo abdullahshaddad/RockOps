@@ -1,0 +1,234 @@
+/* Add these styles to your EmployeesList.css file */
+
+/* Employee Avatar Styles */
+.employee-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-surface-hover);
+    border: 2px solid var(--border-color);
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &__placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-primary-light);
+        color: var(--color-primary);
+        font-size: 18px;
+        border-radius: 50%;
+    }
+}
+
+/* Status Badge Styles */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    border: 1px solid transparent;
+
+    &--success {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #2e7d32;
+        border-color: rgba(76, 175, 80, 0.3);
+    }
+
+    &--active {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #2e7d32;
+        border-color: rgba(76, 175, 80, 0.3);
+    }
+
+    &--secondary {
+        background-color: rgba(158, 158, 158, 0.1);
+        color: #616161;
+        border-color: rgba(158, 158, 158, 0.3);
+    }
+
+    &--info {
+        background-color: rgba(33, 150, 243, 0.1);
+        color: #1976d2;
+        border-color: rgba(33, 150, 243, 0.3);
+    }
+
+    &--warning {
+        background-color: rgba(255, 152, 0, 0.1);
+        color: #f57c00;
+        border-color: rgba(255, 152, 0, 0.3);
+    }
+
+    &--danger {
+        background-color: rgba(244, 67, 54, 0.1);
+        color: #d32f2f;
+        border-color: rgba(244, 67, 54, 0.3);
+    }
+}
+
+/* Employee Name Styles */
+.employee-name {
+    &__primary {
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin-bottom: 2px;
+    }
+
+    &__secondary {
+        font-size: 0.8rem;
+        color: var(--color-text-secondary);
+    }
+}
+
+/* Employee Position Styles */
+.employee-position {
+    &__title {
+        font-weight: 500;
+        color: var(--color-text-primary);
+        margin-bottom: 2px;
+    }
+
+    &__department {
+        font-size: 0.8rem;
+        color: var(--color-text-secondary);
+    }
+}
+
+/* Contract Type Styles */
+.contract-type {
+    display: inline-block;
+    padding: 2px 8px;
+    background-color: var(--color-surface-hover);
+    color: var(--color-text-secondary);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+}
+
+/* Salary Info Styles */
+.salary-info {
+    &__monthly {
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin-bottom: 2px;
+    }
+
+    &__period {
+        font-size: 0.75rem;
+        color: var(--color-text-tertiary);
+    }
+}
+
+/* Enhanced Header Styles */
+.employees-header {
+    &__content {
+        flex: 1;
+    }
+
+    &__title {
+        margin: 0 0 4px 0;
+        font-size: 1.75rem;
+        font-weight: var(--bold-font-weight);
+        color: var(--head-title-color);
+    }
+
+    &__subtitle {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--color-text-secondary);
+    }
+}
+
+/* Button Styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+
+    &-primary {
+        background-color: var(--color-primary);
+        color: var(--color-text-inverse);
+
+        &:hover {
+            background-color: var(--color-primary-dark);
+        }
+    }
+}
+
+/* Filter Select Styles */
+.filter-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+
+    &:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.1);
+    }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] {
+    .status-badge {
+        &--success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+        }
+
+        &--active {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+        }
+
+        &--secondary {
+            background-color: rgba(158, 158, 158, 0.2);
+            color: #bdbdbd;
+        }
+
+        &--info {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #64b5f6;
+        }
+
+        &--warning {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #ffb74d;
+        }
+
+        &--danger {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #e57373;
+        }
+    }
+
+    .employee-avatar__placeholder {
+        background-color: rgba(72, 128, 255, 0.2);
+        color: var(--color-primary-light);
+    }
+}
