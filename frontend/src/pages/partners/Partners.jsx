@@ -127,7 +127,7 @@ const Partners = () => {
 
     return (
         <div className="partner-table-container">
-            <div className="table-header">
+            <div className="departments-header">
                 <h2>{t('partners.title', 'Partners')}</h2>
                 {isAdmin && (
                     <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>

@@ -47,8 +47,15 @@ const EmployeesList = () => {
             setFilteredEmployees(data);
             setLoading(false);
 
-            // Extract unique departments and positions for filters
-            const depts = [...new Set(data.map(emp => emp.jobPositionDepartment).filter(Boolean))];
+            // Extract unique departments and positions for filters - FIX: Handle department objects
+            const depts = [...new Set(data.map(emp => {
+                // Handle department as object or string
+                if (emp.jobPositionDepartment && typeof emp.jobPositionDepartment === 'object') {
+                    return emp.jobPositionDepartment.name;
+                }
+                return emp.jobPositionDepartment;
+            }).filter(Boolean))];
+
             const pos = [...new Set(data.map(emp => emp.position).filter(Boolean))];
             setDepartments(depts);
             setPositions(pos);
@@ -129,7 +136,14 @@ const EmployeesList = () => {
         }
 
         if (departmentFilter) {
-            result = result.filter(employee => employee.jobPositionDepartment === departmentFilter);
+            result = result.filter(employee => {
+                // Handle department as object or string
+                const empDept = employee.jobPositionDepartment;
+                if (empDept && typeof empDept === 'object') {
+                    return empDept.name === departmentFilter;
+                }
+                return empDept === departmentFilter;
+            });
         }
 
         if (positionFilter) {
@@ -347,6 +361,23 @@ const EmployeesList = () => {
         );
     };
 
+    // Helper function to safely get department name
+    const getDepartmentName = (employee) => {
+        if (!employee.jobPositionDepartment) return 'N/A';
+
+        // If department is an object, get its name property
+        if (typeof employee.jobPositionDepartment === 'object' && employee.jobPositionDepartment.name) {
+            return employee.jobPositionDepartment.name;
+        }
+
+        // If department is already a string
+        if (typeof employee.jobPositionDepartment === 'string') {
+            return employee.jobPositionDepartment;
+        }
+
+        return 'N/A';
+    };
+
     // Define columns for DataTable
     const columns = [
         {
@@ -399,7 +430,7 @@ const EmployeesList = () => {
                         {employee.position || employee.jobPositionName || 'N/A'}
                     </div>
                     <div className="employee-position__department">
-                        {employee.jobPositionDepartment || 'N/A'}
+                        {getDepartmentName(employee)}
                     </div>
                 </div>
             )
