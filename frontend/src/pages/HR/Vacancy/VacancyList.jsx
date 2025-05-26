@@ -16,11 +16,14 @@ const VacancyList = () => {
     const [error, setError] = useState(null);
     const [jobPositions, setJobPositions] = useState([]);
 
-    // Fetch vacancies data from the API
+    // Enhanced fetch function with better error handling
     const fetchVacancies = async () => {
         try {
             setLoading(true);
+            setError(null);
             const token = localStorage.getItem('token');
+
+            console.log('Fetching vacancies from API...');
             const response = await fetch('http://localhost:8080/api/v1/vacancies', {
                 method: 'GET',
                 headers: {
@@ -29,40 +32,93 @@ const VacancyList = () => {
                 }
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
-            // Get the raw response text first for debugging
+            // Get the raw response as text first to inspect it
             const responseText = await response.text();
             console.log('Raw response length:', responseText.length);
+            console.log('Response content type:', response.headers.get('content-type'));
 
-            // Check if response looks like valid JSON
-            if (!responseText.trim().startsWith('[') && !responseText.trim().startsWith('{')) {
-                throw new Error('Response is not valid JSON format');
+            // Log first and last 200 characters for debugging
+            if (responseText.length > 0) {
+                console.log('Response start:', responseText.substring(0, 200));
+                console.log('Response end:', responseText.substring(Math.max(0, responseText.length - 200)));
             }
 
-            try {
-                const data = JSON.parse(responseText);
-                console.log('Successfully parsed vacancies:', data?.length || 0, 'items');
-
-                // Ensure data is an array
-                const vacanciesArray = Array.isArray(data) ? data : [];
-                setVacancies(vacanciesArray);
+            // Check if the response is empty
+            if (!responseText.trim()) {
+                console.warn('Empty response received');
+                setVacancies([]);
                 setLoading(false);
+                return;
+            }
+
+            // Validate JSON structure before parsing
+            if (!responseText.trim().startsWith('[') && !responseText.trim().startsWith('{')) {
+                throw new Error('Response is not valid JSON format. Expected array or object.');
+            }
+
+            // Check for common JSON corruption patterns
+            if (responseText.includes(']}}}]}}]}}]}')) {
+                console.error('Detected corrupted JSON with excessive closing brackets');
+                throw new Error('Server returned corrupted JSON data. Please contact administrator.');
+            }
+
+            let data;
+            try {
+                data = JSON.parse(responseText);
+                console.log('Successfully parsed JSON. Type:', typeof data, 'Length:', Array.isArray(data) ? data.length : 'N/A');
             } catch (jsonError) {
                 console.error('JSON Parse Error:', jsonError);
-                console.error('Problematic response excerpt:', responseText.substring(0, 1000));
+                console.error('Problematic JSON section around error:');
 
-                // Try to use empty array as fallback
-                setVacancies([]);
-                setError(`Data format error: ${jsonError.message}. Please check the server response.`);
-                setLoading(false);
+                // Try to find the problematic section
+                const errorMatch = jsonError.message.match(/position (\d+)/);
+                if (errorMatch) {
+                    const position = parseInt(errorMatch[1]);
+                    const start = Math.max(0, position - 50);
+                    const end = Math.min(responseText.length, position + 50);
+                    console.error('Context:', responseText.substring(start, end));
+                }
+
+                throw new Error(`Invalid JSON response from server: ${jsonError.message}`);
             }
+
+            // Ensure data is an array
+            if (!Array.isArray(data)) {
+                console.warn('Response is not an array, converting...');
+                data = data ? [data] : [];
+            }
+
+            // Validate each vacancy object
+            const validVacancies = data.filter((vacancy, index) => {
+                if (!vacancy || typeof vacancy !== 'object') {
+                    console.warn(`Invalid vacancy at index ${index}:`, vacancy);
+                    return false;
+                }
+
+                // Check for required fields
+                if (!vacancy.id || !vacancy.title) {
+                    console.warn(`Vacancy missing required fields at index ${index}:`, vacancy);
+                    return false;
+                }
+
+                return true;
+            });
+
+            console.log(`Valid vacancies: ${validVacancies.length}/${data.length}`);
+            setVacancies(validVacancies);
+            setLoading(false);
+
         } catch (error) {
             console.error('Error fetching vacancies:', error);
-            setError(error.message);
-            setVacancies([]); // Set empty array on error
+            setError(`Failed to load vacancies: ${error.message}`);
+            setVacancies([]);
             setLoading(false);
         }
     };
@@ -83,10 +139,16 @@ const VacancyList = () => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            const data = await response.json();
-            setJobPositions(data);
+            const responseText = await response.text();
+            if (responseText.trim()) {
+                const data = JSON.parse(responseText);
+                setJobPositions(Array.isArray(data) ? data : []);
+            } else {
+                setJobPositions([]);
+            }
         } catch (error) {
             console.error('Error fetching job positions:', error);
+            setJobPositions([]);
         }
     };
 
@@ -99,8 +161,12 @@ const VacancyList = () => {
     // Format date for display (YYYY-MM-DD to DD/MM/YYYY)
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString();
+        try {
+            const date = new Date(dateString);
+            return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleDateString();
+        } catch (error) {
+            return 'Invalid Date';
+        }
     };
 
     // Get status badge class based on status
@@ -115,7 +181,7 @@ const VacancyList = () => {
 
         return (
             <span className={`status-badge status-badge--${colorClass}`}>
-                {status}
+                {status || 'UNKNOWN'}
             </span>
         );
     };
@@ -137,11 +203,14 @@ const VacancyList = () => {
         );
     };
 
-    // Handle adding a new vacancy
+    // Enhanced add vacancy with better error handling
     const handleAddVacancy = async (newVacancy) => {
         try {
             setLoading(true);
+            setError(null);
             const token = localStorage.getItem('token');
+
+            console.log('Adding new vacancy:', newVacancy);
 
             const response = await fetch('http://localhost:8080/api/v1/vacancies', {
                 method: 'POST',
@@ -152,17 +221,27 @@ const VacancyList = () => {
                 body: JSON.stringify(newVacancy)
             });
 
+            console.log('Add vacancy response status:', response.status);
+
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                const errorText = await response.text();
+                console.error('Add vacancy error response:', errorText);
+                throw new Error(`Failed to create vacancy: ${response.status} ${response.statusText}`);
             }
+
+            console.log('Vacancy added successfully, refreshing list...');
 
             // Refresh the vacancy list
             await fetchVacancies();
             setShowAddModal(false);
 
+            // Show success message
+            alert('Vacancy created successfully!');
+
         } catch (error) {
             console.error('Error adding vacancy:', error);
-            setError(error.message);
+            setError(`Failed to create vacancy: ${error.message}`);
+            alert(`Failed to create vacancy: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -172,6 +251,7 @@ const VacancyList = () => {
     const handleEditVacancy = async (updatedVacancy) => {
         try {
             setLoading(true);
+            setError(null);
             const token = localStorage.getItem('token');
 
             const response = await fetch(`http://localhost:8080/api/v1/vacancies/${selectedVacancy.id}`, {
@@ -184,17 +264,20 @@ const VacancyList = () => {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                const errorText = await response.text();
+                throw new Error(`Failed to update vacancy: ${response.status} ${response.statusText}`);
             }
 
             // Refresh the vacancy list
             await fetchVacancies();
             setShowEditModal(false);
             setSelectedVacancy(null);
+            alert('Vacancy updated successfully!');
 
         } catch (error) {
             console.error('Error updating vacancy:', error);
-            setError(error.message);
+            setError(`Failed to update vacancy: ${error.message}`);
+            alert(`Failed to update vacancy: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -208,6 +291,7 @@ const VacancyList = () => {
 
         try {
             setLoading(true);
+            setError(null);
             const token = localStorage.getItem('token');
 
             const response = await fetch(`http://localhost:8080/api/v1/vacancies/${vacancyId}`, {
@@ -219,15 +303,17 @@ const VacancyList = () => {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(`Failed to delete vacancy: ${response.status}`);
             }
 
             // Refresh the vacancy list
             await fetchVacancies();
+            alert('Vacancy deleted successfully!');
 
         } catch (error) {
             console.error('Error deleting vacancy:', error);
-            setError(error.message);
+            setError(`Failed to delete vacancy: ${error.message}`);
+            alert(`Failed to delete vacancy: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -249,6 +335,15 @@ const VacancyList = () => {
         navigate(`/hr/vacancies/${vacancy.id}`);
     };
 
+    // Safe accessor for nested properties
+    const safeGet = (obj, path, defaultValue = 'N/A') => {
+        try {
+            return path.split('.').reduce((current, key) => current?.[key], obj) || defaultValue;
+        } catch {
+            return defaultValue;
+        }
+    };
+
     // Define columns for DataTable
     const columns = [
         {
@@ -258,7 +353,7 @@ const VacancyList = () => {
             render: (vacancy) => (
                 <div className="vacancy-title">
                     <div className="vacancy-title__primary">
-                        {vacancy.title}
+                        {vacancy.title || 'Untitled'}
                     </div>
                     <div className="vacancy-title__secondary">
                         {vacancy.description && vacancy.description.length > 50
@@ -274,10 +369,10 @@ const VacancyList = () => {
             render: (vacancy) => (
                 <div className="vacancy-position">
                     <div className="vacancy-position__title">
-                        {vacancy.jobPosition ? vacancy.jobPosition.positionName : 'N/A'}
+                        {safeGet(vacancy, 'jobPosition.positionName')}
                     </div>
                     <div className="vacancy-position__department">
-                        {vacancy.jobPosition ? vacancy.jobPosition.department : 'N/A'}
+                        {safeGet(vacancy, 'jobPosition.department')}
                     </div>
                 </div>
             )
@@ -345,11 +440,11 @@ const VacancyList = () => {
         { header: 'Position', accessor: 'jobPosition.positionName' }
     ];
 
-    // Get unique values for filters
+    // Get unique values for filters (with null checks)
     const uniqueStatuses = [...new Set(vacancies.map(v => v.status).filter(Boolean))];
     const uniquePriorities = [...new Set(vacancies.map(v => v.priority).filter(Boolean))];
     const uniqueDepartments = [...new Set(vacancies
-        .map(v => v.jobPosition?.department)
+        .map(v => safeGet(v, 'jobPosition.department', null))
         .filter(Boolean))];
 
     // Define custom filters
@@ -411,12 +506,65 @@ const VacancyList = () => {
         }
     ];
 
-    // If there's an error fetching data and not loading
+    // Enhanced error display
     if (error && !loading) {
         return (
-            <div className="error-container">
-                <p>Error: {error}</p>
-                <button onClick={fetchVacancies}>Try Again</button>
+            <div className="vacancy-container">
+                <div className="departments-header">
+                    <div className="vacancy-header__content">
+                        <h1 className="vacancy-header__title">Job Vacancies</h1>
+                        <p className="vacancy-header__subtitle">
+                            Manage job postings and recruitment opportunities
+                        </p>
+                    </div>
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => setShowAddModal(true)}
+                    >
+                        <FaPlus />
+                        <span>Post New Vacancy</span>
+                    </button>
+                </div>
+
+                <div className="error-container" style={{
+                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    color: 'var(--color-danger)',
+                    padding: '24px',
+                    borderRadius: 'var(--radius-md)',
+                    textAlign: 'center',
+                    margin: '24px 0'
+                }}>
+                    <h3>Unable to Load Vacancies</h3>
+                    <p>{error}</p>
+                    <div style={{ marginTop: '16px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                        <button
+                            onClick={fetchVacancies}
+                            style={{
+                                backgroundColor: 'var(--color-primary)',
+                                color: 'white',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: 'var(--radius-sm)',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Retry
+                        </button>
+                        <button
+                            onClick={() => window.location.reload()}
+                            style={{
+                                backgroundColor: 'var(--color-secondary)',
+                                color: 'white',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: 'var(--radius-sm)',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Refresh Page
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }

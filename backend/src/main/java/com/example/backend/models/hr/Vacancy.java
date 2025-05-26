@@ -1,6 +1,8 @@
 package com.example.backend.models.hr;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +45,9 @@ public class Vacancy {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "job_position_id")
+    @JsonManagedReference("vacancy-jobposition")
     private JobPosition jobPosition;
+
 
     @OneToMany(mappedBy = "vacancy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore // Exclude from JSON to prevent circular references
