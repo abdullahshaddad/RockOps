@@ -183,12 +183,6 @@ const Sidebar = () => {
             hasSubmenu: true,
             submenuItems: [
                 {
-                    title: 'Merchants',
-                    icon: <BsFillPersonVcardFill/>,
-                    path: '/merchants',
-                    roles: ['ADMIN', 'USER', 'SITE_ADMIN', 'PROCUREMENT']
-                },
-                {
                     title: 'Request Orders',
                     icon: <FaFileContract/>,
                     path: '/procurement/request-orders',
@@ -281,7 +275,7 @@ const Sidebar = () => {
                                     }}
                                 >
 
-                                <span className="menu-icon">{item.icon}</span>
+                                    <span className="menu-icon">{item.icon}</span>
                                     <span className="menu-title">{t(item.title)}</span>
                                     {item.hasSubmenu && (
                                         <span className="submenu-toggle">

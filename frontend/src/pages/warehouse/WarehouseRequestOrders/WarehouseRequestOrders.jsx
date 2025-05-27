@@ -74,28 +74,21 @@ const WarehouseRequestOrders = ({ warehouseId }) => {
     ];
 
     // Column configuration for validated request orders
+    // Updated column configuration for validated request orders
     const validatedOrderColumns = [
         {
-            id: 'itemName',
-            label: 'ITEM',
-            width: '180px',
+            id: 'title',
+            label: 'TITLE',
+            width: '200px',
             sortable: true,
             render: (row) => {
-                return row.item?.name || row.itemName || 'N/A';
+                return row.title || 'N/A';
             }
-        },
-        {
-            id: 'requestedQuantity',
-            label: 'REQUESTED QTY',
-            width: '130px',
-            sortable: true,
-            sortType: 'number',
-            align: 'center'
         },
         {
             id: 'deadline',
             label: 'DEADLINE',
-            width: '140px',
+            width: '200px',
             sortable: true,
             sortType: 'date',
             render: (row) => {
@@ -103,28 +96,42 @@ const WarehouseRequestOrders = ({ warehouseId }) => {
             }
         },
         {
-            id: 'approvedQuantity',
-            label: 'APPROVED QTY',
-            width: '130px',
-            sortable: true,
-            sortType: 'number',
-            align: 'center'
-        },
-        {
-            id: 'validatedBy',
-            label: 'VALIDATED BY',
-            width: '150px',
-            sortable: true,
-            filterType: 'select'
-        },
-        {
-            id: 'validatedDate',
-            label: 'VALIDATED DATE',
-            width: '140px',
+            id: 'createdAt',
+            label: 'CREATED AT',
+            width: '200px',
             sortable: true,
             sortType: 'date',
             render: (row) => {
-                return row.validatedDate ? new Date(row.validatedDate).toLocaleDateString() : 'N/A';
+                return row.createdAt ? new Date(row.createdAt).toLocaleDateString() : 'N/A';
+            }
+        },
+        {
+            id: 'createdBy',
+            label: 'CREATED BY',
+            width: '200px',
+            sortable: true,
+            render: (row) => {
+                return row.createdBy || 'N/A';
+            }
+        },
+        {
+            id: 'approvedBy',
+            label: 'APPROVED BY',
+            width: '200px',
+            sortable: true,
+            render: (row) => {
+                return row.approvedBy || row.validatedBy || 'N/A';
+            }
+        },
+        {
+            id: 'approvedAt',
+            label: 'APPROVED AT',
+            width: '200px',
+            sortable: true,
+            sortType: 'date',
+            render: (row) => {
+                const approvedDate = row.approvedAt || row.validatedDate || row.approvedDate;
+                return approvedDate ? new Date(approvedDate).toLocaleDateString() : 'N/A';
             }
         }
     ];
@@ -132,7 +139,7 @@ const WarehouseRequestOrders = ({ warehouseId }) => {
     // Action configuration for pending orders - edit and delete
     const pendingActionConfig = {
         label: 'ACTIONS',
-        width: '140px',
+        width: '200px',
         renderActions: (row) => (
             <div className="request-action-buttons">
                 <button

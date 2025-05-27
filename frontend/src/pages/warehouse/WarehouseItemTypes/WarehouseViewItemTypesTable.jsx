@@ -542,20 +542,7 @@ const WarehouseViewItemTypesTable = () => {
                                     />
                                 </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="status">Status</label>
-                                    <select
-                                        id="status"
-                                        name="status"
-                                        value={newItemType.status}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="AVAILABLE">Available</option>
-                                        <option value="OUT_OF_STOCK">Out of Stock</option>
-                                        <option value="DISCONTINUED">Discontinued</option>
-                                        <option value="ON_ORDER">On Order</option>
-                                    </select>
-                                </div>
+
                             </div>
 
                             <div className="form-row">
