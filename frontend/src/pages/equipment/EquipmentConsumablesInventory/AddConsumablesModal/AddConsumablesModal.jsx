@@ -331,20 +331,20 @@ const AddConsumablesModal = ({
     if (!isOpen) return null;
 
     return (
-        <div className="modal-backdrop">
-            <div className="modal">
-                <div className="modal-header">
+        <div className="add-consumables-modal-backdrop">
+            <div className="add-consumables-modal">
+                <div className="add-consumables-modal-header">
                     <h2>Add Consumables Transaction</h2>
-                    <button className="close-modal" onClick={onClose}>
+                    <button className="add-consumables-close-modal" onClick={onClose}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M18 6L6 18M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>
 
-                <form className="form-transaction" onSubmit={handleSubmit}>
+                <form className="add-consumables-form-transaction" onSubmit={handleSubmit}>
                     {/* Transaction Date - Full Width */}
-                    <div className="form-group full-width">
+                    <div className="add-consumables-form-group add-consumables-full-width">
                         <label htmlFor="transactionDate">Transaction Date</label>
                         <input
                             type="datetime-local"
@@ -357,9 +357,9 @@ const AddConsumablesModal = ({
                     </div>
 
                     {/* Batch Number - Full Width */}
-                    <div className="form-group full-width">
+                    <div className="add-consumables-form-group add-consumables-full-width">
                         <label htmlFor="batchNumber">Batch Number</label>
-                        <div className="batch-input-group">
+                        <div className="add-consumables-batch-input-group">
                             <input
                                 type="number"
                                 id="batchNumber"
@@ -372,8 +372,8 @@ const AddConsumablesModal = ({
                             />
                         </div>
                         {batchVerificationResult && (
-                            <div className={`batch-verification-result ${batchVerificationResult.found && !batchVerificationResult.error ? 'success' : 'warning'}`}>
-                                <div className="verification-icon">
+                            <div className={`add-consumables-batch-verification-result ${batchVerificationResult.found && !batchVerificationResult.error ? 'add-consumables-success' : 'add-consumables-warning'}`}>
+                                <div className="add-consumables-verification-icon">
                                     {batchVerificationResult.found && !batchVerificationResult.error ? (
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
@@ -392,9 +392,9 @@ const AddConsumablesModal = ({
                     </div>
 
                     {/* Source and Destination */}
-                    <div className="form-row">
+                    <div className="add-consumables-form-row">
                         {/* Site Selection */}
-                        <div className="form-group">
+                        <div className="add-consumables-form-group">
                             <label htmlFor="site">Source Site</label>
                             <select
                                 id="site"
@@ -412,7 +412,7 @@ const AddConsumablesModal = ({
                         </div>
 
                         {/* Warehouse Selection */}
-                        <div className="form-group">
+                        <div className="add-consumables-form-group">
                             <label>Source Warehouse</label>
                             <select
                                 value={newTransaction.senderId}
@@ -434,23 +434,23 @@ const AddConsumablesModal = ({
                     </div>
 
                     {/* Destination (Fixed) */}
-                    <div className="form-group full-width">
+                    <div className="add-consumables-form-group add-consumables-full-width">
                         <label>Destination (This Equipment)</label>
                         <input
                             type="text"
                             value={equipmentData?.name || "This Equipment"}
                             disabled
-                            className="disabled-input"
+                            className="add-consumables-disabled-input"
                         />
                     </div>
 
                     {/* Items Section - Full Width */}
-                    <div className="form-group full-width">
-                        <div className="items-section-header">
+                    <div className="add-consumables-form-group add-consumables-full-width">
+                        <div className="add-consumables-items-section-header">
                             <label>Requested Items</label>
                             <button
                                 type="button"
-                                className="add-item-button"
+                                className="add-consumables-add-item-button"
                                 onClick={addItem}
                                 disabled={!newTransaction.senderId}
                             >
@@ -459,13 +459,13 @@ const AddConsumablesModal = ({
                         </div>
 
                         {newTransaction.items.map((item, index) => (
-                            <div key={index} className="transaction-item-container">
-                                <div className="transaction-item-header">
+                            <div key={index} className="add-consumables-transaction-item-container">
+                                <div className="add-consumables-transaction-item-header">
                                     <span>Item {index + 1}</span>
                                     {newTransaction.items.length > 1 && (
                                         <button
                                             type="button"
-                                            className="remove-item-button"
+                                            className="add-consumables-remove-item-button"
                                             onClick={() => removeItem(index)}
                                         >
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -475,8 +475,8 @@ const AddConsumablesModal = ({
                                         </button>
                                     )}
                                 </div>
-                                <div className="form-row">
-                                    <div className="form-group">
+                                <div className="add-consumables-form-row">
+                                    <div className="add-consumables-form-group">
                                         <label>Item Type</label>
                                         <select
                                             value={item.itemType.id}
@@ -489,7 +489,7 @@ const AddConsumablesModal = ({
                                         </select>
                                     </div>
 
-                                    <div className="form-group">
+                                    <div className="add-consumables-form-group">
                                         <label>Quantity</label>
                                         <input
                                             type="number"
@@ -505,8 +505,8 @@ const AddConsumablesModal = ({
                         ))}
                     </div>
 
-                    <div className="modal-footer">
-                        <button type="submit" className="submit-button" disabled={isSubmitting}>
+                    <div className="add-consumables-modal-footer">
+                        <button type="submit" className="add-consumables-submit-button" disabled={isSubmitting}>
                             {isSubmitting ? "Processing..." : "Request Consumables"}
                         </button>
                     </div>

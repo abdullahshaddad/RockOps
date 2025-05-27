@@ -434,7 +434,7 @@ public class TransactionService {
         consumedConsumable.setEquipment(equipment);
         consumedConsumable.setItemType(itemType);
         if (transactionItem.getQuantity() < quantity) {
-        consumedConsumable.setQuantity(quantity-(quantity-transactionItem.getQuantity()));
+            consumedConsumable.setQuantity(quantity-(quantity-transactionItem.getQuantity()));
         }
         else {
             consumedConsumable.setQuantity(quantity);
@@ -443,10 +443,6 @@ public class TransactionService {
         consumedConsumable.setStatus(ItemStatus.CONSUMED);
         consumedConsumable.setTransaction(transaction);
         consumableRepository.save(consumedConsumable);
-
-       
-
-
     }
 
     // ========================================

@@ -45,10 +45,10 @@ public class VacancyService {
             LocalDate postingDate = null;
             LocalDate closingDate = null;
             
-            if (vacancyData.get("postingDate") != null) {
+            if (vacancyData.get("postingDate") != null && !((String) vacancyData.get("postingDate")).trim().isEmpty()) {
                 postingDate = LocalDate.parse((String) vacancyData.get("postingDate"));
             }
-            if (vacancyData.get("closingDate") != null) {
+            if (vacancyData.get("closingDate") != null && !((String) vacancyData.get("closingDate")).trim().isEmpty()) {
                 closingDate = LocalDate.parse((String) vacancyData.get("closingDate"));
             }
 

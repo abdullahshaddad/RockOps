@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import DataTable from "../../../components/common/DataTable/DataTable.jsx";
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx";
@@ -153,26 +153,22 @@ const WarehouseViewItemTypesTable = ({ warehouseId }) => {
     ];
 
     // Action configuration for DataTable
-    const getActions = (row) => {
-        if (userRole !== "WAREHOUSE_MANAGER") {
-            return [];
+    const actions = useMemo(() => [
+        {
+            label: 'Edit item type',
+            icon: <FaEdit />,
+            onClick: (row) => openItemModal(row),
+            className: 'primary',
+            isDisabled: () => userRole !== "WAREHOUSE_MANAGER"
+        },
+        {
+            label: 'Delete item type',
+            icon: <FaTrash />,
+            onClick: (row) => deleteItemType(row.id),
+            className: 'danger',
+            isDisabled: () => userRole !== "WAREHOUSE_MANAGER"
         }
-        
-        return [
-            {
-                label: 'Edit item type',
-                icon: <FaEdit />,
-                onClick: (row) => openItemModal(row),
-                className: 'primary'
-            },
-            {
-                label: 'Delete item type',
-                icon: <FaTrash />,
-                onClick: (row) => deleteItemType(row.id),
-                className: 'danger'
-            }
-        ];
-    };
+    ], [userRole]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -202,12 +198,18 @@ const WarehouseViewItemTypesTable = ({ warehouseId }) => {
             return;
         }
 
+        // Additional validation to ensure itemCategory is not empty
+        if (!newItemType.itemCategory || newItemType.itemCategory === "") {
+            showSnackbar("Please select a valid item category.", 'error');
+            return;
+        }
+
         try {
             const token = localStorage.getItem("token");
 
             const requestBody = {
                 name: newItemType.name,
-                itemCategoryId: newItemType.itemCategory,
+                itemCategory: newItemType.itemCategory,
                 minQuantity: newItemType.minQuantity,
                 measuringUnit: newItemType.measuringUnit,
                 serialNumber: newItemType.serialNumber,
@@ -349,7 +351,7 @@ const WarehouseViewItemTypesTable = ({ warehouseId }) => {
                 filterableColumns={columns.filter(col => col.sortable)}
                 itemsPerPageOptions={[10, 25, 50, 100]}
                 defaultItemsPerPage={15}
-                actions={getActions}
+                actions={actions}
                 className="item-types-table"
             />
 

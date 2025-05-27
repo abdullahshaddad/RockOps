@@ -147,6 +147,9 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                 ...formData,
                 status: 'ACTIVE', // Always set status to ACTIVE
                 jobPositionId: formData.jobPositionId ? parseInt(formData.jobPositionId) : null,
+                // Convert empty date strings to null to prevent backend parsing errors
+                birthDate: formData.birthDate && formData.birthDate.trim() !== '' ? formData.birthDate : null,
+                hireDate: formData.hireDate && formData.hireDate.trim() !== '' ? formData.hireDate : null
             };
 
             onSave(modifiedFormData, photoFile, idFrontFile, idBackFile);
