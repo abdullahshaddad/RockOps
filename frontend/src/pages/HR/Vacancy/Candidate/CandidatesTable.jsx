@@ -59,13 +59,27 @@ const CandidatesTable = ({ vacancyId }) => {
     const handleAddCandidate = async (formData) => {
         try {
             setLoading(true);
-            await candidateService.create(formData);
+            setError(null); // Clear any previous errors
+            
+            console.log('Submitting candidate data:', formData); // Debug log
+            
+            const response = await candidateService.create(formData);
+            console.log('Candidate created successfully:', response); // Debug log
+            
             await refreshData();
             setShowAddModal(false);
         } catch (error) {
             console.error('Error adding candidate:', error);
-            setError(error.message);
-            setLoading(false);
+            console.error('Error details:', error.response?.data || error.message);
+            
+            // Set a more descriptive error message
+            const errorMessage = error.response?.data?.message || 
+                                error.response?.data?.error || 
+                                error.message || 
+                                'Failed to add candidate';
+            setError(errorMessage);
+        } finally {
+            setLoading(false); // Always reset loading state
         }
     };
 
@@ -264,6 +278,20 @@ const CandidatesTable = ({ vacancyId }) => {
 
     return (
         <div className="candidates-section">
+            {/* Error Display */}
+            {error && (
+                <div className="error-alert" style={{
+                    backgroundColor: '#f8d7da',
+                    color: '#721c24',
+                    padding: '12px',
+                    borderRadius: '4px',
+                    marginBottom: '16px',
+                    border: '1px solid #f5c6cb'
+                }}>
+                    <strong>Error:</strong> {error}
+                </div>
+            )}
+
             {/* Vacancy Statistics */}
             {vacancyStats && (
                 <div className="vacancy-stats">
@@ -300,13 +328,14 @@ const CandidatesTable = ({ vacancyId }) => {
                 <button
                     className="btn-primary"
                     onClick={() => setShowAddModal(true)}
+                    disabled={loading}
                 >
-                    Add Candidate
+                    {loading ? 'Loading...' : 'Add Candidate'}
                 </button>
             </div>
 
             <DataTable
-                data={candidates}
+                data={candidates || []} // Ensure data is always an array
                 columns={columns}
                 actions={actions}
                 loading={loading}

@@ -196,17 +196,14 @@
 }
 
 .stat-card {
-  background: white;
-  border-radius: var(--po-radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--po-shadow);
-  border: 1px solid var(--po-gray-100);
+  background-color: var(--section-background-color);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  transition: var(--po-transition);
-  position: relative;
-  overflow: hidden;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-normal);
+  border: 1px solid var(--border-color);
 
   &:hover {
     transform: translateY(-2px);

@@ -1,6 +1,6 @@
 package com.example.backend.config;
 
-import com.example.backend.models.Role;
+import com.example.backend.models.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

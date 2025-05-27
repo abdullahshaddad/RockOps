@@ -1,4 +1,4 @@
-/* Modern DataTable Styles - Clean, Responsive & Accessible */
+/* Modern DataTable Styles - Warehouse Details Style */
 
 .rockops-table {
   /* Table Styles */
@@ -6,14 +6,23 @@
   border-collapse: collapse;
   font-size: 0.875rem;
   background-color: var(--color-surface);
-  /* Container Styles */
+  
+  /* Container Styles - Matching warehouse table cards */
   &__container {
-    background-color: var(--section-background-color);
+    position: relative;
+    padding: 20px;
+    background-color: var(--color-surface);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
     border: 1px solid var(--border-color);
+    font-family: var(--font-family);
+    color: var(--color-text-primary);
+    margin-bottom: 20px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     overflow: hidden;
-    margin-bottom: 2rem;
     width: 100%;
 
     /* Smooth transitions for theme changes */
@@ -22,29 +31,31 @@
     box-shadow var(--transition-fast);
   }
 
-  /* Header Section */
+  /* Header Section - Matching warehouse header style */
   &__header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--color-surface);
+    margin-bottom: 24px;
+    padding: 0;
+    border-bottom: none;
+    background-color: transparent;
     flex-wrap: wrap;
     gap: 1rem;
 
     @media (max-width: 768px) {
       flex-direction: column;
       align-items: stretch;
-      padding: 1rem;
+      gap: 1rem;
     }
   }
 
   &__title {
-    font-size: 1.25rem;
+    font-size: 28px;
     font-weight: var(--bold-font-weight);
-    color: var(--head-title-color);
+    color: var(--color-text-primary);
     margin: 0;
+    margin-right: 16px;
     line-height: 1.4;
   }
 
@@ -60,10 +71,10 @@
     }
   }
 
-  /* Search Input */
+  /* Search Input - Matching warehouse search style */
   &__search {
     position: relative;
-    min-width: 280px;
+    min-width: 300px;
 
     @media (max-width: 768px) {
       min-width: 200px;
@@ -73,24 +84,25 @@
 
   &__search-icon {
     position: absolute;
-    left: 0.875rem;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--color-text-tertiary);
-    font-size: 0.875rem;
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-secondary);
     pointer-events: none;
   }
 
   &__search-input {
     width: 100%;
-    padding: 0.75rem 0.875rem 0.75rem 2.5rem;
+    padding: 12px 18px 12px 42px;
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    border-radius: 10px;
     background-color: var(--color-surface);
     color: var(--color-text-primary);
-    font-size: 0.875rem;
-    transition: border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
+    font-size: 14px;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
 
     &::placeholder {
       color: var(--color-text-tertiary);
@@ -99,7 +111,7 @@
     &:focus {
       outline: none;
       border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.1);
+      box-shadow: 0 0 0 4px rgba(72, 128, 255, 0.1);
     }
   }
 
@@ -108,16 +120,17 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1rem;
+    padding: 12px 18px;
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    border-radius: 10px;
     background-color: var(--color-surface);
     color: var(--color-text-primary);
-    font-size: 0.875rem;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-fast);
     white-space: nowrap;
+    box-shadow: var(--shadow-sm);
 
     &:hover {
       background-color: var(--color-surface-hover);
@@ -152,7 +165,8 @@
   &__filter-panel {
     background-color: var(--color-surface);
     border-bottom: 1px solid var(--border-color);
-    padding: 1.5rem;
+    padding: 1.5rem 0;
+    margin-bottom: 1rem;
     animation: slideDown 0.2s ease-out;
   }
 
@@ -200,8 +214,13 @@
     gap: 0.75rem;
   }
 
-  /* Table Wrapper */
+  /* Table Wrapper - Matching warehouse table card style */
   &__wrapper {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    width: 100%;
     overflow-x: auto;
     position: relative;
   }
@@ -227,24 +246,22 @@
     margin-bottom: 1rem;
   }
 
-
-
-  /* Table Header */
+  /* Table Header - Matching warehouse header style */
   &__header {
-    background-color: var(--main-background-color);
+    background-color: var(--color-surface-hover);
   }
 
   &__th {
-    padding: 1rem 1.25rem;
+    padding: 16px 12px;
     text-align: left;
     font-weight: var(--bold-font-weight);
-    color: var(--head-title-color);
-    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     white-space: nowrap;
-    background-color: var(--main-background-color);
+    background-color: var(--color-surface-hover);
     position: sticky;
     top: 0;
     z-index: 2;
@@ -261,7 +278,7 @@
 
     &--actions {
       width: 120px;
-      text-align: center;
+      text-align: left;
     }
   }
 
@@ -279,7 +296,7 @@
     transition: color var(--transition-fast);
   }
 
-  /* Table Body */
+  /* Table Body - Matching warehouse row style */
   tbody {
     tr {
       transition: background-color var(--transition-fast);
@@ -300,35 +317,44 @@
   }
 
   &__cell {
-    padding: 1rem 1.25rem;
+    padding: 16px 12px;
     color: var(--color-text-primary);
     vertical-align: middle;
     border-bottom: 1px solid var(--border-color);
+    font-size: 12px;
+    white-space: nowrap;
+    text-align: left;
 
     &--actions {
-      text-align: center;
-      padding: 0.75rem;
+      text-align: left;
+      padding-right: 20px;
     }
   }
 
-  /* Actions Column */
+  /* Actions Column - Matching warehouse action buttons */
   &__actions {
     position: relative;
     display: inline-block;
   }
 
   &__action-toggle {
-    background: transparent;
-    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--color-surface-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
     color: var(--color-text-tertiary);
-    padding: 0.5rem;
-    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: all var(--transition-fast);
+    padding: 0;
 
     &:hover {
       background-color: var(--color-surface-hover);
       color: var(--color-text-primary);
+      border-color: var(--color-primary);
     }
   }
 
@@ -385,28 +411,28 @@
 
   &__actions-inline {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    gap: 0.25rem;
+    gap: 8px;
   }
 
   &__action-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--color-surface-hover);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    background-color: transparent;
-    color: var(--color-text-tertiary);
+    border: 1px solid var(--border-color);
     cursor: pointer;
     transition: all var(--transition-fast);
+    padding: 0;
     font-size: 0.875rem;
 
     &:hover:not(:disabled) {
       background-color: var(--color-surface-hover);
-      color: var(--color-text-primary);
+      border-color: var(--color-primary);
     }
 
     &:disabled {
@@ -419,6 +445,7 @@
 
       &:hover:not(:disabled) {
         background-color: rgba(72, 128, 255, 0.1);
+        border-color: var(--color-primary);
       }
     }
 
@@ -427,6 +454,7 @@
 
       &:hover:not(:disabled) {
         background-color: rgba(244, 67, 54, 0.1);
+        border-color: var(--color-danger);
       }
     }
 
@@ -435,6 +463,7 @@
 
       &:hover:not(:disabled) {
         background-color: rgba(76, 175, 80, 0.1);
+        border-color: var(--color-success);
       }
     }
 
@@ -443,7 +472,13 @@
 
       &:hover:not(:disabled) {
         background-color: rgba(255, 152, 0, 0.1);
+        border-color: var(--color-warning);
       }
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
     }
   }
 
@@ -452,11 +487,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem;
+    padding: 1.5rem 0 0 0;
     border-top: 1px solid var(--border-color);
-    background-color: var(--color-surface);
+    background-color: transparent;
     flex-wrap: wrap;
     gap: 1rem;
+    margin-top: 1rem;
 
     @media (max-width: 768px) {
       flex-direction: column;
@@ -470,7 +506,7 @@
     align-items: center;
     gap: 0.75rem;
     color: var(--color-text-secondary);
-    font-size: 0.875rem;
+    font-size: 14px;
 
     select {
       padding: 0.5rem 0.75rem;
@@ -478,7 +514,7 @@
       border-radius: var(--radius-sm);
       background-color: var(--color-surface);
       color: var(--color-text-primary);
-      font-size: 0.875rem;
+      font-size: 14px;
       cursor: pointer;
 
       &:focus {
@@ -490,7 +526,7 @@
 
   &__showing {
     color: var(--color-text-secondary);
-    font-size: 0.875rem;
+    font-size: 14px;
 
     @media (max-width: 768px) {
       text-align: center;
@@ -638,27 +674,32 @@
 
     &__th,
     &__cell {
-      padding: 0.75rem 0.5rem;
-      font-size: 0.8rem;
+      padding: 12px 8px;
+      font-size: 12px;
     }
 
     &__th {
-      font-size: 0.75rem;
+      font-size: 10px;
     }
 
     &__wrapper {
-      margin: 0 -1rem;
+      margin: 0;
     }
 
     &__actions-inline {
-      flex-direction: column;
-      gap: 0.125rem;
+      flex-direction: row;
+      gap: 4px;
     }
 
     &__action-button {
-      width: 1.75rem;
-      height: 1.75rem;
+      width: 32px;
+      height: 32px;
       font-size: 0.75rem;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 }
@@ -667,7 +708,7 @@
 [data-theme="dark"] {
   .rockops-table {
     &__search-input:focus {
-      box-shadow: 0 0 0 3px rgba(106, 154, 255, 0.2);
+      box-shadow: 0 0 0 4px rgba(106, 154, 255, 0.2);
     }
 
     &__filter-btn--active {

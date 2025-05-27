@@ -2,8 +2,8 @@ package com.example.backend.controllers;
 
 import com.example.backend.authentication.AuthenticationResponse;
 import com.example.backend.authentication.RegisterRequest;
-import com.example.backend.models.Role;
-import com.example.backend.models.User;
+import com.example.backend.models.user.Role;
+import com.example.backend.models.user.User;
 import com.example.backend.services.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

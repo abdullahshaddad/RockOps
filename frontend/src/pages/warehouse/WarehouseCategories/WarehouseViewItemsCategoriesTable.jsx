@@ -3,9 +3,10 @@ import "./WarehouseViewItemCategories.scss";
 import ParentCategoriesTable from "./ParentCategoriesTable";
 import ChildCategoriesTable from "./ChildCategoriesTable";
 
-const WarehouseViewItemCategoriesTable = () => {
+const WarehouseViewItemCategoriesTable = ({ warehouseId }) => {
   const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef(null);
   const [showNotification, setShowNotification] = useState(false);
@@ -24,7 +25,13 @@ const WarehouseViewItemCategoriesTable = () => {
   const fetchAllCategories = async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = localStorage.getItem("token");
+      
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
       const response = await fetch('http://localhost:8080/api/v1/itemCategories', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -33,13 +40,17 @@ const WarehouseViewItemCategoriesTable = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error("API error response:", errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      setAllCategories(data);
+      setAllCategories(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching categories:", error);
+      setError(error.message);
+      setAllCategories([]);
     } finally {
       setLoading(false);
     }
@@ -47,7 +58,12 @@ const WarehouseViewItemCategoriesTable = () => {
 
   // Fetch all categories on component mount
   useEffect(() => {
-    fetchAllCategories();
+    try {
+      fetchAllCategories();
+    } catch (error) {
+      console.error("Error in useEffect:", error);
+      setError(error.message);
+    }
   }, []);
 
   // Get user role from localStorage
@@ -56,9 +72,7 @@ const WarehouseViewItemCategoriesTable = () => {
       const userInfoString = localStorage.getItem("userInfo");
       if (userInfoString) {
         const userInfo = JSON.parse(userInfoString);
-        console.log("userrrrifnooo" + userInfo);
         setUserRole(userInfo.role);
-        console.log("roleee" + userInfo.role);
       }
     } catch (error) {
       console.error("Error parsing user info:", error);
@@ -264,6 +278,37 @@ const WarehouseViewItemCategoriesTable = () => {
       alert("Failed to delete item category. Error: " + error.message);
     }
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="warehouse-view2">
+        <div className="page-header">
+          <h1 className="page-title2">Item Categories</h1>
+        </div>
+        <div style={{ padding: '40px', textAlign: 'center' }}>
+          <p>Loading categories...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If there's an error, show error message instead of crashing
+  if (error) {
+    return (
+      <div className="warehouse-view2">
+        <div className="page-header">
+          <h1 className="page-title2">Item Categories</h1>
+        </div>
+        <div className="error-container">
+          <p>Error loading categories: {error}</p>
+          <button onClick={fetchAllCategories} className="retry-button">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
       <div className="warehouse-view2">

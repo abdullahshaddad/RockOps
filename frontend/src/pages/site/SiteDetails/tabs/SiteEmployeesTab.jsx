@@ -20,7 +20,7 @@ const SiteEmployeesTab = ({ siteId }) => {
     const isSiteAdmin = currentUser?.role === "SITE_ADMIN" || currentUser?.role === "ADMIN";
 
     const handleRowClick = (row) => {
-        navigate(`/hr/employee-details/${row.employeeID}`);
+        navigate(`/sites/employee-details/${row.employeeID}`);
     };
 
     const columns = [
