@@ -149,7 +149,10 @@ const AddEmployeeModal = ({ onClose, onSave, jobPositions, sites }) => {
                 bonus: formData.bonus ? parseFloat(formData.bonus) : null,
                 commission: formData.commission ? parseFloat(formData.commission) : null,
                 baseSalaryOverride: formData.baseSalaryOverride ? parseFloat(formData.baseSalaryOverride) : null,
-                salaryMultiplier: formData.salaryMultiplier ? parseFloat(formData.salaryMultiplier) : 1.0
+                salaryMultiplier: formData.salaryMultiplier ? parseFloat(formData.salaryMultiplier) : 1.0,
+                // Convert empty date strings to null to prevent backend parsing errors
+                birthDate: formData.birthDate && formData.birthDate.trim() !== '' ? formData.birthDate : null,
+                hireDate: formData.hireDate && formData.hireDate.trim() !== '' ? formData.hireDate : null
             };
 
             // Remove siteId as it's not in the DTO
@@ -411,21 +414,6 @@ const AddEmployeeModal = ({ onClose, onSave, jobPositions, sites }) => {
                                     {errors.country && <span className="r4m-error-message">{errors.country}</span>}
                                 </div>
 
-                                <div className="r4m-form-group">
-                                    <label>Site *</label>
-                                    <select
-                                        name="siteId"
-                                        value={formData.siteId}
-                                        onChange={handleChange}
-                                        className={errors.siteId ? 'error' : ''}
-                                    >
-                                        <option value="">Select Site</option>
-                                        {sites.map(site => (
-                                            <option key={site.id} value={site.id}>{site.name}</option>
-                                        ))}
-                                    </select>
-                                    {errors.siteId && <span className="r4m-error-message">{errors.siteId}</span>}
-                                </div>
                             </div>
 
                             {/* Employment Information Column */}

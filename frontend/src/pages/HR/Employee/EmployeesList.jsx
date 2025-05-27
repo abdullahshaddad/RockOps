@@ -184,7 +184,7 @@ const EmployeesList = () => {
             accessor: 'contractType',
             render: (employee) => (
                 <span className="contract-type">
-                    {employee.contractType ? employee.contractType.replace('_', ' ') : 'N/A'}
+                    {employee.jobPositionType ? employee.jobPositionType.replace('_', ' ') : 'N/A'}
                 </span>
             )
         },

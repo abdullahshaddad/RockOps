@@ -267,9 +267,9 @@ public class EquipmentService {
         if (requestBody.get("name") != null) createDTO.setName(requestBody.get("name").toString());
         if (requestBody.get("manufactureYear") != null)
             createDTO.setManufactureYear(Integer.parseInt(requestBody.get("manufactureYear").toString()));
-        if (requestBody.get("purchasedDate") != null)
+        if (requestBody.get("purchasedDate") != null && !requestBody.get("purchasedDate").toString().trim().isEmpty())
             createDTO.setPurchasedDate(LocalDate.parse(requestBody.get("purchasedDate").toString()));
-        if (requestBody.get("deliveredDate") != null)
+        if (requestBody.get("deliveredDate") != null && !requestBody.get("deliveredDate").toString().trim().isEmpty())
             createDTO.setDeliveredDate(LocalDate.parse(requestBody.get("deliveredDate").toString()));
         if (requestBody.get("egpPrice") != null)
             createDTO.setEgpPrice(Double.parseDouble(requestBody.get("egpPrice").toString()));
@@ -492,9 +492,9 @@ public class EquipmentService {
 
         if (requestBody.get("manufactureYear") != null && !requestBody.get("manufactureYear").toString().isEmpty())
             updateDTO.setManufactureYear(Integer.parseInt(requestBody.get("manufactureYear").toString()));
-        if (requestBody.get("purchasedDate") != null && !requestBody.get("purchasedDate").toString().isEmpty())
+        if (requestBody.get("purchasedDate") != null && !requestBody.get("purchasedDate").toString().trim().isEmpty())
             updateDTO.setPurchasedDate(LocalDate.parse(requestBody.get("purchasedDate").toString()));
-        if (requestBody.get("deliveredDate") != null && !requestBody.get("deliveredDate").toString().isEmpty())
+        if (requestBody.get("deliveredDate") != null && !requestBody.get("deliveredDate").toString().trim().isEmpty())
             updateDTO.setDeliveredDate(LocalDate.parse(requestBody.get("deliveredDate").toString()));
         if (requestBody.get("egpPrice") != null && !requestBody.get("egpPrice").toString().isEmpty())
             updateDTO.setEgpPrice(Double.parseDouble(requestBody.get("egpPrice").toString()));

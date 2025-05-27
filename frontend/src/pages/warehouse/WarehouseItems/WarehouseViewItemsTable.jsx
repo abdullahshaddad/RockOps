@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./WarehouseViewItems.scss";
 import { useParams } from 'react-router-dom';
 import DataTable from "../../../components/common/DataTable/DataTable.jsx";
@@ -399,35 +399,38 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
     }
   ];
 
-  // Action configuration for regular items
-  const getItemActions = (row) => {
-    const actions = [];
-    
-    if (row.itemStatus === 'MISSING' || row.itemStatus === 'OVERRECEIVED') {
-      actions.push({
-        label: 'Resolve Discrepancy',
-        icon: <FaCheckCircle />,
-        onClick: (row) => handleOpenResolutionModal(row),
-        className: 'success'
-      });
-    } else {
-      actions.push({
-        label: 'Edit Item',
-        icon: <FaEdit />,
-        onClick: (row) => console.log('Edit item:', row),
-        className: 'primary'
-      });
-    }
-    
-    actions.push({
+  // Action configuration for regular items - static array with conditional logic
+  const itemActions = useMemo(() => [
+    {
+      label: 'Resolve Discrepancy',
+      icon: <FaCheckCircle />,
+      onClick: (row) => handleOpenResolutionModal(row),
+      className: 'success',
+      isDisabled: (row) => !(row.itemStatus === 'MISSING' || row.itemStatus === 'OVERRECEIVED')
+    },
+    {
+      label: 'Edit Item',
+      icon: <FaEdit />,
+      onClick: (row) => console.log('Edit item:', row),
+      className: 'primary',
+      isDisabled: (row) => row.itemStatus === 'MISSING' || row.itemStatus === 'OVERRECEIVED'
+    },
+    {
       label: 'Delete Item',
       icon: <FaTrash />,
       onClick: (row) => handleDeleteItem(row.id),
-      className: 'danger'
-    });
-    
-    return actions;
-  };
+      className: 'danger',
+      isDisabled: () => false // Always enabled
+    }
+  ], []);
+
+  // Get current actions based on active tab
+  const getCurrentActions = useMemo(() => {
+    if (activeTab === 'resolvedHistory') {
+      return []; // No actions for resolved history
+    }
+    return itemActions;
+  }, [activeTab, itemActions]);
 
   // Filter data based on active tab
   const getFilteredData = () => {
@@ -465,13 +468,6 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
       default:
         return itemColumns;
     }
-  };
-
-  const getCurrentActions = () => {
-    if (activeTab === 'resolvedHistory') {
-      return []; // No actions for resolved history
-    }
-    return getItemActions;
   };
 
   return (
@@ -589,7 +585,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
         filterableColumns={getCurrentColumns().filter(col => col.sortable)}
         itemsPerPageOptions={[10, 25, 50, 100]}
         defaultItemsPerPage={10}
-        actions={getCurrentActions()}
+        actions={getCurrentActions}
         className={`inventory-table ${activeTab}-table`}
       />
 

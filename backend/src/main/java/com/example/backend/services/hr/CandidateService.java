@@ -62,7 +62,7 @@ public class CandidateService {
         candidate.setCurrentCompany((String) candidateData.get("currentCompany"));
         candidate.setNotes((String) candidateData.get("notes"));
 
-        if (candidateData.get("applicationDate") != null) {
+        if (candidateData.get("applicationDate") != null && !((String) candidateData.get("applicationDate")).trim().isEmpty()) {
             candidate.setApplicationDate(LocalDate.parse((String) candidateData.get("applicationDate")));
         } else {
             candidate.setApplicationDate(LocalDate.now());
@@ -148,7 +148,7 @@ public class CandidateService {
             candidate.setNotes((String) candidateData.get("notes"));
         }
 
-        if (candidateData.get("applicationDate") != null) {
+        if (candidateData.get("applicationDate") != null && !((String) candidateData.get("applicationDate")).trim().isEmpty()) {
             candidate.setApplicationDate(LocalDate.parse((String) candidateData.get("applicationDate")));
         }
 
