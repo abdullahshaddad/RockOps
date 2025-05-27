@@ -122,12 +122,12 @@ const Sidebar = () => {
             path: '/merchants',
             roles: ['ADMIN', 'USER', 'SITE_ADMIN', 'PROCUREMENT']
         },
-        {
-            title: 'Assets',
-            icon: <FaBoxes/>,
-            path: '/assets',
-            roles: ['ADMIN', 'USER', 'SITE_ADMIN', 'EQUIPMENT_MANAGER', 'WAREHOUSE_MANAGER']
-        },
+        // {
+        //     title: 'Assets',
+        //     icon: <FaBoxes/>,
+        //     path: '/assets',
+        //     roles: ['ADMIN', 'USER', 'SITE_ADMIN', 'EQUIPMENT_MANAGER', 'WAREHOUSE_MANAGER']
+        // },
         {
             title: 'HR',
             icon: <FaUsers/>,
