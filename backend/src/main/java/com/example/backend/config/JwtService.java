@@ -1,6 +1,6 @@
 package com.example.backend.config;
 
-import com.example.backend.models.User;
+import com.example.backend.models.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

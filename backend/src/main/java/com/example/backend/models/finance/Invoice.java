@@ -2,7 +2,7 @@ package com.example.backend.models.finance;
 
 import com.example.backend.models.merchant.Merchant;
 import com.example.backend.models.site.Site;
-import com.example.backend.models.User;
+import com.example.backend.models.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

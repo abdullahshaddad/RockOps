@@ -218,4 +218,24 @@ public class CandidateService {
 
         return employeeData;
     }
+
+    // Update candidate status
+    @Transactional
+    public Candidate updateCandidateStatus(UUID candidateId, String newStatus) {
+        Candidate candidate = getCandidateById(candidateId);
+        
+        try {
+            Candidate.CandidateStatus status = Candidate.CandidateStatus.valueOf(newStatus.toUpperCase());
+            candidate.setCandidateStatus(status);
+            
+            // Set hired date if status is HIRED
+            if (status == Candidate.CandidateStatus.HIRED) {
+                candidate.setHiredDate(LocalDate.now());
+            }
+            
+            return candidateRepository.save(candidate);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid candidate status: " + newStatus);
+        }
+    }
 }

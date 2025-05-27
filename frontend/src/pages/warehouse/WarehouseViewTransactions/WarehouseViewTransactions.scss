@@ -1,11 +1,11 @@
 .warehouse-view3 {
   position: relative;
   padding: 20px;
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #1a2b42;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
   margin-bottom: 20px;
   min-height: 200px; /* Ensures the container has some minimum height */
   display: flex;
@@ -33,16 +33,16 @@
 
 .page-title3 {
   font-size: 28px;
-  font-weight: 700;
-  color: #1a2b42;
+  font-weight: var(--bold-font-weight);
+  color: var(--color-text-primary);
   margin: 0;
   margin-right: 16px;
 }
 
 .item-count3 {
   font-size: 14px;
-  color: #6b7280;
-  background-color: #f3f4f6;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-hover);
   padding: 4px 10px;
   border-radius: 20px;
 }
@@ -62,17 +62,19 @@
 .search-input3 {
   width: 100%;
   padding: 12px 18px 12px 42px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 14px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
 }
 
 .search-input3:focus {
   outline: none;
-  border-color: #4f85e5;
-  box-shadow: 0 0 0 4px rgba(79, 133, 229, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(72, 128, 255, 0.1);
 }
 
 .search-icon3 {
@@ -82,15 +84,15 @@
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
 }
 
 /* Table Card Styles */
 .table-card3 {
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
   width: 100%;
   position: relative;
   overflow-x: auto; /* Make the table scrollable horizontally */
@@ -106,10 +108,10 @@
 /* Table Header Styles */
 .table-header-row3 {
   display: table-row;
-  background-color: #f1f3f5;
-  border-bottom: 1px solid #e5e7eb;
-  font-weight: 600;
-  color: #4b5563;
+  background-color: var(--color-surface-hover);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: var(--bold-font-weight);
+  color: var(--color-text-secondary);
   font-size: 8px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -127,6 +129,7 @@
   vertical-align: middle;
   overflow: visible; /* Allow content overflow */
   white-space: nowrap; /* Prevent wrapping */
+  color: var(--color-text-primary);
 }
 
 .table-header-cell3:not(:last-child),
@@ -143,8 +146,8 @@
 
 .table-row3{
   display: table-row;
-  border-bottom: 1px solid #e5e7eb;
-  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
 }
 
 .table-row3:last-child {
@@ -152,7 +155,7 @@
 }
 
 .table-row3:hover {
-  background-color: #f9fafb;
+  background-color: var(--color-surface-hover);
 }
 
 .table-cell3 {
@@ -291,8 +294,8 @@
 .category-tag3 {
   display: inline-block;
   padding: 4px 12px;
-  background-color: #e0f2fe;
-  color: #0369a1;
+  background-color: var(--color-info);
+  color: var(--color-text-inverse);
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
@@ -300,7 +303,6 @@
 
 .status-tag3 {
   display: inline-block;
-  // padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
@@ -315,26 +317,26 @@
   border: none;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   margin-left: 3px;
 }
 
 .edit-button3 {
-  color: #4f85e5;
+  color: var(--color-primary);
 }
 
 .delete-button3 {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .edit-button3:hover,
 .delete-button3:hover {
-  background-color: #f3f4f6;
+  background-color: var(--color-surface-hover);
 }
 
 .edit-button3 svg,
@@ -362,15 +364,15 @@
   width: 60px;
   height: 60px;
   border-radius: 30px;
-  background-color: #4f85e5;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   cursor: pointer;
-  box-shadow: 0 10px 25px rgba(79, 133, 229, 0.4);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
 }
 
 /* Table warning message styles */
@@ -380,13 +382,13 @@
   gap: 8px;
   background-color: rgba(255, 248, 225, 0.95);
   padding: 10px;
-  border-radius: 6px;
-  border-left: 3px solid #ffc107;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-warning);
   height: fit-content; /* Make height fit the content */
   margin: auto 0; /* Center vertically in the row */
   max-width: 260px;
   font-size: 0.8rem;
-  color: #856404;
+  color: var(--color-warning);
   margin-top:10px;
   margin-left:10px;
 }
@@ -417,7 +419,7 @@
 
 .add-button3:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(79, 133, 229, 0.5);
+  box-shadow: var(--shadow-md);
 }
 
 .plus-icon3 {
@@ -442,11 +444,12 @@
 .loading-spinner3 {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(79, 133, 229, 0.2);
+  border: 3px solid var(--color-primary);
   border-radius: 50%;
-  border-top-color: #4f85e5;
+  border-top-color: var(--color-primary-light);
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
+  opacity: 0.3;
 }
 
 @keyframes spin {
@@ -465,7 +468,7 @@
   top: 8rem; /* Vertically center */
   left: 40rem; /* Horizontally center */
   transform: translate(-50%, -50%); /* Fine-tune positioning */
-  color: #6b7280;
+  color: var(--color-text-secondary);
   z-index: 10; /* Ensure it's on top of other content */
   width: 100%;
   height: auto;
