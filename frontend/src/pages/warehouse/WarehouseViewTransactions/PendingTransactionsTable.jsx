@@ -210,7 +210,7 @@ const PendingTransactionsTable = ({ warehouseId }) => {
     ];
 
     // Action configuration for DataTable
-    const getActions = (row) => [
+    const actions = [
         {
             label: 'Edit transaction',
             icon: <FaEdit />,
@@ -236,7 +236,7 @@ const PendingTransactionsTable = ({ warehouseId }) => {
                 filterableColumns={columns.filter(col => col.sortable)}
                 itemsPerPageOptions={[10, 25, 50]}
                 defaultItemsPerPage={10}
-                actions={getActions}
+                actions={actions}
                 className="pending-transactions-table"
             />
 

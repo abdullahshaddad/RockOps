@@ -98,7 +98,7 @@ const WarehouseRequestOrders = ({ warehouseId }) => {
     ];
 
     // Action configuration for pending orders
-    const getPendingActions = (row) => [
+    const pendingActions = [
         {
             label: 'Edit request',
             icon: <FaEdit />,
@@ -467,7 +467,7 @@ const WarehouseRequestOrders = ({ warehouseId }) => {
                     <DataTable
                         columns={pendingOrderColumns}
                         data={pendingOrders}
-                        actions={getPendingActions}
+                        actions={pendingActions}
                         loading={isLoadingPending}
                         showSearch={true}
                         showFilters={true}
