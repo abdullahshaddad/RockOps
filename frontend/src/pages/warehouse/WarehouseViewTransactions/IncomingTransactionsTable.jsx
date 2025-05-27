@@ -414,7 +414,7 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
     ];
 
     // Action configuration for DataTable
-    const getActions = (row) => [
+    const actions = [
         {
             label: 'Accept transaction',
             icon: <FaCheck />,
@@ -446,7 +446,7 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                 filterableColumns={columns.filter(col => col.sortable)}
                 itemsPerPageOptions={[10, 25, 50]}
                 defaultItemsPerPage={10}
-                actions={getActions}
+                actions={actions}
                 className="incoming-transactions-table"
             />
 
