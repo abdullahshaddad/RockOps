@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './VacancyDetails.scss';
-import CandidatesTable from "./Candidate/CandidatesTable";
+import CandidatesTable from "../Candidate/CandidatesTable.jsx";
 
 
 const VacancyDetails = () => {

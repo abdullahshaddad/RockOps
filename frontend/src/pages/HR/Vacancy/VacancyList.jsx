@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './VacancyList.scss';
-import AddVacancyModal from './AddVacancyModal';
-import EditVacancyModal from './EditVacancyModal';
+import AddVacancyModal from './modals/AddVacancyModal.jsx';
+import EditVacancyModal from './modals/EditVacancyModal.jsx';
 import DataTable from '../../../components/common/DataTable/DataTable';
 import {FaEdit, FaTrashAlt, FaEye} from "react-icons/fa";
 import { useSnackbar } from '../../../contexts/SnackbarContext';
@@ -313,7 +313,11 @@ const VacancyList = () => {
     return (
         <div className="vacancy-container">
             <div className="departments-header">
-                <h1>Job Vacancies</h1>
+                <h1>Job Vacancies
+                    <p className="employees-header__subtitle">
+                        Post open positions, manage applications, and track your recruitment process
+                    </p>
+                </h1>
                 <button
                     className="primary-button"
                     onClick={() => setShowAddModal(true)}

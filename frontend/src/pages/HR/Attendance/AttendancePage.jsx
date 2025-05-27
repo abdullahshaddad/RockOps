@@ -97,12 +97,7 @@ const AttendancePage = () => {
                 >
                     <BsCalendarWeek /> Calendar View
                 </button>
-                <button
-                    className={`nav-tab ${activeView === 'form' ? 'active' : ''}`}
-                    onClick={() => setActiveView('form')}
-                >
-                    <BsClipboardCheck /> Quick Entry
-                </button>
+
                 <button
                     className={`nav-tab ${activeView === 'report' ? 'active' : ''}`}
                     onClick={() => setActiveView('report')}

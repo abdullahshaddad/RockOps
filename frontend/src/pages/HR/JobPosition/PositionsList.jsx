@@ -160,7 +160,11 @@ const PositionsList = () => {
     return (
         <div className="positions-container">
             <div className="departments-header">
-                <h1>Job Positions</h1>
+                <h1>Job Positions
+                    <p className="employees-header__subtitle">
+                        Manage job positions with salary structures, requirements, and department assignments
+                    </p>
+                </h1>
                 <button
                     className="btn btn-primary"
                     onClick={() => setShowAddForm(true)}
