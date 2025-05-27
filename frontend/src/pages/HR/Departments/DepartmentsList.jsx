@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { FiPlus, FiEdit, FiTrash2, FiCheck, FiX } from 'react-icons/fi';
+import React, {useEffect, useState} from 'react';
+import {FiCheck, FiEdit, FiPlus, FiTrash2, FiX} from 'react-icons/fi';
 import DataTable from '../../../components/common/DataTable/DataTable';
-import { useSnackbar } from '../../../contexts/SnackbarContext';
-import { departmentService } from '../../../services/departmentService';
+import {useSnackbar} from '../../../contexts/SnackbarContext';
+import {departmentService} from '../../../services/departmentService';
 import './DepartmentsList.scss';
 
 const DepartmentsList = () => {
-    const { showSuccess, showError } = useSnackbar();
+    const {showSuccess, showError} = useSnackbar();
     const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -14,8 +14,8 @@ const DepartmentsList = () => {
     const [isEditFormOpen, setIsEditFormOpen] = useState(false);
     const [currentDepartment, setCurrentDepartment] = useState(null);
     const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-    const [formData, setFormData] = useState({ name: '', description: '' });
-    const [editFormData, setEditFormData] = useState({ name: '', description: '' });
+    const [formData, setFormData] = useState({name: '', description: ''});
+    const [editFormData, setEditFormData] = useState({name: '', description: ''});
 
     // Fetch departments
     const fetchDepartments = async () => {
@@ -40,13 +40,13 @@ const DepartmentsList = () => {
     }, []);
 
     const handleOpenForm = () => {
-        setFormData({ name: '', description: '' });
+        setFormData({name: '', description: ''});
         setIsFormOpen(true);
     };
 
     const handleCloseForm = () => {
         setIsFormOpen(false);
-        setFormData({ name: '', description: '' });
+        setFormData({name: '', description: ''});
         setError(null);
     };
 
@@ -62,12 +62,12 @@ const DepartmentsList = () => {
     const handleCloseEditForm = () => {
         setIsEditFormOpen(false);
         setCurrentDepartment(null);
-        setEditFormData({ name: '', description: '' });
+        setEditFormData({name: '', description: ''});
         setError(null);
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -75,7 +75,7 @@ const DepartmentsList = () => {
     };
 
     const handleEditInputChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setEditFormData(prev => ({
             ...prev,
             [name]: value
@@ -99,7 +99,7 @@ const DepartmentsList = () => {
                 name: formData.name.trim(),
                 description: formData.description.trim() || null
             };
-            
+
             console.log('Creating department with data:', departmentData);
             const response = await departmentService.create(departmentData);
             console.log('Created department:', response.data);
@@ -134,7 +134,7 @@ const DepartmentsList = () => {
                 name: editFormData.name.trim(),
                 description: editFormData.description.trim() || null
             };
-            
+
             console.log('Updating department with data:', departmentData);
             const response = await departmentService.update(currentDepartment.id, departmentData);
 
@@ -190,13 +190,13 @@ const DepartmentsList = () => {
     const actions = [
         {
             label: 'Edit',
-            icon: <FiEdit />,
+            icon: <FiEdit/>,
             onClick: (row) => handleOpenEditForm(row),
             className: 'primary'
         },
         {
             label: 'Delete',
-            icon: <FiTrash2 />,
+            icon: <FiTrash2/>,
             onClick: (row) => setDeleteConfirmId(row.id),
             className: 'danger'
         }
@@ -214,13 +214,17 @@ const DepartmentsList = () => {
     return (
         <div className="departments-list-container">
             <div className="departments-header">
-                <h1>Departments</h1>
+                <h1>Departments
+                    <p className="employees-header__subtitle">
+                        Manage departments to structure your workforce effectively
+                    </p>
+                </h1>
                 <button
                     className="departments-add-button"
                     onClick={handleOpenForm}
                     disabled={loading}
                 >
-                    <FiPlus /> Add Department
+                    <FiPlus/> Add Department
                 </button>
             </div>
 
@@ -377,14 +381,14 @@ const DepartmentsList = () => {
                                 onClick={() => setDeleteConfirmId(null)}
                                 disabled={loading}
                             >
-                                <FiX /> Cancel
+                                <FiX/> Cancel
                             </button>
                             <button
                                 className="departments-confirm-button"
                                 onClick={() => handleDeleteDepartment(deleteConfirmId)}
                                 disabled={loading}
                             >
-                                <FiCheck /> Confirm
+                                <FiCheck/> Confirm
                             </button>
                         </div>
                     </div>
