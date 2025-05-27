@@ -23,9 +23,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -46,7 +48,139 @@ public class TransactionService {
     private ConsumableRepository consumableRepository;
 
     // ========================================
-    // CORE TRANSACTION CREATION METHODS
+    // BATCH MATCHING LOGIC - NEW ADDITION
+    // ========================================
+
+    /**
+     * Attempts to match transactions with the same batch number between two warehouses
+     * Handles case where:
+     * - Warehouse A creates: A → B (I sent to B)
+     * - Warehouse B creates: B ← A (I received from A, which is A → B initiated by B)
+     */
+    public void attemptBatchMatching(int batchNumber, UUID senderId, UUID receiverId) {
+        System.out.println("🔍 Attempting to match transactions with:");
+        System.out.println("Batch Number: " + batchNumber);
+        System.out.println("Sender ID: " + senderId);
+        System.out.println("Receiver ID: " + receiverId);
+
+        // Find all pending transactions with this batch number
+        List<Transaction> batchTransactions = transactionRepository.findByBatchNumberAndStatus(batchNumber, TransactionStatus.PENDING);
+
+        // Look for matching transactions in both directions
+        Transaction senderInitiatedTx = null;  // A → B initiated by A
+        Transaction receiverInitiatedTx = null; // A → B initiated by B (receiver claiming they got it)
+
+        for (Transaction tx : batchTransactions) {
+            // Only process warehouse-to-warehouse transactions
+            if (tx.getSenderType() != PartyType.WAREHOUSE || tx.getReceiverType() != PartyType.WAREHOUSE) {
+                continue;
+            }
+
+            // Check if this transaction matches our sender→receiver flow
+            if (tx.getSenderId().equals(senderId) && tx.getReceiverId().equals(receiverId)) {
+                if (tx.getSentFirst().equals(senderId)) {
+                    // Sender initiated: "I (sender) sent to receiver"
+                    senderInitiatedTx = tx;
+                    System.out.println("📤 Found sender-initiated transaction: " + tx.getId());
+                } else if (tx.getSentFirst().equals(receiverId)) {
+                    // Receiver initiated: "I (receiver) got from sender"
+                    receiverInitiatedTx = tx;
+                    System.out.println("📥 Found receiver-initiated transaction: " + tx.getId());
+                }
+            }
+        }
+
+        // If we found both complementary transactions, match them
+        if (senderInitiatedTx != null && receiverInitiatedTx != null) {
+            System.out.println("✅ Found matching pair, processing batch match");
+            processBatchMatchedTransactions(senderInitiatedTx, receiverInitiatedTx);
+        } else {
+            System.out.println("📝 No matching pair found:");
+            System.out.println("  - Sender-initiated: " + (senderInitiatedTx != null ? "✓" : "✗"));
+            System.out.println("  - Receiver-initiated: " + (receiverInitiatedTx != null ? "✓" : "✗"));
+        }
+    }
+
+    /**
+     * Checks if two transactions are complementary - not needed anymore since we find them specifically
+     */
+    private boolean areComplementaryTransactions(Transaction tx1, Transaction tx2) {
+        return tx1.getBatchNumber() == tx2.getBatchNumber() &&
+                tx1.getSenderId().equals(tx2.getSenderId()) &&
+                tx1.getReceiverId().equals(tx2.getReceiverId()) &&
+                !tx1.getSentFirst().equals(tx2.getSentFirst()) && // Different initiators
+                tx1.getSenderType() == PartyType.WAREHOUSE &&
+                tx1.getReceiverType() == PartyType.WAREHOUSE &&
+                tx2.getSenderType() == PartyType.WAREHOUSE &&
+                tx2.getReceiverType() == PartyType.WAREHOUSE;
+    }
+
+    /**
+     * Creates a consistent key for warehouse pairs regardless of direction
+     */
+    private String createWarehousePairKey(UUID warehouse1, UUID warehouse2) {
+        String w1 = warehouse1.toString();
+        String w2 = warehouse2.toString();
+        return w1.compareTo(w2) < 0 ? w1 + "_" + w2 : w2 + "_" + w1;
+    }
+
+    /**
+     * Processes two matched transactions as if they were a single sender-initiated transaction
+     * senderTransaction: The transaction where sender claims "I sent X"
+     * receiverTransaction: The transaction where receiver claims "I received Y"
+     */
+    private void processBatchMatchedTransactions(Transaction senderTransaction, Transaction receiverTransaction) {
+        System.out.println("🔄 Processing batch matched transactions:");
+        System.out.println("📤 Sender Transaction: " + senderTransaction.getId() + " (initiated by sender)");
+        System.out.println("📥 Receiver Transaction: " + receiverTransaction.getId() + " (initiated by receiver)");
+
+        // Create received quantities map from receiver transaction
+        Map<UUID, Integer> receivedQuantities = createReceivedQuantitiesMap(senderTransaction, receiverTransaction);
+
+        // Process the sender transaction as if it was accepted by the receiver
+        String username = receiverTransaction.getAddedBy();
+        String acceptanceComment = "Auto-matched with receiver transaction (Batch #" + senderTransaction.getBatchNumber() + ")";
+
+        // Mark the receiver transaction as matched/processed
+        receiverTransaction.setStatus(TransactionStatus.ACCEPTED);
+        receiverTransaction.setCompletedAt(LocalDateTime.now());
+        receiverTransaction.setApprovedBy("SYSTEM_BATCH_MATCH");
+        receiverTransaction.setAcceptanceComment("Matched with sender transaction (Batch #" + receiverTransaction.getBatchNumber() + ")");
+        transactionRepository.save(receiverTransaction);
+
+        // Process the sender transaction using existing accept logic
+        acceptTransaction(senderTransaction.getId(), receivedQuantities, username, acceptanceComment);
+
+        System.out.println("🎉 Batch matching completed successfully for batch #" + senderTransaction.getBatchNumber());
+        System.out.println("✅ Sender claimed: " + senderTransaction.getItems().stream().mapToInt(TransactionItem::getQuantity).sum() + " total items");
+        System.out.println("✅ Receiver claimed: " + receiverTransaction.getItems().stream().mapToInt(TransactionItem::getQuantity).sum() + " total items");
+    }
+
+    /**
+     * Creates a map of received quantities by matching items between sender and receiver transactions
+     */
+    private Map<UUID, Integer> createReceivedQuantitiesMap(Transaction senderTransaction, Transaction receiverTransaction) {
+        Map<UUID, Integer> receivedQuantities = new HashMap<>();
+
+        // Create a map of receiver transaction items by item type for easy lookup
+        Map<UUID, TransactionItem> receiverItemsByType = receiverTransaction.getItems().stream()
+                .collect(Collectors.toMap(
+                        item -> item.getItemType().getId(),
+                        item -> item
+                ));
+
+        // Map sender transaction items to received quantities
+        for (TransactionItem senderItem : senderTransaction.getItems()) {
+            TransactionItem receiverItem = receiverItemsByType.get(senderItem.getItemType().getId());
+            int receivedQuantity = (receiverItem != null) ? receiverItem.getQuantity() : 0;
+            receivedQuantities.put(senderItem.getId(), receivedQuantity);
+        }
+
+        return receivedQuantities;
+    }
+
+    // ========================================
+    // MODIFIED CREATE TRANSACTION TO TRIGGER BATCH MATCHING
     // ========================================
 
     public Transaction createTransaction(
@@ -56,9 +190,15 @@ public class TransactionService {
             LocalDateTime transactionDate,
             String username, int batchNumber,
             UUID sentFirst) {
-        return createTransactionWithPurpose(
+
+        Transaction transaction = createTransactionWithPurpose(
                 senderType, senderId, receiverType, receiverId,
                 items, transactionDate, username, batchNumber, sentFirst, null);
+
+        // After creating the transaction, attempt batch matching with specific sender/receiver IDs
+        attemptBatchMatching(batchNumber, senderId, receiverId);
+
+        return transaction;
     }
 
     public Transaction createEquipmentTransaction(
@@ -68,10 +208,20 @@ public class TransactionService {
             LocalDateTime transactionDate,
             String username, int batchNumber,
             UUID sentFirst, TransactionPurpose purpose) {
-        return createTransactionWithPurpose(
+
+        Transaction transaction = createTransactionWithPurpose(
                 senderType, senderId, receiverType, receiverId,
                 items, transactionDate, username, batchNumber, sentFirst, purpose);
+
+        // After creating the transaction, attempt batch matching with specific sender/receiver IDs
+        attemptBatchMatching(batchNumber, senderId, receiverId);
+
+        return transaction;
     }
+
+    // ========================================
+    // CORE TRANSACTION CREATION METHODS (UNCHANGED)
+    // ========================================
 
     private Transaction createTransactionWithPurpose(
             PartyType senderType, UUID senderId,
@@ -112,7 +262,7 @@ public class TransactionService {
     }
 
     // ========================================
-    // TRANSACTION ACCEPTANCE - FIXED LOGIC
+    // TRANSACTION ACCEPTANCE - FIXED LOGIC (UNCHANGED)
     // ========================================
 
     public Transaction acceptTransaction(UUID transactionId, Map<UUID, Integer> receivedQuantities,
@@ -353,7 +503,7 @@ public class TransactionService {
     }
 
     // ========================================
-    // WAREHOUSE INVENTORY OPERATIONS
+    // WAREHOUSE INVENTORY OPERATIONS (UNCHANGED)
     // ========================================
 
     private void deductFromWarehouseInventory(UUID warehouseId, ItemType itemType, int quantity) {
@@ -384,23 +534,40 @@ public class TransactionService {
         Warehouse warehouse = warehouseRepository.findById(receivingWarehouseId)
                 .orElseThrow(() -> new IllegalArgumentException("Warehouse not found: " + receivingWarehouseId));
 
-        // Create the new Item entity
-        Item newItem = new Item();
-        newItem.setItemType(transactionItem.getItemType());
-        newItem.setQuantity(actualQuantity);
-        newItem.setItemStatus(ItemStatus.IN_WAREHOUSE);
-        newItem.setWarehouse(warehouse); // ✅ THIS IS THE CRITICAL FIX
-        newItem.setTransactionItem(transactionItem);
-        newItem.setResolved(false);
+        // 🔍 Check if there's already an existing item of this type in the warehouse
+        List<Item> existingItems = itemRepository.findAllByItemTypeIdAndWarehouseIdAndItemStatus(
+                transactionItem.getItemType().getId(),
+                receivingWarehouseId,
+                ItemStatus.IN_WAREHOUSE
+        );
 
-        // Save the item
-        itemRepository.save(newItem);
+        if (!existingItems.isEmpty()) {
+            // ✅ Add to existing item instead of creating new one
+            Item existingItem = existingItems.get(0); // Get the first available item
+            int newQuantity = existingItem.getQuantity() + actualQuantity;
+            existingItem.setQuantity(newQuantity);
+            itemRepository.save(existingItem);
 
-        System.out.println("✅ Successfully added item to warehouse inventory");
+            System.out.println("✅ Added " + actualQuantity + " to existing item. New total: " + newQuantity);
+        } else {
+            // 🆕 Create new item only if none exists
+            Item newItem = new Item();
+            newItem.setItemType(transactionItem.getItemType());
+            newItem.setQuantity(actualQuantity);
+            newItem.setItemStatus(ItemStatus.IN_WAREHOUSE);
+            newItem.setWarehouse(warehouse);
+            newItem.setTransactionItem(transactionItem);
+            newItem.setResolved(false);
+
+            itemRepository.save(newItem);
+            System.out.println("✅ Created new item entry with quantity: " + actualQuantity);
+        }
+
+        System.out.println("✅ Successfully processed warehouse inventory addition");
     }
 
     // ========================================
-    // EQUIPMENT INVENTORY OPERATIONS
+    // EQUIPMENT INVENTORY OPERATIONS (UNCHANGED)
     // ========================================
 
     private void deductFromEquipmentConsumables(UUID equipmentId, ItemType itemType, int quantity) {
@@ -434,7 +601,7 @@ public class TransactionService {
         consumedConsumable.setEquipment(equipment);
         consumedConsumable.setItemType(itemType);
         if (transactionItem.getQuantity() < quantity) {
-        consumedConsumable.setQuantity(quantity-(quantity-transactionItem.getQuantity()));
+            consumedConsumable.setQuantity(quantity-(quantity-transactionItem.getQuantity()));
         }
         else {
             consumedConsumable.setQuantity(quantity);
@@ -444,7 +611,7 @@ public class TransactionService {
         consumedConsumable.setTransaction(transaction);
         consumableRepository.save(consumedConsumable);
 
-       
+
 
 
     }
@@ -521,7 +688,7 @@ public class TransactionService {
     }
 
     // ========================================
-    // UPDATE METHODS (SIMPLIFIED)
+    // UPDATE METHODS (SIMPLIFIED) (UNCHANGED)
     // ========================================
 
     public Transaction updateTransaction(

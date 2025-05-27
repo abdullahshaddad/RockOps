@@ -1,11 +1,36 @@
 import React, { useState, useEffect } from "react";
 import "./WarehouseViewTransactions.scss";
+import Table from "../../../components/common/OurTable/Table.jsx";
+import Snackbar from "../../../components/common/Snackbar/Snackbar.jsx";
 
 const ValidatedTransactionsTable = ({ warehouseId }) => {
     const [loading, setLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
     const [validatedTransactions, setValidatedTransactions] = useState([]);
     const [modalInfo, setModalInfo] = useState(null);
+
+    // Snackbar state for potential future use
+    const [snackbar, setSnackbar] = useState({
+        isOpen: false,
+        message: "",
+        type: "success"
+    });
+
+    // Helper function to show snackbar
+    const showSnackbar = (message, type = "success") => {
+        setSnackbar({
+            isOpen: true,
+            message,
+            type
+        });
+    };
+
+    // Helper function to close snackbar
+    const closeSnackbar = () => {
+        setSnackbar({
+            ...snackbar,
+            isOpen: false
+        });
+    };
 
     useEffect(() => {
         fetchValidatedTransactions();
@@ -36,9 +61,12 @@ const ValidatedTransactionsTable = ({ warehouseId }) => {
                         })
                 );
                 setValidatedTransactions(validatedData);
+            } else {
+                showSnackbar("Failed to fetch validated transactions", "error");
             }
         } catch (err) {
             console.error("Error fetching validated transactions:", err);
+            showSnackbar("Error fetching validated transactions", "error");
         } finally {
             setLoading(false);
         }
@@ -66,14 +94,6 @@ const ValidatedTransactionsTable = ({ warehouseId }) => {
             return null;
         }
     };
-
-    const filteredTransactions = searchTerm
-        ? validatedTransactions.filter((item) =>
-            item.sender?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.receiver?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.status?.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        : validatedTransactions;
 
     const handleInfoClick = (event, transaction) => {
         event.stopPropagation();
@@ -105,109 +125,147 @@ const ValidatedTransactionsTable = ({ warehouseId }) => {
         }
     };
 
+    // Format date helper functions
+    const formatDate = (dateString) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleDateString('en-GB');
+    };
+
+    const formatDateTime = (dateString) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
+    };
+
+    // Helper function to get entity display name
+    const getEntityDisplayName = (entity, entityType) => {
+        if (!entity) return "N/A";
+        return entity.name || entity.equipment?.fullModelName || "N/A";
+    };
+
+    // Define table columns
+    const columns = [
+        {
+            id: 'items',
+            label: 'ITEMS',
+            width: '200px',
+            render: (row) => row.items?.length || 0,
+            sortType: 'number',
+            filterType: 'number'
+        },
+        {
+            id: 'sender',
+            label: 'SENDER',
+            width: '200px',
+            render: (row) => getEntityDisplayName(row.sender, row.senderType),
+            filterType: 'text'
+        },
+        {
+            id: 'receiver',
+            label: 'RECEIVER',
+            width: '200px',
+            render: (row) => getEntityDisplayName(row.receiver, row.receiverType),
+            filterType: 'text'
+        },
+        {
+            id: 'batchNumber',
+            label: 'BATCH NUMBER',
+            width: '200px',
+            render: (row) => row.batchNumber || "N/A",
+            sortType: 'number',
+            filterType: 'number'
+        },
+        {
+            id: 'transactionDate',
+            label: 'TRANSACTION DATE',
+            width: '200px',
+            render: (row) => formatDate(row.transactionDate),
+            sortType: 'date',
+            filterType: 'text'
+        },
+        {
+            id: 'createdAt',
+            label: 'CREATED AT',
+            width: '200px',
+            render: (row) => formatDateTime(row.createdAt),
+            sortType: 'date',
+            filterType: 'text'
+        },
+        {
+            id: 'addedBy',
+            label: 'ADDED BY',
+            width: '200px',
+            render: (row) => row.addedBy || "N/A",
+            filterType: 'text'
+        },
+        {
+            id: 'approvedBy',
+            label: 'APPROVED BY',
+            width: '200px',
+            render: (row) => row.approvedBy || "N/A",
+            filterType: 'text'
+        },
+        {
+            id: 'status',
+            label: 'STATUS',
+            width: '200px',
+            render: (row) => (
+                <div className="status-container">
+                    <span className={`status-badge3 ${row.status.toLowerCase()}`}>
+                        {row.status}
+                    </span>
+
+                    {((row.status === "REJECTED" && row.rejectionReason) ||
+                        (row.status === "ACCEPTED" && row.acceptanceComment)) && (
+                        <button
+                            className="info-button"
+                            onClick={(e) => handleInfoClick(e, row)}
+                            aria-label={row.status === "REJECTED" ? "View rejection reason" : "View acceptance comment"}
+                        >
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="16" x2="12" y2="12" />
+                                <circle cx="12" cy="8" r="0.5" fill="currentColor" stroke="none" />
+                            </svg>
+                        </button>
+                    )}
+                </div>
+            ),
+            filterType: 'select'
+        }
+    ];
+
     return (
-        <div className="transaction-table-pending">
-            <div className="left-section3">
-                <h2 className="transaction-section-title">Validated Transactions</h2>
-                <div className="item-count3">{validatedTransactions.length} validated transactions</div>
-            </div>
-            <div className="section-description">(Completed transactions - accepted or rejected)</div>
-            <div className="right-section3">
-                <div className="table-search-container-pending">
-                    <input
-                        type="text"
-                        placeholder="Search validated transactions..."
-                        className="search-input3"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="M21 21l-4.35-4.35" />
-                    </svg>
+        <div className="transaction-table-section">
+            <div className="table-header-section">
+                <div className="left-section3">
+                    <h2 className="transaction-section-title">Validated Transactions</h2>
+                    <div className="item-count3">{validatedTransactions.length} validated transactions</div>
                 </div>
             </div>
 
-            <div className="table-card3" style={{ minHeight: filteredTransactions.length === 0 ? '300px' : 'auto' }}>
-                {loading ? (
-                    <div className="loading-container3">
-                        <div className="loading-spinner3"></div>
-                        <p>Loading transaction data...</p>
-                    </div>
-                ) : (
-                    <>
-                        <div className="table-header-row3">
-                            <div className="table-header-cell item-type-cell3">Items</div>
-                            <div className="table-header-cell sender-cell3">Sender</div>
-                            <div className="table-header-cell receiver-cell3">Receiver</div>
-                            <div className="table-header-cell date-cell3">Batch Number</div>
-                            <div className="table-header-cell date-cell3">Transaction Date</div>
-                            <div className="table-header-cell created-at-cell3">Created At</div>
-                            <div className="table-header-cell added-by-cell3">Added By</div>
-                            <div className="table-header-cell approved-by-cell3">Approved By</div>
-                            <div className="table-header-cell status-cell3">Status</div>
-                        </div>
-
-                        <div className="table-body3">
-                            {filteredTransactions.length > 0 ? (
-                                filteredTransactions.map((item, index) => (
-                                    <div className="table-row3" key={index}>
-                                        <div className="table-cell item-type-cell3">{item.items?.length || 0}</div>
-                                        <div className="table-cell sender-cell3">{item.sender?.name || "N/A"}</div>
-                                        <div className="table-cell receiver-cell3">{item.receiver?.name || item.receiver?.equipment?.fullModelName || "N/A"}</div>
-                                        <div className="table-cell date-cell3">
-                                            {item.batchNumber || "N/A"}
-                                        </div>
-                                        <div className="table-cell date-cell3">
-                                            {item.transactionDate ? new Date(item.transactionDate).toLocaleDateString('en-GB') : "N/A"}
-                                        </div>
-                                        <div className="table-cell created-at-cell3">
-                                            {item.createdAt ? new Date(item.createdAt).toLocaleString('en-GB', {
-                                                day: '2-digit', month: '2-digit', year: 'numeric',
-                                                hour: '2-digit', minute: '2-digit', second: '2-digit'
-                                            }) : "N/A"}
-                                        </div>
-                                        <div className="table-cell added-by-cell3">{item.addedBy}</div>
-                                        <div className="table-cell approved-by-cell3">{item.approvedBy}</div>
-                                        <div className="table-cell status-cell3">
-                                            <div className="status-container">
-                                                <span className={`status-badge3 ${item.status.toLowerCase()}`}>
-                                                    {item.status}
-                                                </span>
-
-                                                {((item.status === "REJECTED" && item.rejectionReason) ||
-                                                    (item.status === "ACCEPTED" && item.acceptanceComment)) && (
-                                                    <button
-                                                        className="info-button"
-                                                        onClick={(e) => handleInfoClick(e, item)}
-                                                        aria-label={item.status === "REJECTED" ? "View rejection reason" : "View acceptance comment"}
-                                                    >
-                                                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" strokeWidth="2">
-                                                            <circle cx="12" cy="12" r="10" />
-                                                            <line x1="12" y1="16" x2="12" y2="12" />
-                                                            <circle cx="12" cy="8" r="0.5" fill="currentColor" stroke="none" />
-                                                        </svg>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="empty-state3">
-                                    <div className="empty-icon3">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                            <path d="M20 6L9 17l-5-5" />
-                                        </svg>
-                                    </div>
-                                    <h3>No validated transactions</h3>
-                                    <p>There are no accepted or rejected transactions for this warehouse</p>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                )}
+            <div className="section-description">
+                (Completed transactions - accepted or rejected)
             </div>
+
+            {/* New Table Component */}
+            <Table
+                columns={columns}
+                data={validatedTransactions}
+                isLoading={loading}
+                emptyMessage="There are no accepted or rejected transactions for this warehouse"
+                className="validated-transactions-table"
+                itemsPerPage={10}
+                enablePagination={true}
+                enableSorting={true}
+                enableFiltering={true}
+            />
 
             {/* Modal for comments/reasons */}
             {modalInfo && (
@@ -260,6 +318,16 @@ const ValidatedTransactionsTable = ({ warehouseId }) => {
                     </div>
                 </div>
             )}
+
+            {/* Snackbar Component */}
+            <Snackbar
+                isOpen={snackbar.isOpen}
+                message={snackbar.message}
+                type={snackbar.type}
+                onClose={closeSnackbar}
+                duration={3000}
+                position="bottom-right"
+            />
         </div>
     );
 };

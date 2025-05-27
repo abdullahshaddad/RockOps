@@ -1,22 +1,38 @@
 import React, { useState, useEffect } from "react";
 import "./WarehouseViewTransactions.scss";
 import "./AcceptRejectModal.scss";
+import Table from "../../../components/common/OurTable/Table.jsx";
+import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx";
 
 const IncomingTransactionsTable = ({ warehouseId }) => {
     const [loading, setLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
     const [pendingTransactions, setPendingTransactions] = useState([]);
     const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [receivedQuantities, setReceivedQuantities] = useState({});
     const [rejectionReason, setRejectionReason] = useState("");
-    const [showAcceptNotification, setShowAcceptNotification] = useState(false);
-    const [showRejectNotification, setShowRejectNotification] = useState(false);
     const [comments, setComments] = useState("");
     const [acceptError, setAcceptError] = useState("");
     const [rejectError, setRejectError] = useState("");
     const [processingAction, setProcessingAction] = useState(false);
+
+    // Replace old notification states with snackbar state
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
+    const [notificationType, setNotificationType] = useState('success');
+
+    // Helper function to show snackbar
+    const showSnackbar = (message, type = "success") => {
+        setNotificationMessage(message);
+        setNotificationType(type);
+        setShowNotification(true);
+    };
+
+    // Helper function to close snackbar
+    const closeSnackbar = () => {
+        setShowNotification(false);
+    };
 
     // Fetch transactions when component mounts or warehouseId changes
     useEffect(() => {
@@ -156,16 +172,6 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         }
     };
 
-    // Filter transactions based on search term
-    const filteredTransactions = searchTerm ?
-        pendingTransactions.filter((item) =>
-            item.itemType?.itemCategory?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.itemType?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.sender?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.receiver?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (item.batchNumber && item.batchNumber.toString().includes(searchTerm))
-        ) : pendingTransactions;
-
     // Function to open accept modal
     const openAcceptModal = (transaction) => {
         setSelectedTransaction(transaction);
@@ -220,7 +226,6 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         try {
             const token = localStorage.getItem('token');
 
-
             let username = "system"; // Default fallback
             const userInfoString = localStorage.getItem('userInfo');
 
@@ -258,12 +263,7 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                 // Successfully accepted transaction
                 fetchPendingTransactions(); // Refresh data
                 setIsAcceptModalOpen(false);
-                setShowAcceptNotification(true);
-
-                // Show notification for 3 seconds
-                setTimeout(() => {
-                    setShowAcceptNotification(false);
-                }, 3000);
+                showSnackbar("Transaction Accepted Successfully", "success");
             } else {
                 // Try to get error details from the response
                 let errorMessage = "Failed to accept transaction";
@@ -274,10 +274,12 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                     console.error("Error parsing error response:", e);
                 }
                 setAcceptError(errorMessage);
+                showSnackbar("Failed to accept transaction", "error");
                 console.error("Failed to accept transaction:", errorMessage);
             }
         } catch (error) {
             setAcceptError("Network error. Please try again.");
+            showSnackbar("Network error. Please try again.", "error");
             console.error("Error accepting transaction:", error);
         } finally {
             setProcessingAction(false);
@@ -287,115 +289,138 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
     // Helper function to format entity name for display
     const getEntityDisplayName = (entity, entityType) => {
         if (!entity) return "N/A";
-
-        // Return formatted name based on entity type
         return entity.name || "N/A";
     };
 
-    return (
-        <div className="transaction-table-pending">
-            <div className="left-section3">
-                <h2 className="transaction-section-title">Incoming Transactions</h2>
-                <div className="item-count3">{pendingTransactions.length} incoming transactions</div>
-            </div>
-            <div className="section-description">(Transactions waiting for your approval)</div>
+    // Format date helper functions
+    const formatDate = (dateString) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleDateString('en-GB');
+    };
 
-            {/* Search input for this table only */}
-            <div className="right-section3">
-                <div className="table-search-container-pending">
-                    <input
-                        type="text"
-                        placeholder="Search incoming transactions..."
-                        className="search-input3"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="M21 21l-4.35-4.35"/>
-                    </svg>
+    const formatDateTime = (dateString) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
+    };
+
+    // Define table columns
+    const columns = [
+        {
+            id: 'items',
+            label: 'ITEMS',
+            width: '200px',
+            render: (row) => row.items?.length || 0,
+            sortType: 'number',
+            filterType: 'number'
+        },
+        {
+            id: 'sender',
+            label: 'SENDER',
+            width: '200px',
+            render: (row) => getEntityDisplayName(row.sender, row.senderType),
+            filterType: 'text'
+        },
+        {
+            id: 'receiver',
+            label: 'RECEIVER',
+            width: '200px',
+            render: (row) => getEntityDisplayName(row.receiver, row.receiverType),
+            filterType: 'text'
+        },
+        {
+            id: 'batchNumber',
+            label: 'BATCH NUMBER',
+            width: '200px',
+            render: (row) => row.batchNumber || "N/A",
+            sortType: 'number',
+            filterType: 'number'
+        },
+        {
+            id: 'transactionDate',
+            label: 'TRANSACTION DATE',
+            width: '200px',
+            render: (row) => formatDate(row.transactionDate),
+            sortType: 'date',
+            filterType: 'text'
+        },
+        {
+            id: 'createdAt',
+            label: 'CREATED AT',
+            width: '200px',
+            render: (row) => formatDateTime(row.createdAt),
+            sortType: 'date',
+            filterType: 'text'
+        },
+        {
+            id: 'addedBy',
+            label: 'ADDED BY',
+            width: '200px',
+            render: (row) => row.addedBy || "N/A",
+            filterType: 'text'
+        },
+        {
+            id: 'status',
+            label: 'STATUS',
+            width: '200px',
+            render: (row) => (
+                <span className={`status-badge3 ${row.status?.toLowerCase()}`}>
+                    {row.status}
+                </span>
+            ),
+            filterType: 'select'
+        }
+    ];
+
+    // Define action configuration
+    const actionConfig = {
+        label: 'ACTIONS',
+        width: '200px',
+        renderActions: (row) => (
+            <button
+                className="accept-button3"
+                onClick={() => openAcceptModal(row)}
+                title="Accept transaction"
+            >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 13l4 4L19 7"/>
+                </svg>
+            </button>
+        )
+    };
+
+    return (
+        <div className="transaction-table-section">
+            <div className="table-header-section">
+                <div className="left-section3">
+                    <h2 className="transaction-section-title">Incoming Transactions</h2>
+                    <div className="item-count3">{pendingTransactions.length} incoming transactions</div>
                 </div>
             </div>
 
-            <div
-                className="table-card3"
-                style={{
-                    minHeight: filteredTransactions.length === 0 ? '300px' : 'auto',
-                }}
-            >
-                {loading ? (
-                    <div className="loading-container3">
-                        <div className="loading-spinner3"></div>
-                        <p>Loading transaction data...</p>
-                    </div>
-                ) : (
-                    <>
-                        <div className="table-header-row3">
-                            <div className="table-header-cell item-type-cell3">Items</div>
-                            <div className="table-header-cell sender-cell3">Sender</div>
-                            <div className="table-header-cell receiver-cell3">Receiver</div>
-                            <div className="table-header-cell quantity-cell3">Batch Number</div>
-                            <div className="table-header-cell date-cell3">Transaction Date</div>
-                            <div className="table-header-cell created-at-cell3">Created At</div>
-                            <div className="table-header-cell added-by-cell3">Added By</div>
-                            <div className="table-header-cell status-cell3">Status</div>
-                            <div className="table-header-cell actions-cell3">Actions</div>
-                        </div>
-
-                        <div className="table-body3">
-                            {filteredTransactions.length > 0 ? (
-                                filteredTransactions.map((item, index) => (
-                                    <div className="table-row3" key={index}>
-                                        <div className="table-cell item-type-cell3">{item.items?.length || 0}</div>
-                                        <div className="table-cell sender-cell3">
-                                            {getEntityDisplayName(item.sender, item.senderType)}
-                                        </div>
-                                        <div className="table-cell receiver-cell3">
-                                            {getEntityDisplayName(item.receiver, item.receiverType)}
-                                        </div>
-                                        <div className="table-cell quantity-cell3">{item.batchNumber}</div>
-
-                                        <div className="table-cell date-cell3">
-                                            {item.transactionDate ? new Date(item.transactionDate).toLocaleDateString('en-GB') : "N/A"}
-                                        </div>
-                                        <div className="table-cell created-at-cell3">
-                                            {item.createdAt ? new Date(item.createdAt).toLocaleString('en-GB', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                                second: '2-digit',
-                                            }) : "N/A"}
-                                        </div>
-                                        <div className="table-cell added-by-cell3">
-                                            {item.addedBy}
-                                        </div>
-                                        <div className="table-cell status-cell3">{item.status}</div>
-                                        <div className="table-cell actions-cell3">
-                                            <button className="accept-button3" onClick={() => openAcceptModal(item)}>
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="empty-state3">
-                                    <div className="empty-icon3">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                            <path d="M20 6L9 17l-5-5"/>
-                                        </svg>
-                                    </div>
-                                    <h3>No incoming transactions</h3>
-                                    <p>There are no transactions waiting for your approval</p>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                )}
+            <div className="section-description">
+                (Transactions waiting for your approval)
             </div>
+
+            {/* New Table Component */}
+            <Table
+                columns={columns}
+                data={pendingTransactions}
+                isLoading={loading}
+                emptyMessage="There are no transactions waiting for your approval"
+                actionConfig={actionConfig}
+                className="incoming-transactions-table"
+                itemsPerPage={10}
+                enablePagination={true}
+                enableSorting={true}
+                enableFiltering={true}
+            />
 
             {/* Modal for accepting transaction with multiple items */}
             {isAcceptModalOpen && selectedTransaction && (
@@ -587,18 +612,15 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                     </div>
                 </div>
             )}
-            {/* Notifications */}
-            {showAcceptNotification && (
-                <div className="notification3 success-notification3">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                        <path d="M22 4L12 14.01l-3-3"/>
-                    </svg>
-                    <span>Transaction Accepted Successfully</span>
-                </div>
-            )}
 
-            {/* Add Reject Modal and Reject Notification here if needed */}
+            {/* Snackbar Component - Replace old notifications */}
+            <Snackbar
+                type={notificationType}
+                text={notificationMessage}
+                isVisible={showNotification}
+                onClose={closeSnackbar}
+                duration={3000}
+            />
         </div>
     );
 };

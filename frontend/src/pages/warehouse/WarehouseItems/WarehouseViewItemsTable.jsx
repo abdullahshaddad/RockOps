@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./WarehouseViewItems.scss";
 import { useParams } from 'react-router-dom';
 import Table from "../../../components/common/OurTable/Table.jsx";
+import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx"; // Import your existing snackbar
 
 const WarehouseViewItemsTable = ({ warehouseId }) => {
   const [tableData, setTableData] = useState([]);
@@ -24,8 +25,12 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
     comment: "",
   });
   const [itemTypes, setItemTypes] = useState([]);
+
+  // Replace old notification states with snackbar state
   const [showNotification, setShowNotification] = useState(false);
-  const [showNotification2, setShowNotification2] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationType, setNotificationType] = useState('success');
+
   const [activeTab, setActiveTab] = useState('inWarehouse');
   const [warehouseData, setWarehouseData] = useState({
     site: {},
@@ -33,6 +38,18 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
     id: "",
     employees: []
   });
+
+  // Helper function to show snackbar
+  const showSnackbar = (message, type = "success") => {
+    setNotificationMessage(message);
+    setNotificationType(type);
+    setShowNotification(true);
+  };
+
+  // Helper function to close snackbar
+  const closeSnackbar = () => {
+    setShowNotification(false);
+  };
 
   const fetchItems = async () => {
     if (!warehouseId) {
@@ -156,16 +173,16 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
 
       if (response.ok) {
         setTableData((prev) => prev.filter(item => item.id !== itemId));
-        setShowNotification2(true);
-        setTimeout(() => {
-          setShowNotification2(false);
-        }, 3000);
+        // Show success snackbar instead of old notification
+        showSnackbar("Item deleted successfully", "success");
       } else {
         const errorText = await response.text();
         console.error("Failed to delete item:", response.status, errorText);
+        showSnackbar("Failed to delete item", "error");
       }
     } catch (error) {
       console.error('Delete error:', error);
+      showSnackbar("Error deleting item", "error");
     }
   };
 
@@ -207,16 +224,16 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
       if (response.ok) {
         fetchItems();
         setIsResolutionModalOpen(false);
-        setShowNotification(true);
-        setTimeout(() => {
-          setShowNotification(false);
-        }, 3000);
+        // Show success snackbar instead of old notification
+        showSnackbar("Discrepancy resolved successfully", "success");
       } else {
         const errorText = await response.text();
         console.error("Failed to resolve item:", response.status, errorText);
+        showSnackbar("Failed to resolve discrepancy", "error");
       }
     } catch (error) {
       console.error("Failed to resolve item:", error);
+      showSnackbar("Error resolving discrepancy", "error");
     }
   };
 
@@ -443,11 +460,10 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
     }
   ];
 
-  // Action configuration for regular items
-// Action configuration for regular items (In Warehouse) - smaller width
+  // Action configuration for regular items (In Warehouse) - smaller width
   const itemActionConfig = {
     label: 'ACTIONS',
-    width: '150px',  // Smaller width for In Warehouse
+    width: '150px',
     renderActions: (row) => (
         <>
           {row.itemStatus === 'MISSING' || row.itemStatus === 'OVERRECEIVED' ? (
@@ -483,10 +499,10 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
     )
   };
 
-// Action configuration for discrepancy items (Missing/Excess) - keep original width
+  // Action configuration for discrepancy items (Missing/Excess) - keep original width
   const discrepancyActionConfig = {
     label: 'ACTIONS',
-    width: '150px',  // Keep original width for Missing/Excess
+    width: '150px',
     renderActions: (row) => (
         <>
           {row.itemStatus === 'MISSING' || row.itemStatus === 'OVERRECEIVED' ? (
@@ -534,7 +550,6 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
                   : `${tableData.length} items`}
             </div>
           </div>
-
         </div>
 
         {/* Tab navigation */}
@@ -613,7 +628,6 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
         )}
 
         {/* Table Component - Different column sets for different tabs */}
-        {/* Table Component - Different column sets for different tabs */}
         {activeTab === 'resolvedHistory' ? (
             <Table
                 columns={historyColumns}
@@ -628,7 +642,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
                 data={filteredData}
                 isLoading={loading}
                 emptyMessage="No warehouse items found"
-                actionConfig={itemActionConfig}  // Use smaller width config
+                actionConfig={itemActionConfig}
                 className="inventory-items-table"
             />
         ) : (
@@ -637,7 +651,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
                 data={filteredData}
                 isLoading={loading}
                 emptyMessage={`No ${activeTab === 'missingItems' ? 'missing' : 'excess'} items found`}
-                actionConfig={discrepancyActionConfig}  // Use original width config
+                actionConfig={discrepancyActionConfig}
                 className="discrepancy-items-table"
             />
         )}
@@ -761,26 +775,14 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
             </div>
         )}
 
-        {/* Notifications */}
-        {showNotification && (
-            <div className="notification success-notification">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                <path d="M22 4L12 14.01l-3-3" />
-              </svg>
-              <span>Operation completed successfully</span>
-            </div>
-        )}
-
-        {showNotification2 && (
-            <div className="notification success-notification">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                <path d="M22 4L12 14.01l-3-3" />
-              </svg>
-              <span>Item deleted successfully</span>
-            </div>
-        )}
+        {/* Snackbar Component - Replace old notifications */}
+        <Snackbar
+            type={notificationType}
+            text={notificationMessage}
+            isVisible={showNotification}
+            onClose={closeSnackbar}
+            duration={3000}
+        />
       </div>
   );
 };
