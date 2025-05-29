@@ -136,7 +136,7 @@ function App() {
                                         allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN"]}><ProcurementOffers/></RoleRoute>}/>
 
                                     <Route path="/procurement/purchase-orders" element={
-                                        <RoleRoute allowedRoles={["ADMIN", "PROCUREMENT"]}>
+                                        <RoleRoute allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN"]}>
                                             <PurchaseOrders/>
                                         </RoleRoute>
                                     }/>
