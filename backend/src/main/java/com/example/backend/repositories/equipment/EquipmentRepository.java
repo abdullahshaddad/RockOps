@@ -13,4 +13,6 @@ public interface EquipmentRepository extends JpaRepository<Equipment, UUID> {
     List<Equipment> findByType(EquipmentType type);
     boolean existsBySerialNumber (String serialNumber);
 
+    List<Equipment> findBySiteIsNull();
+
 }
