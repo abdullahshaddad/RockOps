@@ -3,6 +3,7 @@ import DataTable from "../../../../components/common/DataTable/DataTable.jsx";
 import {useTranslation} from 'react-i18next';
 import {useAuth} from "../../../../contexts/AuthContext.jsx";
 import { FaTrash, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
+import { useSnackbar } from "../../../../contexts/SnackbarContext.jsx";
 
 const SitePartnersTab = ({siteId}) => {
     const {t} = useTranslation();
@@ -15,24 +16,15 @@ const SitePartnersTab = ({siteId}) => {
     const {currentUser} = useAuth();
     const [editingPartner, setEditingPartner] = useState(null);
     const [editPercentage, setEditPercentage] = useState("");
+    const { showSuccess, showError, showWarning } = useSnackbar();
 
     const isSiteAdmin = currentUser?.role === "SITE_ADMIN";
 
     // Define columns for DataTable
     const columns = [
         {
-            header: 'Partner ID',
-            accessor: 'partnerID',
-            sortable: true
-        },
-        {
-            header: 'First Name',
-            accessor: 'partnerFirstName',
-            sortable: true
-        },
-        {
-            header: 'Last Name',
-            accessor: 'partnerLastName',
+            header: 'ID',
+            accessor: 'conventionalId',
             sortable: true
         },
         {
@@ -140,7 +132,8 @@ const SitePartnersTab = ({siteId}) => {
             const data = await response.json();
 
             if (Array.isArray(data)) {
-                const transformedData = data.map((item) => ({
+                const transformedData = data.map((item, index) => ({
+                    conventionalId: `P-${String(index + 1).padStart(3, '0')}`,
                     partnerID: item.id,
                     partnerFirstName: item.firstName,
                     partnerLastName: item.lastName,
@@ -156,6 +149,7 @@ const SitePartnersTab = ({siteId}) => {
             setLoading(false);
         } catch (err) {
             setError(err.message);
+            showError(err.message);
             setPartnersData([]);
             setLoading(false);
         }
@@ -193,6 +187,7 @@ const SitePartnersTab = ({siteId}) => {
             setAvailablePartners(unassignedPartners);
         } catch (err) {
             console.error("Error fetching available partners:", err);
+            showError("Unable to load available partners. Please try again.");
             setAvailablePartners([]);
         }
     };
@@ -211,11 +206,17 @@ const SitePartnersTab = ({siteId}) => {
                 body: JSON.stringify({percentage: parseFloat(percentageValue)}),
             });
 
-            if (!response.ok) throw new Error("Failed to assign partner.");
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(errorData);
+            }
+
             setShowModal(false);
-            fetchPartners(); // Refresh the partners list
+            await fetchPartners();
+            showSuccess("Partner successfully assigned to the site.");
         } catch (err) {
             console.error("Error assigning partner:", err);
+            showError(err.message || "Failed to assign partner. Please try again.");
         }
     };
 
@@ -231,13 +232,42 @@ const SitePartnersTab = ({siteId}) => {
                 body: JSON.stringify({ percentage: parseFloat(newPercentage) }),
             });
 
-            if (!response.ok) throw new Error("Failed to update partner percentage.");
-            await fetchPartners(); // Refresh the partners list
+            if (!response.ok) {
+                const errorData = await response.text();
+                let errorMessage;
+                try {
+                    // Try to parse as JSON
+                    const jsonError = JSON.parse(errorData);
+                    errorMessage = jsonError.message || jsonError.error || errorData;
+                } catch {
+                    // If not JSON, use the raw error text
+                    errorMessage = errorData;
+                }
+
+                // Check for specific error messages and provide user-friendly versions
+                if (errorMessage.includes("Rock4Mining")) {
+                    throw new Error("Cannot modify the default Rock4Mining partner's percentage directly");
+                } else if (errorMessage.includes("Cannot increase partner percentage")) {
+                    throw new Error("Not enough percentage available to increase. Please reduce other partners first");
+                }
+                throw new Error(errorMessage);
+            }
+
+            await fetchPartners();
             setEditingPartner(null);
             setEditPercentage("");
+            showSuccess("Partner percentage successfully updated");
         } catch (err) {
             console.error("Error updating partner percentage:", err);
-            alert("Failed to update partner percentage. Please try again.");
+            if (err.message.includes("Rock4Mining")) {
+                showError("Cannot modify the default partner's percentage. Please adjust other partners instead");
+            } else if (err.message.includes("Cannot increase partner percentage")) {
+                showError("Not enough percentage available. Please reduce other partners first");
+            } else if (err.message.includes("Server Error")) {
+                showError("Unable to update partner percentage. Please check if the percentage is available");
+            } else {
+                showError(err.message || "Unable to update partner percentage");
+            }
         }
     };
 
@@ -252,11 +282,36 @@ const SitePartnersTab = ({siteId}) => {
                 },
             });
 
-            if (!response.ok) throw new Error("Failed to remove partner.");
-            await fetchPartners(); // Refresh the partners list
+            if (!response.ok) {
+                const errorData = await response.text();
+                let errorMessage;
+                try {
+                    // Try to parse as JSON
+                    const jsonError = JSON.parse(errorData);
+                    errorMessage = jsonError.message || jsonError.error || errorData;
+                } catch {
+                    // If not JSON, use the raw error text
+                    errorMessage = errorData;
+                }
+
+                // Check for specific error messages and provide user-friendly versions
+                if (errorMessage.includes("Rock4Mining")) {
+                    throw new Error("The default Rock4Mining partner cannot be removed from the site");
+                }
+                throw new Error(errorMessage);
+            }
+
+            await fetchPartners();
+            showSuccess("Partner successfully removed from the site");
         } catch (err) {
             console.error("Error removing partner:", err);
-            alert("Failed to remove partner. Please try again.");
+            if (err.message.includes("Rock4Mining")) {
+                showError("This partner cannot be removed as they are the default partner for the site");
+            } else if (err.message.includes("Server Error")) {
+                showError("Unable to remove partner. The partner might be the default partner or have active assignments.");
+            } else {
+                showError(err.message || "Unable to remove partner from the site");
+            }
         }
     };
 

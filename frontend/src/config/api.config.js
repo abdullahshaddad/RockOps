@@ -22,7 +22,7 @@ export const EQUIPMENT_ENDPOINTS = {
     BRAND_BY_ID: (id) => `/api/equipment/brands/${id}`,
     // Transaction endpoints
     SEND_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/send-transaction`,
-    RECEIVE_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/receive-transaction`,
+    RECEIVE_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/receive-transaction`
 };
 
 // Sarky module endpoints

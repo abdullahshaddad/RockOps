@@ -25,8 +25,8 @@ const SiteEmployeesTab = ({ siteId }) => {
 
     const columns = [
         {
-            header: 'Employee ID',
-            accessor: 'employeeID',
+            header: 'ID',
+            accessor: 'conventionalId',
             sortable: true
         },
         {
@@ -89,7 +89,7 @@ const SiteEmployeesTab = ({ siteId }) => {
             const data = response.data;
 
             if (Array.isArray(data)) {
-                const transformedData = data.map(item => {
+                const transformedData = data.map((item, index) => {
                     let departmentName = "Unknown";
                     if (item.jobPosition?.department?.name) {
                         departmentName = item.jobPosition.department.name;
@@ -100,6 +100,7 @@ const SiteEmployeesTab = ({ siteId }) => {
                     }
 
                     return {
+                        conventionalId: `EMP-${String(index + 1).padStart(3, '0')}`,
                         employeeID: item.id,
                         employeeName: `${item.firstName || ''} ${item.lastName || ''}`.trim(),
                         mobileNumber: item.phoneNumber || 'N/A',

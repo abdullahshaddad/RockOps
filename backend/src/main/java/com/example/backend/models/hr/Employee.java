@@ -86,7 +86,7 @@ public class Employee
     // Relationships
     @ManyToOne
     @JoinColumn(name = "site_id", referencedColumnName = "id")
-    @JsonManagedReference
+    @JsonBackReference
     private Site site;
 
     @ManyToOne

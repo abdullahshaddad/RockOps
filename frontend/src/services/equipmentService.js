@@ -195,6 +195,5 @@ export const equipmentService = {
         }
         
         return apiClient.post(`${EQUIPMENT_ENDPOINTS.SEND_TRANSACTION(equipmentId)}?${params}`, items);
-    },
-
+    }
 };
