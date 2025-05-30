@@ -64,6 +64,16 @@ const EmployeeDetails = () => {
         });
     };
 
+    // Calculate days since hire
+    const calculateDaysSinceHire = (hireDate) => {
+        if (!hireDate) return 'N/A';
+        const today = new Date();
+        const hire = new Date(hireDate);
+        const diffTime = today - hire;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        return `${diffDays} days`;
+    };
+
     // Format currency for display - moved to a utility function to be used by all tabs
     const formatCurrency = (amount) => {
         if (!amount && amount !== 0) return '-';
@@ -162,8 +172,8 @@ const EmployeeDetails = () => {
                     <div className="employee-quick-stats">
                         <div className="stat-item">
                             <span className="stat-label">Status</span>
-                            <span className={`stat-value status-badge ${employee.status?.toLowerCase() || 'active'}`}>
-                                {employee.status || 'Active'}
+                            <span className={`status-badge ${employee.status?.toLowerCase() || 'active'}`}>
+                                {employee.status || 'N/A'}
                             </span>
                         </div>
                         <div className="stat-item">
@@ -172,7 +182,12 @@ const EmployeeDetails = () => {
                         </div>
                         <div className="stat-item">
                             <span className="stat-label">Hire Date</span>
-                            <span className="stat-value">{formatDate(employee.hireDate)}</span>
+                            <span className="stat-value">
+                                {formatDate(employee.hireDate)}
+                                <span className="days-since-hire">
+                                    ({calculateDaysSinceHire(employee.hireDate)})
+                                </span>
+                            </span>
                         </div>
                     </div>
                 </div>

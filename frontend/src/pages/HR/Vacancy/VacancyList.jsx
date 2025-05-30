@@ -143,6 +143,19 @@ const VacancyList = () => {
         return date.toLocaleDateString();
     };
 
+    // Calculate remaining days
+    const calculateRemainingDays = (closingDate) => {
+        if (!closingDate) return 'N/A';
+        const today = new Date();
+        const closing = new Date(closingDate);
+        const diffTime = closing - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 0) return 'Closed';
+        if (diffDays === 0) return 'Today';
+        return `${diffDays} days`;
+    };
+
     // Get status badge class based on status
     const getStatusBadgeClass = (status) => {
         switch (status) {
@@ -201,7 +214,7 @@ const VacancyList = () => {
             header: 'Status',
             accessor: 'status',
             render: (row) => (
-                <span className={`status-badge ${getStatusBadgeClass(row.status)}`}>
+                <span className={`jv-status-badge ${getStatusBadgeClass(row.status)}`}>
                     {row.status}
                 </span>
             )
@@ -224,6 +237,17 @@ const VacancyList = () => {
             header: 'Closing',
             accessor: 'closingDate',
             render: (row) => formatDate(row.closingDate)
+        },
+        {
+            header: 'Remaining',
+            accessor: 'closingDate',
+            render: (row) => {
+                const remaining = calculateRemainingDays(row.closingDate);
+                const className = remaining === 'Closed' ? 'remaining-days-closed' : 
+                                remaining === 'Today' ? 'remaining-days-today' : 
+                                parseInt(remaining) <= 7 ? 'remaining-days-urgent' : 'remaining-days-normal';
+                return <span className={className}>{remaining}</span>;
+            }
         },
         {
             header: 'Positions',
