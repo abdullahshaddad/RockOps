@@ -368,7 +368,7 @@ const AllSites = () => {
 
     return (
         <div className="sites-container">
-            <div className="sites-header">
+            <div className="departments-header">
                 <h1 className="sites-title">{t('site.siteList')}</h1>
                 {isSiteAdmin && (
                     <button onClick={handleOpenAddModal} className="btn btn-primary">

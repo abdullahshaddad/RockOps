@@ -188,7 +188,7 @@ const SiteEmployeesTab = ({ siteId }) => {
     return (
         <div className="tab-content">
             <div className="tab-header">
-                <div className="header-content">
+                <div className="departments-header">
                     <h3>{t('site.siteEmployeesReport')}</h3>
                     {isSiteAdmin && (
                         <div className="btn-primary-container">

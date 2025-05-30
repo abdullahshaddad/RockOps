@@ -1,8 +1,8 @@
 package com.example.backend.services.hr;
 
-import com.example.backend.models.hr.Vacancy;
 import com.example.backend.models.hr.Candidate;
 import com.example.backend.models.hr.JobPosition;
+import com.example.backend.models.hr.Vacancy;
 import com.example.backend.repositories.VacancyRepository;
 import com.example.backend.repositories.hr.CandidateRepository;
 import com.example.backend.repositories.hr.JobPositionRepository;
@@ -44,7 +44,7 @@ public class VacancyService {
             // Parse dates
             LocalDate postingDate = null;
             LocalDate closingDate = null;
-            
+
             if (vacancyData.get("postingDate") != null && !((String) vacancyData.get("postingDate")).trim().isEmpty()) {
                 postingDate = LocalDate.parse((String) vacancyData.get("postingDate"));
             }
@@ -215,6 +215,7 @@ public class VacancyService {
                 "hiredCount", vacancy.getHiredCount(),
                 "filledPercentage", vacancy.getFilledPercentage(),
                 "isFull", vacancy.isFull(),
+                "closingDate", vacancy.getClosingDate(),
                 "candidateStats", Map.of(
                         "applied", appliedCount,
                         "underReview", underReviewCount,

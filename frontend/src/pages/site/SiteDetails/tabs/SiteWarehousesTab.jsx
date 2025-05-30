@@ -294,7 +294,7 @@ const SiteWarehousesTab = ({siteId}) => {
 
     return (
         <div className="site-warehouses-tab">
-            <div className="tab-header">
+            <div className="departments-header">
                 <h3>{t('site.siteWarehousesReport')}</h3>
                 {isSiteAdmin && (
                     <div className="btn-primary-container">
