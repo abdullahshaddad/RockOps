@@ -138,8 +138,7 @@ public class Employee
      * @return Monthly salary amount
      */
     public BigDecimal getMonthlySalary() {
-        return getBaseSalary()
-                .divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
+        return getBaseSalary();
     }
 
     /**
