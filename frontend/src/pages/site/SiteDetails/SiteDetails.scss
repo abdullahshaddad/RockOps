@@ -37,8 +37,12 @@
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
   }
 
@@ -373,7 +377,6 @@
   }
 
 
-
   /* Assign Fixed Asset Modal Styles - Matching Add Site Modal Design */
 
   .assign-fixed-asset-modal-overlay {
@@ -392,8 +395,12 @@
   }
 
   @keyframes assign-fixed-asset-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .assign-fixed-asset-modal-content {
@@ -407,8 +414,14 @@
   }
 
   @keyframes assign-fixed-asset-slide-in {
-    from { transform: translateY(-20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   .assign-fixed-asset-modal-header {
@@ -578,8 +591,12 @@
   }
 
   @keyframes add-warehouse-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .add-warehouse-modal-content {
@@ -593,8 +610,14 @@
   }
 
   @keyframes add-warehouse-slide-in {
-    from { transform: translateY(-20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   .add-warehouse-modal-header {
@@ -942,8 +965,12 @@
   }
 
   @keyframes assign-equipment-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .assign-equipment-modal-content {
@@ -957,8 +984,14 @@
   }
 
   @keyframes assign-equipment-slide-in {
-    from { transform: translateY(-20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   .assign-equipment-modal-header {
@@ -1189,8 +1222,12 @@
   }
 
   @keyframes assign-partner-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .assign-partner-modal-content {
@@ -1204,8 +1241,14 @@
   }
 
   @keyframes assign-partner-slide-in {
-    from { transform: translateY(-20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   .assign-partner-modal-header {
@@ -1472,6 +1515,11 @@
     }
   }
 
+  .site-tab-header {
+    display: flex;
+    justify-content: space-between
+  }
+
   /* Replace the existing employee modal styles in your SiteDetails.scss with this: */
 
   /* BULLETPROOF Employee Modal - Copy this and replace the existing employee modal CSS in SiteDetails.scss */
@@ -1490,8 +1538,12 @@
   }
 
   @keyframes employee-modal-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .assign-employee-modal-content {
@@ -1505,8 +1557,14 @@
   }
 
   @keyframes employee-modal-slide-in {
-    from { transform: translateY(-20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   .assign-employee-modal-header {
@@ -1918,6 +1976,7 @@
     .icon-button {
       &.primary {
         background-color: rgba(64, 102, 224, 0.2);
+
         &:hover {
           background-color: rgba(64, 102, 224, 0.3);
         }
@@ -1925,6 +1984,7 @@
 
       &.success {
         background-color: rgba(76, 175, 80, 0.2);
+
         &:hover {
           background-color: rgba(76, 175, 80, 0.3);
         }
@@ -1932,6 +1992,7 @@
 
       &.danger {
         background-color: rgba(244, 67, 54, 0.2);
+
         &:hover {
           background-color: rgba(244, 67, 54, 0.3);
         }
@@ -1939,6 +2000,7 @@
 
       &.cancel {
         background-color: rgba(158, 158, 158, 0.2);
+
         &:hover {
           background-color: rgba(158, 158, 158, 0.3);
         }
