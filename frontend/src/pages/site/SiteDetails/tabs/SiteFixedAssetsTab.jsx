@@ -146,7 +146,7 @@ const SiteFixedAssetsTab = ({siteId}) => {
 
     return (
         <div className="site-fixed-assets-tab">
-            <div className="tab-header">
+            <div className="departments-header">
                 <h3>{t('site.siteFixedAssetsReport')}</h3>
                 {isSiteAdmin && (
                     <div className="btn-primary-container">

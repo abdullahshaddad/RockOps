@@ -102,7 +102,7 @@ const SiteMerchantsTab = ({ siteId }) => {
 
     return (
         <div className="site-merchants-tab">
-            <div className="tab-header">
+            <div className="departments-header">
                 <h3>{t('site.siteMerchantsReport')}</h3>
             </div>
 

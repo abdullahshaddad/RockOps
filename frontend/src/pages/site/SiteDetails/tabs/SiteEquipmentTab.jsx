@@ -207,7 +207,7 @@ const SiteEquipmentTab = ({siteId}) => {
 
     return (
         <div className="site-equipment-tab">
-            <div className="tab-header">
+            <div className="departments-header">
                 <h3>{t('site.siteEquipmentReport')}</h3>
                 {isSiteAdmin && (
                     <div className="btn-primary-container">

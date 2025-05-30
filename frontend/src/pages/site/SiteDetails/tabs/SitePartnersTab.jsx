@@ -319,7 +319,7 @@ const SitePartnersTab = ({siteId}) => {
 
     return (
         <div className="site-partners-tab">
-            <div className="tab-header">
+            <div className="departments-header">
                 <h3>Site Partners Report</h3>
                 {isSiteAdmin && (
                     <div className="btn-primary-container">
