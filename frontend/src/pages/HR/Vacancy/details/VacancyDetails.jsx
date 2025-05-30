@@ -52,6 +52,19 @@ const VacancyDetails = () => {
         return date.toLocaleDateString();
     };
 
+    // Calculate remaining days
+    const calculateRemainingDays = (closingDate) => {
+        if (!closingDate) return 'N/A';
+        const today = new Date();
+        const closing = new Date(closingDate);
+        const diffTime = closing - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 0) return 'Closed';
+        if (diffDays === 0) return 'Today';
+        return `${diffDays} days`;
+    };
+
     // Get status badge class based on status
     const getStatusBadgeClass = (status) => {
         switch (status) {
@@ -155,59 +168,61 @@ const VacancyDetails = () => {
             </div>
 
             {activeTab === 'details' ? (
-                <div className="details-content">
-                    <div className="details-section basic-info">
-                        <div className="info-grid">
-                            <div className="info-item">
-                                <span className="info-label">Position</span>
-                                <span className="info-value">{vacancy.jobPosition ? vacancy.jobPosition.positionName : 'General Position'}</span>
+                <div className="vacancy-details-content">
+                    <div className="vacancy-details-section vacancy-overview-section">
+                        <div className="vacancy-info-grid">
+                            <div className="vacancy-info-card">
+                                <span className="vacancy-info-label">Position</span>
+                                <span className="vacancy-info-value">{vacancy.jobPosition ? vacancy.jobPosition.positionName : 'General Position'}</span>
                             </div>
-                            <div className="info-item">
-                                <span className="info-label">Department</span>
-                                <span className="info-value">{vacancy.jobPosition ? vacancy.jobPosition.department.name : 'N/A'}</span>
+                            <div className="vacancy-info-card">
+                                <span className="vacancy-info-label">Department</span>
+                                <span className="vacancy-info-value">{vacancy.jobPosition ? vacancy.jobPosition.department.name : 'N/A'}</span>
                             </div>
-                            <div className="info-item">
-                                <span className="info-label">Posted Date</span>
-                                <span className="info-value">{formatDate(vacancy.postingDate)}</span>
+                            <div className="vacancy-info-card">
+                                <span className="vacancy-info-label">Posted Date</span>
+                                <span className="vacancy-info-value">{formatDate(vacancy.postingDate)}</span>
                             </div>
-                            <div className="info-item">
-                                <span className="info-label">Closing Date</span>
-                                <span className="info-value">{formatDate(vacancy.closingDate)}</span>
+                            <div className="vacancy-info-card">
+                                <span className="vacancy-info-label">Closing Date</span>
+                                <span className="vacancy-info-value">{formatDate(vacancy.closingDate)}</span>
                             </div>
-                            <div className="info-item">
-                                <span className="info-label">Positions</span>
-                                <span className="info-value">{vacancy.numberOfPositions || 1}</span>
+                            <div className="vacancy-info-card">
+                                <span className="vacancy-info-label">Remaining Time</span>
+                                <span className={`vacancy-info-value ${calculateRemainingDays(vacancy.closingDate) === 'Closed' ? 'vacancy-closed' : 
+                                    calculateRemainingDays(vacancy.closingDate) === 'Today' ? 'vacancy-today' : 
+                                    parseInt(calculateRemainingDays(vacancy.closingDate)) <= 7 ? 'vacancy-urgent' : 'vacancy-normal'}`}>
+                                    {calculateRemainingDays(vacancy.closingDate)}
+                                </span>
+                            </div>
+                            <div className="vacancy-info-card">
+                                <span className="vacancy-info-label">Positions</span>
+                                <span className="vacancy-info-value">{vacancy.numberOfPositions || 1}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="details-section">
+                    <div className="vacancy-details-section vacancy-description-section">
                         <h2>Description</h2>
-                        <div className="content-box">
+                        <div className="vacancy-content-card">
                             <p>{vacancy.description || 'No description provided.'}</p>
                         </div>
                     </div>
 
-                    <div className="details-section">
+                    <div className="vacancy-details-section vacancy-requirements-section">
                         <h2>Requirements</h2>
-                        <div className="content-box">
+                        <div className="vacancy-content-card">
                             <p>{vacancy.requirements || 'No specific requirements provided.'}</p>
                         </div>
                     </div>
 
-                    <div className="details-section">
+                    <div className="vacancy-details-section vacancy-responsibilities-section">
                         <h2>Responsibilities</h2>
-                        <div className="content-box">
+                        <div className="vacancy-content-card">
                             <p>{vacancy.responsibilities || 'No specific responsibilities provided.'}</p>
                         </div>
                     </div>
 
-                    <div className="details-actions">
-                        <button className="action-button edit-button" onClick={handleEditClick}>
-                            <i className="fas fa-edit"></i> Edit Vacancy
-                        </button>
-
-                    </div>
                 </div>
             ) : (
                 <div className="candidates-content">

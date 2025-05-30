@@ -276,7 +276,7 @@
 .vacancy-stats {
     .vacancy-stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
         gap: 20px;
         margin-bottom: 20px;
     }
@@ -329,6 +329,13 @@
                 background-color: rgba(156, 39, 176, 0.05);
             }
         }
+      &:nth-child(5) {
+        border-top-color: var(--border-color);
+
+        &:hover {
+          background-color: rgba(156, 39, 176, 0.05);
+        }
+      }
 
         &:hover {
             transform: translateY(-2px);
@@ -400,4 +407,24 @@
       }
     }
   }
+}
+
+.remaining-days-closed {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.remaining-days-today {
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.remaining-days-urgent {
+  color: #fd7e14;
+  font-weight: 600;
+}
+
+.remaining-days-normal {
+  color: var(--color-success);
+  font-weight: 500;
 }
