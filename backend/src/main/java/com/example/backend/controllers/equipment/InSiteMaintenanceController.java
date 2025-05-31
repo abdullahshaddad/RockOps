@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.time.temporal.ChronoUnit;
 
 @RestController
 @RequestMapping("/api/equipment/{equipmentId}/maintenance")
@@ -58,7 +60,6 @@ public class InSiteMaintenanceController {
 
         UUID technicianId = UUID.fromString((String) maintenanceData.get("technicianId"));
         LocalDateTime maintenanceDate = LocalDateTime.parse((String) maintenanceData.get("maintenanceDate"));
-        String maintenanceType = (String) maintenanceData.get("maintenanceType");
         String description = (String) maintenanceData.get("description");
         String status = (String) maintenanceData.get("status");
 
@@ -68,9 +69,25 @@ public class InSiteMaintenanceController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // First create the maintenance record
-            InSiteMaintenance maintenance = maintenanceService.createMaintenance(
-                    equipmentId, technicianId, maintenanceDate, maintenanceType, description, status);
+            InSiteMaintenance maintenance;
+            
+            // Check if maintenanceTypeId is provided (new format) or maintenanceType (legacy format)
+            Object maintenanceTypeIdObj = maintenanceData.get("maintenanceTypeId");
+            Object maintenanceTypeObj = maintenanceData.get("maintenanceType");
+            
+            if (maintenanceTypeIdObj != null) {
+                // New format: using maintenance type ID
+                UUID maintenanceTypeId = UUID.fromString(maintenanceTypeIdObj.toString());
+                maintenance = maintenanceService.createMaintenance(
+                        equipmentId, technicianId, maintenanceDate, maintenanceTypeId, description, status);
+            } else if (maintenanceTypeObj != null) {
+                // Legacy format: using maintenance type string
+                String maintenanceTypeName = maintenanceTypeObj.toString();
+                maintenance = maintenanceService.createMaintenance(
+                        equipmentId, technicianId, maintenanceDate, maintenanceTypeName, description, status);
+            } else {
+                throw new IllegalArgumentException("Either maintenanceTypeId or maintenanceType must be provided");
+            }
 
             // If batch number is provided, check if transaction exists
             if (batchNumber != null) {
@@ -135,12 +152,28 @@ public class InSiteMaintenanceController {
 
         UUID technicianId = UUID.fromString((String) maintenanceData.get("technicianId"));
         LocalDateTime maintenanceDate = LocalDateTime.parse((String) maintenanceData.get("maintenanceDate"));
-        String maintenanceType = (String) maintenanceData.get("maintenanceType");
         String description = (String) maintenanceData.get("description");
         String status = (String) maintenanceData.get("status");
 
-        InSiteMaintenance maintenance = maintenanceService.updateMaintenance(
-                maintenanceId, technicianId, maintenanceDate, maintenanceType, description, status);
+        InSiteMaintenance maintenance;
+        
+        // Check if maintenanceTypeId is provided (new format) or maintenanceType (legacy format)
+        Object maintenanceTypeIdObj = maintenanceData.get("maintenanceTypeId");
+        Object maintenanceTypeObj = maintenanceData.get("maintenanceType");
+        
+        if (maintenanceTypeIdObj != null) {
+            // New format: using maintenance type ID
+            UUID maintenanceTypeId = UUID.fromString(maintenanceTypeIdObj.toString());
+            maintenance = maintenanceService.updateMaintenance(
+                    maintenanceId, technicianId, maintenanceDate, maintenanceTypeId, description, status);
+        } else if (maintenanceTypeObj != null) {
+            // Legacy format: using maintenance type string
+            String maintenanceTypeName = maintenanceTypeObj.toString();
+            maintenance = maintenanceService.updateMaintenance(
+                    maintenanceId, technicianId, maintenanceDate, maintenanceTypeName, description, status);
+        } else {
+            throw new IllegalArgumentException("Either maintenanceTypeId or maintenanceType must be provided");
+        }
 
         return ResponseEntity.ok(maintenance);
     }
@@ -231,23 +264,162 @@ public class InSiteMaintenanceController {
     }
 
     // Add this endpoint to InSiteMaintenanceController.java
-    @GetMapping("/transaction-by-batch/{batchNumber}")
-    public ResponseEntity<?> findTransactionByBatchNumber(
-            @PathVariable UUID equipmentId,
-            @PathVariable int batchNumber) {
+    @GetMapping("/check-transaction/{batchNumber}")
+    public ResponseEntity<?> checkTransactionExists(@PathVariable UUID equipmentId, @PathVariable int batchNumber) {
+        Map<String, Object> response = new HashMap<>();
 
         try {
             Optional<Transaction> transaction = maintenanceService.findTransactionByBatchNumber(batchNumber);
 
             if (transaction.isPresent()) {
-                return ResponseEntity.ok(transaction.get());
+                Transaction trans = transaction.get();
+                response.put("found", true);
+                response.put("transaction", Map.of(
+                        "id", trans.getId(),
+                        "batchNumber", trans.getBatchNumber(),
+                        "status", trans.getStatus(),
+                        "purpose", trans.getPurpose(),
+                        "items", trans.getItems().size()
+                ));
+                response.put("message", "Transaction found with " + trans.getItems().size() + " items");
             } else {
-                return ResponseEntity.status(404).body("No transaction found with batch number: " + batchNumber);
+                response.put("found", false);
+                response.put("message", "No transaction found with batch number " + batchNumber);
             }
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    // Get maintenance analytics for equipment dashboard
+    @GetMapping("/analytics")
+    public ResponseEntity<Map<String, Object>> getMaintenanceAnalytics(@PathVariable UUID equipmentId) {
+        try {
+            List<InSiteMaintenance> maintenanceRecords = maintenanceService.getMaintenanceByEquipmentId(equipmentId);
+            
+            Map<String, Object> analytics = new HashMap<>();
+            
+            // Calculate basic metrics
+            int totalMaintenanceEvents = maintenanceRecords.size();
+            long completedEvents = maintenanceRecords.stream()
+                    .filter(m -> "COMPLETED".equals(m.getStatus()))
+                    .count();
+            long inProgressEvents = maintenanceRecords.stream()
+                    .filter(m -> "IN_PROGRESS".equals(m.getStatus()))
+                    .count();
+            long scheduledEvents = maintenanceRecords.stream()
+                    .filter(m -> "SCHEDULED".equals(m.getStatus()))
+                    .count();
+            long cancelledEvents = maintenanceRecords.stream()
+                    .filter(m -> "CANCELLED".equals(m.getStatus()))
+                    .count();
+            
+            // Calculate maintenance type breakdown
+            Map<String, Long> maintenanceTypeBreakdown = maintenanceRecords.stream()
+                    .filter(m -> m.getMaintenanceType() != null)
+                    .collect(Collectors.groupingBy(
+                        m -> m.getMaintenanceType().getName(),
+                        Collectors.counting()
+                    ));
+            
+            // Calculate technician performance
+            Map<String, Map<String, Object>> technicianPerformance = maintenanceRecords.stream()
+                    .filter(m -> m.getTechnician() != null)
+                    .collect(Collectors.groupingBy(
+                        m -> m.getTechnician().getFirstName() + " " + m.getTechnician().getLastName(),
+                        Collectors.collectingAndThen(
+                            Collectors.toList(),
+                            list -> {
+                                Map<String, Object> stats = new HashMap<>();
+                                stats.put("totalJobs", list.size());
+                                stats.put("completedJobs", list.stream().filter(m -> "COMPLETED".equals(m.getStatus())).count());
+                                stats.put("completionRate", list.size() > 0 ? 
+                                    (double) list.stream().filter(m -> "COMPLETED".equals(m.getStatus())).count() / list.size() * 100 : 0);
+                                return stats;
+                            }
+                        )
+                    ));
+            
+            // Calculate monthly maintenance breakdown (last 12 months)
+            LocalDateTime twelveMonthsAgo = LocalDateTime.now().minusMonths(12);
+            Map<String, Map<String, Object>> monthlyBreakdown = maintenanceRecords.stream()
+                    .filter(m -> m.getMaintenanceDate() != null && m.getMaintenanceDate().isAfter(twelveMonthsAgo))
+                    .collect(Collectors.groupingBy(
+                        m -> m.getMaintenanceDate().getYear() + "-" + 
+                             String.format("%02d", m.getMaintenanceDate().getMonthValue()),
+                        Collectors.collectingAndThen(
+                            Collectors.toList(),
+                            list -> {
+                                Map<String, Object> monthStats = new HashMap<>();
+                                monthStats.put("month", list.get(0).getMaintenanceDate().getYear() + "-" + 
+                                              String.format("%02d", list.get(0).getMaintenanceDate().getMonthValue()));
+                                monthStats.put("totalEvents", list.size());
+                                monthStats.put("completedEvents", list.stream().filter(m -> "COMPLETED".equals(m.getStatus())).count());
+                                monthStats.put("inProgressEvents", list.stream().filter(m -> "IN_PROGRESS".equals(m.getStatus())).count());
+                                monthStats.put("scheduledEvents", list.stream().filter(m -> "SCHEDULED".equals(m.getStatus())).count());
+                                monthStats.put("cancelledEvents", list.stream().filter(m -> "CANCELLED".equals(m.getStatus())).count());
+                                return monthStats;
+                            }
+                        )
+                    ));
+            
+            // Calculate mean time between maintenance events
+            double meanTimeBetweenEvents = 0;
+            if (maintenanceRecords.size() > 1) {
+                List<LocalDateTime> sortedDates = maintenanceRecords.stream()
+                        .filter(m -> m.getMaintenanceDate() != null)
+                        .map(InSiteMaintenance::getMaintenanceDate)
+                        .sorted()
+                        .collect(Collectors.toList());
+                
+                if (sortedDates.size() > 1) {
+                    long totalDaysBetween = 0;
+                    for (int i = 1; i < sortedDates.size(); i++) {
+                        totalDaysBetween += ChronoUnit.DAYS.between(sortedDates.get(i-1), sortedDates.get(i));
+                    }
+                    meanTimeBetweenEvents = (double) totalDaysBetween / (sortedDates.size() - 1);
+                }
+            }
+            
+            // Calculate maintenance efficiency metrics
+            double completionRate = totalMaintenanceEvents > 0 ? (double) completedEvents / totalMaintenanceEvents * 100 : 0;
+            
+            // Calculate overdue maintenance (scheduled events past their date)
+            long overdueEvents = maintenanceRecords.stream()
+                    .filter(m -> "SCHEDULED".equals(m.getStatus()) && 
+                                m.getMaintenanceDate() != null && 
+                                m.getMaintenanceDate().isBefore(LocalDateTime.now()))
+                    .count();
+            
+            // Count related transactions and consumables used
+            long totalTransactions = maintenanceRecords.stream()
+                    .mapToLong(m -> m.getRelatedTransactions() != null ? m.getRelatedTransactions().size() : 0)
+                    .sum();
+            
+            // Prepare response
+            analytics.put("totalMaintenanceEvents", totalMaintenanceEvents);
+            analytics.put("completedEvents", completedEvents);
+            analytics.put("inProgressEvents", inProgressEvents);
+            analytics.put("scheduledEvents", scheduledEvents);
+            analytics.put("cancelledEvents", cancelledEvents);
+            analytics.put("overdueEvents", overdueEvents);
+            analytics.put("completionRate", Math.round(completionRate * 100.0) / 100.0);
+            analytics.put("meanTimeBetweenEvents", Math.round(meanTimeBetweenEvents * 100.0) / 100.0);
+            analytics.put("totalTransactions", totalTransactions);
+            analytics.put("maintenanceTypeBreakdown", maintenanceTypeBreakdown);
+            analytics.put("technicianPerformance", technicianPerformance);
+            analytics.put("monthlyBreakdown", monthlyBreakdown.values().stream()
+                    .sorted((a, b) -> ((String) a.get("month")).compareTo((String) b.get("month")))
+                    .collect(Collectors.toList()));
+            
+            return ResponseEntity.ok(analytics);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to generate maintenance analytics: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 }
