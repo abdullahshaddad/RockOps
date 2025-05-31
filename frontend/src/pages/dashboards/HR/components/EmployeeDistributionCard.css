@@ -78,27 +78,27 @@
     padding-bottom: 4px;
 }
 
-.tab-button {
-    /*background: none;*/
-    /*border: 1px solid var(--border-color);*/
-    /*border-radius: var(--radius-sm);*/
-    /*padding: 6px 12px;*/
-    /*font-size: 13px;*/
-    /*color: var(--color-text-secondary);*/
-    /*cursor: pointer;*/
-    /*white-space: nowrap;*/
-    /*display: flex;*/
-    /*align-items: center;*/
-    /*gap: 6px;*/
-    /*transition: all var(--transition-fast);*/
+.employee-distribution-tab-button {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all var(--transition-fast);
 }
 
-.tab-button:hover {
+.employee-distribution-tab-button:hover {
     background-color: var(--color-surface-hover);
     border-color: var(--border-color);
 }
 
-.tab-button.active {
+.employee-distribution-tab-button.active {
     background-color: var(--color-primary);
     color: var(--text-hover);
     border-color: var(--color-primary);

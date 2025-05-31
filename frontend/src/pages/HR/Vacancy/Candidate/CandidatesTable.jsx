@@ -221,7 +221,7 @@ const CandidatesTable = ({ vacancyId }) => {
         const colorClass = statusColors[status] || 'info';
 
         return (
-            <span className={`candidate-status-badge candidate-status-badge--${colorClass}`}>
+            <span className={`status-badge status-badge--${colorClass}`}>
                 {status?.replace('_', ' ') || 'APPLIED'}
             </span>
         );
