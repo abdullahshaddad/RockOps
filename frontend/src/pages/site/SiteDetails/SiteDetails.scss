@@ -2,6 +2,7 @@
 // Styling for site details page with tabs (similar to employee details)
 
 .site-details-container {
+  
   width: 100%;
   flex: 1;
   margin: 0 auto;
@@ -9,7 +10,7 @@
   font-family: var(--font-family);
   color: var(--color-text-primary);
   background-color: var(--main-background-color);
-  min-height: calc(100vh - 80px);
+  // min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
 
@@ -179,14 +180,14 @@
         flex-shrink: 0;
 
         img {
-          width: 60px;
-          height: 60px;
+          width: 100px;
+          height: 100px;
           border-radius: var(--radius-md);
           object-fit: cover;
           border: 2px solid var(--border-color);
         }
 
-        .status-indicator {
+        .site-status-indicator {
           position: absolute;
           bottom: -2px;
           right: -2px;
