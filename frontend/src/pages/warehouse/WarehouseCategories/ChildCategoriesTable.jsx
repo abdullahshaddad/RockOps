@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import DataTable from "../../../components/common/DataTable/DataTable.jsx";
+import Table from "../../../components/common/OurTable/Table.jsx";
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import "./WarehouseViewItemCategories.scss";
 
@@ -18,11 +18,11 @@ const ChildCategoriesTable = ({
             setError(null);
             try {
                 const token = localStorage.getItem("token");
-                
+
                 if (!token) {
                     throw new Error("No authentication token found");
                 }
-                
+
                 const response = await fetch(`http://localhost:8080/api/v1/itemCategories/children`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -30,7 +30,6 @@ const ChildCategoriesTable = ({
                     }
                 });
 
-                // If the response is not ok, get the error message
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error("Error response:", errorText);
@@ -51,42 +50,57 @@ const ChildCategoriesTable = ({
         fetchChildCategories();
     }, []);
 
-    // Define table columns for DataTable
+    // Define table columns for Table component
     const columns = [
         {
-            header: 'CATEGORY',
-            accessor: 'name',
-            sortable: true
+            id: 'name',
+            label: 'CATEGORY',
+            sortable: true,
+            filterable: true,
+            filterType: 'text'
         },
         {
-            header: 'DESCRIPTION',
-            accessor: 'description',
+            id: 'parentCategory',
+            label: 'PARENT CATEGORY',
             sortable: true,
-            render: (row) => row.description || 'No description'
-        },
-        {
-            header: 'PARENT CATEGORY',
-            accessor: 'parentCategory.name',
-            sortable: true,
+            filterable: true,
+            filterType: 'text',
             render: (row) => row.parentCategory ? row.parentCategory.name : "None"
+        },
+        {
+            id: 'description',
+            label: 'DESCRIPTION',
+            sortable: true,
+            filterable: true,
+            filterType: 'text',
+            render: (row) => row.description || 'No description'
         }
+
     ];
 
-    // Action configuration for DataTable
-    const actions = [
-        {
-            label: 'Edit category',
-            icon: <FaEdit />,
-            onClick: (row) => onEdit(row),
-            className: 'primary'
-        },
-        {
-            label: 'Delete category',
-            icon: <FaTrash />,
-            onClick: (row) => onDelete(row.id),
-            className: 'danger'
-        }
-    ];
+    // Action configuration for Table component using existing CSS classes
+    const actionConfig = {
+        label: 'ACTIONS',
+        width: '120px',
+        renderActions: (row) => (
+            <div>
+                <button
+                    className="custom-table-action-button edit"
+                    onClick={() => onEdit(row)}
+                    title="Edit category"
+                >
+                    <FaEdit />
+                </button>
+                <button
+                    className="custom-table-action-button delete"
+                    onClick={() => onDelete(row.id)}
+                    title="Delete category"
+                >
+                    <FaTrash />
+                </button>
+            </div>
+        )
+    };
 
     if (error) {
         return (
@@ -108,83 +122,32 @@ const ChildCategoriesTable = ({
         );
     }
 
-    // Add safety check for DataTable component
-    try {
-        // Simple test to see if DataTable is the issue
-        const useSimpleTable = false; // Set to true to test without DataTable
-        
-        if (useSimpleTable) {
-            return (
-                <div className="category-table-container">
-                    <div className="table-header-container">
-                        <div className="left-section2">
-                            <h2 className="table-section-title">Child Categories (Simple)</h2>
-                            <div className="item-count2">{childCategories.length} categories</div>
-                        </div>
-                        <div className="section-description">
-                            (A more specific category that falls under a parent category, used to better organize and manage items)
-                        </div>
-                    </div>
-                    <div style={{ padding: '20px' }}>
-                        {loading && <p>Loading child categories...</p>}
-                        {childCategories.length === 0 && !loading && <p>No child categories found.</p>}
-                        {childCategories.map((category, index) => (
-                            <div key={category.id || index} style={{ padding: '10px', border: '1px solid #ccc', margin: '5px 0' }}>
-                                <strong>{category.name}</strong>: {category.description}
-                                {category.parentCategory && <p>Parent: {category.parentCategory.name}</p>}
-                            </div>
-                        ))}
-                    </div>
+    return (
+        <div className="category-table-container">
+            <div className="table-header-container">
+                <div className="left-section2">
+                    <h2 className="table-section-title">Child Categories</h2>
+                    <div className="item-count2">{childCategories.length} categories</div>
                 </div>
-            );
-        }
-
-        return (
-            <div className="category-table-container">
-                <div className="table-header-container">
-                    <div className="left-section2">
-                        <h2 className="table-section-title">Child Categories</h2>
-                        <div className="item-count2">{childCategories.length} categories</div>
-                    </div>
-                    <div className="section-description">
-                        (A more specific category that falls under a parent category, used to better organize and manage items)
-                    </div>
-                </div>
-
-                <DataTable
-                    data={childCategories}
-                    columns={columns}
-                    loading={loading}
-                    showSearch={true}
-                    showFilters={true}
-                    filterableColumns={columns}
-                    itemsPerPageOptions={[10, 25, 50]}
-                    defaultItemsPerPage={10}
-                    actions={actions}
-                    className="child-categories-table"
-                />
-            </div>
-        );
-    } catch (renderError) {
-        console.error("Error rendering ChildCategoriesTable:", renderError);
-        return (
-            <div className="category-table-container">
-                <div className="table-header-container">
-                    <div className="left-section2">
-                        <h2 className="table-section-title">Child Categories</h2>
-                        <div className="item-count2">0 categories</div>
-                    </div>
-                    <div className="section-description">
-                        (A more specific category that falls under a parent category, used to better organize and manage items)
-                    </div>
-                </div>
-                <div className="error-container">
-                    <p>Error rendering table: {renderError.message}</p>
-                    <p>Please refresh the page or contact support.</p>
+                <div className="section-description">
+                    (A more specific category that falls under a parent category, used to better organize and manage items)
                 </div>
             </div>
-        );
-    }
+
+            <Table
+                data={childCategories}
+                columns={columns}
+                isLoading={loading}
+                emptyMessage="No child categories found"
+                actionConfig={actionConfig}
+                className="child-categories-table"
+                enablePagination={true}
+                enableSorting={true}
+                enableFiltering={true}
+                itemsPerPage={10}
+            />
+        </div>
+    );
 };
 
 export default ChildCategoriesTable;
