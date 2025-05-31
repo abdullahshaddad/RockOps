@@ -2,9 +2,11 @@ import React, {useEffect, useRef, useState} from "react";
 import DataTable from "../../../../components/common/DataTable/DataTable.jsx";
 import {useTranslation} from 'react-i18next';
 import {useAuth} from "../../../../contexts/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const SiteWarehousesTab = ({siteId}) => {
     const {t} = useTranslation();
+    const navigate = useNavigate();
     const [warehouseData, setWarehouseData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -29,8 +31,8 @@ const SiteWarehousesTab = ({siteId}) => {
     // Define columns for DataTable
     const columns = [
         {
-            header: 'Warehouse ID',
-            accessor: 'warehouseID',
+            header: 'ID',
+            accessor: 'conventionalId',
             sortable: true
         },
         {
@@ -102,7 +104,8 @@ const SiteWarehousesTab = ({siteId}) => {
             const data = await response.json();
 
             if (Array.isArray(data)) {
-                const transformedData = data.map((item) => ({
+                const transformedData = data.map((item, index) => ({
+                    conventionalId: `WH-${String(index + 1).padStart(3, '0')}`,
                     warehouseID: item.id,
                     capacity: `${item.capacity} m²`,
                     manager: findManagerName(item),
@@ -283,6 +286,10 @@ const SiteWarehousesTab = ({siteId}) => {
         }
     };
 
+    const handleRowClick = (row) => {
+        navigate(`/warehouses/warehouse-details/${row.warehouseID}`);
+    };
+
     if (loading) return <div className="loading-container">{t('site.loadingWarehouses')}</div>;
 
     return (
@@ -312,6 +319,8 @@ const SiteWarehousesTab = ({siteId}) => {
                         itemsPerPageOptions={[10, 25, 50, 100]}
                         defaultItemsPerPage={10}
                         tableTitle="Warehouses List"
+                        onRowClick={handleRowClick}
+                        rowClassName="clickable-row"
                     />
                 </div>
             )}

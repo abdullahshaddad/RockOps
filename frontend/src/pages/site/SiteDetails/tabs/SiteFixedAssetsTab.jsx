@@ -18,8 +18,8 @@ const SiteFixedAssetsTab = ({siteId}) => {
     // Define columns for DataTable
     const columns = [
         {
-            header: 'Asset ID',
-            accessor: 'assetID',
+            header: 'ID',
+            accessor: 'conventionalId',
             sortable: true
         },
         {
@@ -68,7 +68,8 @@ const SiteFixedAssetsTab = ({siteId}) => {
 
             if (Array.isArray(data)) {
                 const transformedData = data.map((asset, index) => ({
-                    assetID: `Asset-${String(index + 1).padStart(3, "0")}`,
+                    conventionalId: `FA-${String(index + 1).padStart(3, "0")}`,
+                    assetID: asset.id,
                     assetName: asset.name,
                     creationDate: asset.creationDate.split("T")[0],
                     areaQuantity: `${asset.area} m²`,
