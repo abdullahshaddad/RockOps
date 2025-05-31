@@ -18,8 +18,8 @@ const SiteFixedAssetsTab = ({siteId}) => {
     // Define columns for DataTable
     const columns = [
         {
-            header: 'Asset ID',
-            accessor: 'assetID',
+            header: 'ID',
+            accessor: 'conventionalId',
             sortable: true
         },
         {
@@ -68,7 +68,8 @@ const SiteFixedAssetsTab = ({siteId}) => {
 
             if (Array.isArray(data)) {
                 const transformedData = data.map((asset, index) => ({
-                    assetID: `Asset-${String(index + 1).padStart(3, "0")}`,
+                    conventionalId: `FA-${String(index + 1).padStart(3, "0")}`,
+                    assetID: asset.id,
                     assetName: asset.name,
                     creationDate: asset.creationDate.split("T")[0],
                     areaQuantity: `${asset.area} m²`,
@@ -145,7 +146,7 @@ const SiteFixedAssetsTab = ({siteId}) => {
 
     return (
         <div className="site-fixed-assets-tab">
-            <div className="tab-header">
+            <div className="departments-header">
                 <h3>{t('site.siteFixedAssetsReport')}</h3>
                 {isSiteAdmin && (
                     <div className="btn-primary-container">

@@ -114,7 +114,7 @@ const Navbar = () => {
                             <p className="user-name">
                                 {currentUser?.firstName || 'N/A'}
                             </p>
-                            <p className="user-role">{currentUser?.role || 'N/A'}</p>
+                            <p className="user-role">{currentUser?.role.replace('_', ' ') || 'N/A'}</p>
                         </div>
                     </div>
 

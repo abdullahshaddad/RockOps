@@ -2,9 +2,11 @@ import React, {useEffect, useState} from "react";
 import DataTable from "../../../../components/common/DataTable/DataTable.jsx";
 import {useTranslation} from 'react-i18next';
 import {useAuth} from "../../../../contexts/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const SiteEquipmentTab = ({siteId}) => {
     const {t} = useTranslation();
+    const navigate = useNavigate();
     const [equipmentData, setEquipmentData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -17,8 +19,8 @@ const SiteEquipmentTab = ({siteId}) => {
     // Define columns for DataTable
     const columns = [
         {
-            header: 'Equipment ID',
-            accessor: 'equipmentID',
+            header: 'ID',
+            accessor: 'conventionalId',
             sortable: true
         },
         {
@@ -97,11 +99,13 @@ const SiteEquipmentTab = ({siteId}) => {
             }
 
             const data = await response.json();
+            console.log("Equipment data from fetchEquipment:", data); // Debug log
 
             if (Array.isArray(data)) {
-                const transformedData = data.map((item) => ({
+                const transformedData = data.map((item, index) => ({
+                    conventionalId: `EQ-${String(index + 1).padStart(3, '0')}`,
                     equipmentID: item.id,
-                    equipmentType: typeof item.type === 'object' ? item.type.name : item.type,
+                    equipmentType: item.type?.name || '',
                     modelNumber: item.modelNumber,
                     status: item.status,
                     driverName: item.mainDriver ? `${item.mainDriver.firstName} ${item.mainDriver.lastName}` : "No Driver",
@@ -138,7 +142,7 @@ const SiteEquipmentTab = ({siteId}) => {
     const fetchAvailableEquipment = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:8080/equipment", {
+            const response = await fetch("http://localhost:8080/api/v1/site/unassigned-equipment", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -149,8 +153,8 @@ const SiteEquipmentTab = ({siteId}) => {
             if (!response.ok) throw new Error("Failed to fetch equipment.");
 
             const data = await response.json();
-            const unassignedEquipment = data.filter(eq => !eq.site);
-            setAvailableEquipment(unassignedEquipment);
+            console.log("Modal equipment data:", data[0]);
+            setAvailableEquipment(data);
         } catch (err) {
             console.error("Error fetching available equipment:", err);
             setAvailableEquipment([]);
@@ -195,11 +199,15 @@ const SiteEquipmentTab = ({siteId}) => {
         }
     };
 
+    const handleRowClick = (row) => {
+        navigate(`/equipment/${row.equipmentID}`);
+    };
+
     if (loading) return <div className="loading-container">{t('site.loadingEquipment')}</div>;
 
     return (
         <div className="site-equipment-tab">
-            <div className="tab-header">
+            <div className="departments-header">
                 <h3>{t('site.siteEquipmentReport')}</h3>
                 {isSiteAdmin && (
                     <div className="btn-primary-container">
@@ -207,18 +215,17 @@ const SiteEquipmentTab = ({siteId}) => {
                             {t('site.assignEquipment')}
                         </button>
                     </div>
-
                 )}
             </div>
 
-            <div className="equipment-stats">
-                {Object.entries(Equipcounts).map(([type, count]) => (
-                    <div className="stat-card" key={type}>
-                        <div className="stat-title">{type}</div>
-                        <div className="stat-value">{count}</div>
-                    </div>
-                ))}
-            </div>
+            {/*<div className="equipment-stats">*/}
+            {/*    {Object.entries(Equipcounts).map(([type, count]) => (*/}
+            {/*        <div className="stat-card" key={type}>*/}
+            {/*            <div className="stat-title">{type}</div>*/}
+            {/*            <div className="stat-value">{count}</div>*/}
+            {/*        </div>*/}
+            {/*    ))}*/}
+            {/*</div>*/}
             {/* Updated Assign Equipment Modal JSX - Replace the existing modal section in your component */}
             {showModal && (
                 <div className="assign-equipment-modal-overlay">
@@ -253,7 +260,8 @@ const SiteEquipmentTab = ({siteId}) => {
                                         {availableEquipment.map((eq) => {
                                             const eqData = eq.equipment || {};
                                             const equipmentId = eqData.id || eq.id;
-                                            const equipmentType = eqData.type || eq.type;
+                                            // Try both possible data structures
+                                            const equipmentType = eq.type?.name || eq.typeName || '';
                                             const modelNumber = eqData.modelNumber || eq.modelNumber;
                                             const status = eqData.status || eq.status;
 
@@ -312,6 +320,8 @@ const SiteEquipmentTab = ({siteId}) => {
                         itemsPerPageOptions={[10, 25, 50, 100]}
                         defaultItemsPerPage={10}
                         tableTitle="Equipment List"
+                        onRowClick={handleRowClick}
+                        rowClassName="clickable-row"
                     />
                 </div>
             )}

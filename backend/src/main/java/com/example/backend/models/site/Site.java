@@ -63,5 +63,26 @@ public class Site
     @JsonIgnore
     private List<FixedAssets> fixedAssets;
 
+    // Helper methods to get counts
+    @Transient
+    private int equipmentCount;
 
+    @Transient
+    private int employeeCount;
+
+    public int getEquipmentCount() {
+        return equipment != null ? equipment.size() : 0;
+    }
+
+    public int getEmployeeCount() {
+        return employees != null ? employees.size() : 0;
+    }
+
+    public void setEquipmentCount(int count) {
+        this.equipmentCount = count;
+    }
+
+    public void setEmployeeCount(int count) {
+        this.employeeCount = count;
+    }
 }

@@ -115,6 +115,11 @@ const AllSites = () => {
             setLoading(true);
             const response = await siteService.getAll();
             console.log("Sites fetched from service:", response.data);
+
+            if (response.data.length > 0) {
+                console.log("First site structure:", Object.keys(response.data[0]));
+                console.log("First site full object:", response.data[0]);
+            }
             setSites(response.data);
             setError(null);
         } catch (err) {
@@ -363,7 +368,7 @@ const AllSites = () => {
 
     return (
         <div className="sites-container">
-            <div className="sites-header">
+            <div className="departments-header">
                 <h1 className="sites-title">{t('site.siteList')}</h1>
                 {isSiteAdmin && (
                     <button onClick={handleOpenAddModal} className="btn btn-primary">
@@ -386,16 +391,16 @@ const AllSites = () => {
                                 <div className="site-stats">
                                     <p className="stat-item">
                                         <span className="stat-label">{t('hr.dashboard.employees')}:</span>
-                                        <span className="stat-value"> {site.employees?.length || 0}</span>
+                                        <span className="stat-value"> {site.employeeCount || 0}</span>
                                     </p>
                                     <p className="stat-item">
                                         <span className="stat-label">{t('equipment.equipment')}:</span>
-                                        <span className="stat-value"> {site.equipment?.length || 0}</span>
+                                        <span className="stat-value"> {site.equipmentCount || 0}</span>
                                     </p>
-                                    <p className="stat-item full-width">
-                                        <span className="stat-label">{t('site.efficiency')}:</span>
-                                        <span className="stat-value"> {site.efficiency || '90%'}</span>
-                                    </p>
+                                    {/*<p className="stat-item full-width">*/}
+                                    {/*    <span className="stat-label">{t('site.efficiency')}:</span>*/}
+                                    {/*    <span className="stat-value"> {site.efficiency || '90%'}</span>*/}
+                                    {/*</p>*/}
                                 </div>
 
                                 <div className="site-actions">

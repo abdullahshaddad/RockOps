@@ -21,6 +21,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
     itemTypeId: "",
     initialQuantity: ""
   });
+
   const [addItemLoading, setAddItemLoading] = useState(false);
   const [itemCategories, setItemCategories] = useState([]);
   const [resolutionData, setResolutionData] = useState({
@@ -597,7 +598,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
     {
       accessor: 'itemType.itemCategory.name',
       header: 'CATEGORY',
-      width: '500px',
+      width: '200px',
       render: (row) => (
           <span className="category-tag">
             {row.itemType?.itemCategory?.name || "No Category"}
@@ -703,6 +704,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
   ];
 
   // Define actions for different tabs
+  // Define actions for different tabs
   const getActions = () => {
     if (activeTab === 'resolvedHistory') {
       return []; // No actions for resolved history
@@ -721,7 +723,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
             </svg>
         ),
         onClick: (row) => handleOpenTransactionDetailsModal(row),
-        className: 'action-view',
+        className: 'view', // ✅ Change from 'action-view' to 'view'
         isDisabled: (row) => !row.isAggregated
       });
 
@@ -736,7 +738,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
             </svg>
         ),
         onClick: (row) => handleDeleteItem(row.id),
-        className: 'action-delete',
+        className: 'delete', // ✅ Change from 'action-delete' to 'delete'
         isDisabled: (row) => row.isAggregated
       });
     } else {
@@ -750,7 +752,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
               </svg>
           ),
           onClick: (row) => handleOpenResolutionModal(row),
-          className: 'action-resolve'
+          className: 'resolve' // ✅ Change from 'action-resolve' to 'resolve'
         });
       }
 
@@ -764,7 +766,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
             </svg>
         ),
         onClick: (row) => handleDeleteItem(row.id),
-        className: 'action-delete'
+        className: 'delete' // ✅ Change from 'action-delete' to 'delete'
       });
     }
 

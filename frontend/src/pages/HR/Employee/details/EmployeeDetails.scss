@@ -273,65 +273,28 @@
 
     .employee-quick-stats {
       display: flex;
-      gap: 2rem;
-      align-items: center;
-
-      @media (max-width: 768px) {
-        width: 100%;
-        justify-content: space-around;
-        gap: 1rem;
-      }
+      gap: 24px;
+      margin-top: 16px;
 
       .stat-item {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        text-align: center;
-        min-width: 80px;
-
-        @media (max-width: 768px) {
-          min-width: 60px;
-        }
+        gap: 4px;
 
         .stat-label {
-          font-size: 0.75rem;
+          font-size: 0.85rem;
           color: var(--color-text-tertiary);
-          margin-bottom: 0.25rem;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
         }
 
         .stat-value {
-          font-size: 0.9rem;
+          font-size: 0.95rem;
           font-weight: 500;
           color: var(--color-text-primary);
 
-          &.status-badge {
-            padding: 0.2rem 0.6rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: var(--bold-font-weight);
-
-            &.active {
-              background-color: rgba(76, 175, 80, 0.1);
-              color: var(--color-success);
-            }
-
-            &.on_leave {
-              background-color: rgba(255, 152, 0, 0.1);
-              color: var(--color-warning);
-            }
-
-            &.suspended {
-              background-color: rgba(244, 67, 54, 0.1);
-              color: var(--color-danger);
-            }
-
-            &.terminated {
-              background-color: rgba(107, 114, 128, 0.1);
-              color: #6b7280;
-            }
+          .days-since-hire {
+            color: var(--color-text-secondary);
+            font-size: 0.85rem;
+            margin-left: 4px;
           }
         }
       }

@@ -216,11 +216,32 @@ public class SiteAdminService
             throw new RuntimeException("Equipment is already assigned to a site!");
         }
 
+        // Assign equipment to site
         equipment.setSite(site);
+
+        // If equipment has a main driver, assign them to the site
+        if (equipment.getMainDriver() != null) {
+            Employee mainDriver = equipment.getMainDriver();
+            if (mainDriver.getSite() == null) {
+                mainDriver.setSite(site);
+                employeeRepository.save(mainDriver);
+            }
+        }
+
+        // If equipment has a sub driver, assign them to the site
+        if (equipment.getSubDriver() != null) {
+            Employee subDriver = equipment.getSubDriver();
+            if (subDriver.getSite() == null) {
+                subDriver.setSite(site);
+                employeeRepository.save(subDriver);
+            }
+        }
+
         return equipmentRepository.save(equipment);
     }
 
 
+    @Transactional
     public Equipment removeEquipmentFromSite(UUID siteId, UUID equipmentId) {
         siteRepository.findById(siteId)
                 .orElseThrow(() -> new RuntimeException("❌ Site not found with ID: " + siteId));
@@ -230,6 +251,20 @@ public class SiteAdminService
 
         if (equipment.getSite() == null || !equipment.getSite().getId().equals(siteId)) {
             throw new RuntimeException("Equipment is not assigned to the specified site!");
+        }
+
+        // Unassign main driver from the site if exists
+        if (equipment.getMainDriver() != null) {
+            Employee mainDriver = equipment.getMainDriver();
+            mainDriver.setSite(null);
+            employeeRepository.save(mainDriver);
+        }
+
+        // Unassign sub driver from the site if exists
+        if (equipment.getSubDriver() != null) {
+            Employee subDriver = equipment.getSubDriver();
+            subDriver.setSite(null);
+            employeeRepository.save(subDriver);
         }
 
         equipment.setSite(null);

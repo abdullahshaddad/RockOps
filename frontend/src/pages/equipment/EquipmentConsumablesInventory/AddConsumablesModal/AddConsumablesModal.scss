@@ -1,5 +1,5 @@
-// AddConsumablesModal.scss
-.modal-backdrop {
+// AddConsumablesModal.scss - Unique styles for Add Consumables Modal
+.add-consumables-modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
   backdrop-filter: blur(2px);
 }
 
-.modal {
+.add-consumables-modal {
   background-color: var(--section-background-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
@@ -24,7 +24,7 @@
   position: relative;
   border: 1px solid var(--border-color);
 
-  .modal-header {
+  .add-consumables-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -38,9 +38,10 @@
       font-size: 1.5rem;
       font-weight: var(--bold-font-weight);
       color: var(--color-text-primary);
+      font-family: var(--font-family);
     }
 
-    .close-modal {
+    .add-consumables-close-modal {
       background: none;
       border: none;
       cursor: pointer;
@@ -64,18 +65,18 @@
     }
   }
 
-  .form-transaction {
+  .add-consumables-form-transaction {
     padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 20px;
 
-    .form-group {
+    .add-consumables-form-group {
       display: flex;
       flex-direction: column;
       gap: 8px;
 
-      &.full-width {
+      &.add-consumables-full-width {
         width: 100%;
       }
 
@@ -83,6 +84,7 @@
         font-weight: var(--bold-font-weight);
         color: var(--color-text-primary);
         font-size: 0.9rem;
+        font-family: var(--font-family);
       }
 
       input, select {
@@ -92,6 +94,7 @@
         background-color: var(--color-surface);
         color: var(--color-text-primary);
         font-size: 0.9rem;
+        font-family: var(--font-family);
         transition: all var(--transition-fast);
 
         &:focus {
@@ -106,10 +109,15 @@
           cursor: not-allowed;
         }
 
-        &.disabled-input {
-          background-color: var(--color-surface-hover);
+        &::placeholder {
           color: var(--color-text-secondary);
         }
+      }
+
+      .add-consumables-disabled-input {
+        background-color: var(--color-surface-hover) !important;
+        color: var(--color-text-secondary) !important;
+        cursor: not-allowed;
       }
 
       select {
@@ -118,10 +126,15 @@
         &:disabled {
           cursor: not-allowed;
         }
+
+        option {
+          background-color: var(--color-surface);
+          color: var(--color-text-primary);
+        }
       }
     }
 
-    .form-row {
+    .add-consumables-form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
@@ -131,11 +144,11 @@
       }
     }
 
-    .batch-input-group {
+    .add-consumables-batch-input-group {
       position: relative;
     }
 
-    .batch-verification-result {
+    .add-consumables-batch-verification-result {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -143,20 +156,21 @@
       border-radius: var(--radius-sm);
       margin-top: 8px;
       font-size: 0.85rem;
+      font-family: var(--font-family);
 
-      &.success {
+      &.add-consumables-success {
         background-color: rgba(76, 175, 80, 0.1);
         border: 1px solid var(--color-success);
         color: var(--color-success);
       }
 
-      &.warning {
+      &.add-consumables-warning {
         background-color: rgba(255, 152, 0, 0.1);
         border: 1px solid var(--color-warning);
         color: var(--color-warning);
       }
 
-      .verification-icon {
+      .add-consumables-verification-icon {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -169,7 +183,7 @@
       }
     }
 
-    .items-section-header {
+    .add-consumables-items-section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -179,9 +193,10 @@
         font-weight: var(--bold-font-weight);
         color: var(--color-text-primary);
         font-size: 0.9rem;
+        font-family: var(--font-family);
       }
 
-      .add-item-button {
+      .add-consumables-add-item-button {
         background-color: var(--color-primary);
         color: var(--color-text-inverse);
         border: none;
@@ -189,6 +204,7 @@
         border-radius: var(--radius-sm);
         font-size: 0.85rem;
         font-weight: var(--bold-font-weight);
+        font-family: var(--font-family);
         cursor: pointer;
         transition: all var(--transition-fast);
 
@@ -205,13 +221,13 @@
       }
     }
 
-    .transaction-item-container {
+    .add-consumables-transaction-item-container {
       border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
       padding: 16px;
       background-color: var(--color-surface);
 
-      .transaction-item-header {
+      .add-consumables-transaction-item-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -221,9 +237,10 @@
           font-weight: var(--bold-font-weight);
           color: var(--color-text-primary);
           font-size: 0.9rem;
+          font-family: var(--font-family);
         }
 
-        .remove-item-button {
+        .add-consumables-remove-item-button {
           display: flex;
           align-items: center;
           gap: 6px;
@@ -233,6 +250,7 @@
           padding: 6px 12px;
           border-radius: var(--radius-sm);
           font-size: 0.8rem;
+          font-family: var(--font-family);
           cursor: pointer;
           transition: all var(--transition-fast);
 
@@ -249,14 +267,14 @@
       }
     }
 
-    .modal-footer {
+    .add-consumables-modal-footer {
       display: flex;
       justify-content: flex-end;
       padding-top: 20px;
       border-top: 1px solid var(--border-color);
       margin-top: 20px;
 
-      .submit-button {
+      .add-consumables-submit-button {
         background-color: var(--color-primary);
         color: var(--color-text-inverse);
         border: none;
@@ -264,6 +282,7 @@
         border-radius: var(--radius-sm);
         font-size: 0.9rem;
         font-weight: var(--bold-font-weight);
+        font-family: var(--font-family);
         cursor: pointer;
         transition: all var(--transition-fast);
         min-width: 160px;
@@ -284,14 +303,14 @@
   }
 }
 
-// Responsive design
+// Responsive design for Add Consumables Modal
 @media (max-width: 768px) {
-  .modal {
+  .add-consumables-modal {
     width: 95%;
     margin: 20px;
     max-height: calc(100vh - 40px);
 
-    .modal-header {
+    .add-consumables-modal-header {
       padding: 16px;
 
       h2 {
@@ -299,42 +318,42 @@
       }
     }
 
-    .form-transaction {
+    .add-consumables-form-transaction {
       padding: 16px;
       gap: 16px;
 
-      .form-row {
+      .add-consumables-form-row {
         grid-template-columns: 1fr;
         gap: 12px;
       }
 
-      .items-section-header {
+      .add-consumables-items-section-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
 
-        .add-item-button {
+        .add-consumables-add-item-button {
           align-self: stretch;
         }
       }
 
-      .transaction-item-container {
+      .add-consumables-transaction-item-container {
         padding: 12px;
 
-        .transaction-item-header {
+        .add-consumables-transaction-item-header {
           flex-direction: column;
           align-items: flex-start;
           gap: 12px;
 
-          .remove-item-button {
+          .add-consumables-remove-item-button {
             align-self: stretch;
             justify-content: center;
           }
         }
       }
 
-      .modal-footer {
-        .submit-button {
+      .add-consumables-modal-footer {
+        .add-consumables-submit-button {
           width: 100%;
         }
       }
@@ -342,19 +361,29 @@
   }
 }
 
-// Dark theme adjustments
+// Dark theme adjustments for Add Consumables Modal
 [data-theme="dark"] {
-  .modal-backdrop {
+  .add-consumables-modal-backdrop {
     background-color: rgba(0, 0, 0, 0.7);
   }
 
-  .batch-verification-result {
-    &.success {
+  .add-consumables-batch-verification-result {
+    &.add-consumables-success {
       background-color: rgba(92, 188, 96, 0.15);
     }
 
-    &.warning {
+    &.add-consumables-warning {
       background-color: rgba(255, 183, 77, 0.15);
+    }
+  }
+
+  .add-consumables-form-transaction {
+    .add-consumables-form-group {
+      input, select {
+        &:focus {
+          box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.2);
+        }
+      }
     }
   }
 } 

@@ -9,13 +9,13 @@ const CompensationTab = ({ employee, formatCurrency }) => {
                 <div className="salary-card">
                     <div className="salary-title">Base Monthly Salary</div>
                     <div className="salary-amount">
-                        {formatCurrency(employee.monthlySalary || (employee.jobPosition?.baseSalary ? employee.jobPosition.baseSalary / 12 : 0))}
+                        {formatCurrency(employee.monthlySalary || (employee.jobPosition?.baseSalary ? employee.jobPosition.baseSalary  : 0))}
                     </div>
                 </div>
                 <div className="salary-card">
                     <div className="salary-title">Annual Salary</div>
                     <div className="salary-amount">
-                        {formatCurrency(employee.baseSalary || employee.jobPosition?.baseSalary || 0)}
+                        {formatCurrency((employee.baseSalary || employee.jobPosition?.baseSalary )*12 || 0)}
                     </div>
                 </div>
                 <div className="salary-card">

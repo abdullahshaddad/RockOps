@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { FaUserPlus, FaEdit, FaTrash,  FaUser } from 'react-icons/fa';
 import './EmployeesList.scss';
 import DataTable from '../../../components/common/DataTable/DataTable';
-import AddEmployeeModal from './AddEmployeeModal';
-import EditEmployeeModal from './EditEmployeeModal';
+import AddEmployeeModal from './modals/AddEmployeeModal.jsx';
+import EditEmployeeModal from './modals/EditEmployeeModal.jsx';
 import { useSnackbar } from '../../../contexts/SnackbarContext';
 import { employeeService } from '../../../services/employeeService';
 import { hrEmployeeService } from '../../../services/hrEmployeeService';
@@ -184,7 +184,7 @@ const EmployeesList = () => {
             accessor: 'contractType',
             render: (employee) => (
                 <span className="contract-type">
-                    {employee.contractType ? employee.contractType.replace('_', ' ') : 'N/A'}
+                    {employee.jobPositionType ? employee.jobPositionType.replace('_', ' ') : 'N/A'}
                 </span>
             )
         },

@@ -125,4 +125,10 @@ public class SiteController
         return ResponseEntity.ok(unassignedEmployees != null ? unassignedEmployees : Collections.emptyList());
     }
 
+    @GetMapping("/unassigned-equipment")
+    public ResponseEntity<?> getUnassignedEquipment() {
+        List<Equipment> unassignedEquipment = siteService.getUnassignedEquipment();
+        return ResponseEntity.ok(unassignedEquipment != null ? unassignedEquipment : Collections.emptyList());
+    }
+
 }

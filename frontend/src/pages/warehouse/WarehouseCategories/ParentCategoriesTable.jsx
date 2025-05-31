@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Table from "../../../components/common/OurTable/Table.jsx";
+import DataTable from "../../../components/common/DataTable/DataTable.jsx"; // Updated import
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import "./WarehouseViewItemCategories.scss";
 
@@ -50,48 +50,54 @@ const ParentCategoriesTable = ({
         fetchParentCategories();
     }, []);
 
-    // Define table columns for Table component
+    // Define table columns for DataTable component
     const columns = [
         {
-            id: 'name',
-            label: 'CATEGORY',
+            header: 'CATEGORY',
+            accessor: 'name',
             sortable: true,
-            filterable: true,
-            filterType: 'text'
+            width: '300px',
+            minWidth: '200px'
         },
         {
-            id: 'description',
-            label: 'DESCRIPTION',
+            header: 'DESCRIPTION',
+            accessor: 'description',
             sortable: true,
-            filterable: true,
-            filterType: 'text',
+            width: '400px',
+            minWidth: '250px',
             render: (row) => row.description || 'No description'
         }
     ];
 
-    // Action configuration for Table component using existing CSS classes
-    const actionConfig = {
-        label: 'ACTIONS',
-        width: '120px',
-        renderActions: (row) => (
-            <div>
-                <button
-                    className="custom-table-action-button edit"
-                    onClick={() => onEdit(row)}
-                    title="Edit category"
-                >
-                    <FaEdit />
-                </button>
-                <button
-                    className="custom-table-action-button delete"
-                    onClick={() => onDelete(row.id)}
-                    title="Delete category"
-                >
-                    <FaTrash />
-                </button>
-            </div>
-        )
-    };
+    // Filterable columns for DataTable
+    const filterableColumns = [
+        {
+            header: 'CATEGORY',
+            accessor: 'name',
+            filterType: 'text'
+        },
+        {
+            header: 'DESCRIPTION',
+            accessor: 'description',
+            filterType: 'text'
+        }
+    ];
+
+    // Actions array for DataTable
+    const actions = [
+        {
+            label: 'Edit',
+            icon: <FaEdit />,
+            className: 'edit',
+            onClick: (row) => onEdit(row)
+        },
+        {
+            label: 'Delete',
+            icon: <FaTrash />,
+            className: 'delete',
+            onClick: (row) => onDelete(row.id)
+        }
+    ];
 
     if (error) {
         return (
@@ -125,17 +131,19 @@ const ParentCategoriesTable = ({
                 </div>
             </div>
 
-            <Table
+            <DataTable
                 data={parentCategories}
                 columns={columns}
-                isLoading={loading}
+                loading={loading}
                 emptyMessage="No parent categories found"
-                actionConfig={actionConfig}
+                actions={actions}
                 className="parent-categories-table"
-                enablePagination={true}
-                enableSorting={true}
-                enableFiltering={true}
-                itemsPerPage={10}
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={filterableColumns}
+                itemsPerPageOptions={[5, 10, 15, 20]}
+                defaultItemsPerPage={10}
+                actionsColumnWidth="120px"
             />
         </div>
     );
