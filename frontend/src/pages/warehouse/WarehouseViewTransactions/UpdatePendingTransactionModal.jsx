@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./WarehouseViewTransactions.scss";
+import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx"; // Import the Snackbar component
 
 const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate, warehouseId }) => {
     const [updatedTransaction, setUpdatedTransaction] = useState(transaction || {});
@@ -10,11 +11,34 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
     const [selectedReceiverSite, setSelectedReceiverSite] = useState("");
     const [senderOptions, setSenderOptions] = useState([]);
     const [receiverOptions, setReceiverOptions] = useState([]);
-    const [entityTypes, setEntityTypes] = useState(["WAREHOUSE", "EQUIPMENT", "MERCHANT", "SUPPLIER"]);
+    const [entityTypes, setEntityTypes] = useState(["WAREHOUSE", "EQUIPMENT", "MERCHANT"]);
     const [warehouseData, setWarehouseData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
-    const [showCreateNotification, setShowCreateNotification] = useState(false);
+
+    // Snackbar states
+    const [snackbar, setSnackbar] = useState({
+        isVisible: false,
+        type: 'success',
+        text: ''
+    });
+
+    // Function to show snackbar
+    const showSnackbar = (type, text) => {
+        setSnackbar({
+            isVisible: true,
+            type,
+            text
+        });
+    };
+
+    // Function to hide snackbar
+    const hideSnackbar = () => {
+        setSnackbar(prev => ({
+            ...prev,
+            isVisible: false
+        }));
+    };
 
     // Initialize the form when the modal opens
     useEffect(() => {
@@ -197,7 +221,14 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
             });
 
             if (response.ok) {
-                return await response.json();
+                let data = await response.json();
+
+                // Filter out the current warehouse from the options
+                if (entityType === "WAREHOUSE") {
+                    data = data.filter((entity) => entity.id !== warehouseId);
+                }
+
+                return data;
             }
             return [];
         } catch (error) {
@@ -296,7 +327,7 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
         }
     };
 
-    // Handle item change
+    // Enhanced handleItemChange with quantity validation
     const handleItemChange = (index, field, value) => {
         const newItems = [...updatedTransaction.items];
 
@@ -306,6 +337,35 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
             newItems[index] = {
                 ...newItems[index],
                 itemType
+            };
+        } else if (field === 'quantity') {
+            // Validate quantity for sender role
+            if (transactionRole === "sender" && value && newItems[index].itemType?.id) {
+                const warehouseItemsOfType = items.filter(warehouseItem =>
+                    warehouseItem.itemStatus === "IN_WAREHOUSE" &&
+                    warehouseItem.itemType.id === newItems[index].itemType.id
+                );
+
+                if (warehouseItemsOfType.length > 0) {
+                    const aggregatedItems = aggregateWarehouseItems(warehouseItemsOfType);
+                    const aggregatedItem = aggregatedItems.find(aggItem => aggItem.itemType.id === newItems[index].itemType.id);
+
+                    if (aggregatedItem) {
+                        const totalAvailableQuantity = aggregatedItem.quantity;
+                        const requestedQuantity = parseInt(value);
+
+                        if (requestedQuantity > totalAvailableQuantity) {
+                            showSnackbar('error', `Not enough quantity available for ${aggregatedItem.itemType.name}. Only ${totalAvailableQuantity} items in stock.`);
+                            // Don't update the value if it exceeds available quantity
+                            return;
+                        }
+                    }
+                }
+            }
+
+            newItems[index] = {
+                ...newItems[index],
+                [field]: value
             };
         } else {
             newItems[index] = {
@@ -378,11 +438,6 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
                 throw new Error(errorData.message || "Failed to update transaction");
             }
 
-            setShowCreateNotification(true);
-            setTimeout(() => {
-                setShowCreateNotification(false);
-            }, 3000);
-
             return await response.json();
         } catch (error) {
             console.error("API Error:", error);
@@ -391,12 +446,51 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
     };
 
     // Handle form submission
-    // Handle form submission
     const handleUpdateTransaction = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
 
+        // Validate items
+        for (const item of updatedTransaction.items) {
+            if (!item.itemType?.id || !item.quantity) {
+                showSnackbar('error', 'Please complete all item fields');
+                setIsLoading(false);
+                return;
+            }
+
+            // Check if the warehouse is the sender and verify inventory
+            if (transactionRole === "sender") {
+                const warehouseItemsOfType = items.filter(warehouseItem =>
+                    warehouseItem.itemStatus === "IN_WAREHOUSE" &&
+                    warehouseItem.itemType.id === item.itemType.id
+                );
+
+                if (warehouseItemsOfType.length === 0) {
+                    showSnackbar('error', 'Item not found in the warehouse inventory or not available (IN_WAREHOUSE status)');
+                    setIsLoading(false);
+                    return;
+                }
+
+                const aggregatedItems = aggregateWarehouseItems(warehouseItemsOfType);
+                const aggregatedItem = aggregatedItems.find(aggItem => aggItem.itemType.id === item.itemType.id);
+
+                if (!aggregatedItem) {
+                    showSnackbar('error', 'Item not found in the warehouse inventory');
+                    setIsLoading(false);
+                    return;
+                }
+
+                const totalAvailableQuantity = aggregatedItem.quantity;
+                const itemTypeName = aggregatedItem.itemType.name;
+
+                if (totalAvailableQuantity < parseInt(item.quantity)) {
+                    showSnackbar('error', `Not enough quantity available for ${itemTypeName}. Only ${totalAvailableQuantity} items in stock.`);
+                    setIsLoading(false);
+                    return;
+                }
+            }
+        }
 
         let username = "system";
         const userInfoString = localStorage.getItem('userInfo');
@@ -426,16 +520,23 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
                 username : username
             };
 
-            // Call the API - renamed the variable to avoid conflict with state
+            // Call the API
             const updatedTransactionResponse = await updateTransactionAPI(transactionData);
+
+            // Show success message
+            showSnackbar('success', 'Transaction updated successfully!');
 
             // Notify parent component of successful update
             if (onUpdate) {
                 onUpdate(updatedTransactionResponse);
             }
 
-            onClose();
+            // Close modal after a short delay to show the success message
+            setTimeout(() => {
+                onClose();
+            }, 1500);
         } catch (error) {
+            showSnackbar('error', error.message || 'Failed to update transaction. Please try again.');
             setError(error.message || "Failed to update transaction");
         } finally {
             setIsLoading(false);
@@ -444,8 +545,96 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
 
     if (!isOpen) return null;
 
+    // Helper function to aggregate warehouse items by item type
+    const aggregateWarehouseItems = (items) => {
+        const aggregated = {};
+
+        items.forEach(item => {
+            const key = item.itemType?.id;
+            if (!key) return;
+
+            if (aggregated[key]) {
+                // Add quantity and keep track of individual items
+                aggregated[key].quantity += item.quantity;
+                aggregated[key].individualItems.push(item);
+            } else {
+                // Create new aggregated entry
+                aggregated[key] = {
+                    ...item,
+                    quantity: item.quantity,
+                    individualItems: [item], // Store individual items
+                    id: `aggregated_${key}`, // Use a different ID to avoid conflicts
+                    isAggregated: true
+                };
+            }
+        });
+
+        return Object.values(aggregated);
+    };
+
+    // Get available item types for a specific item dropdown
+    const getAvailableItemTypes = (currentIndex) => {
+        // Get all selected item type IDs except the current one
+        const selectedItemTypeIds = updatedTransaction.items
+            .filter((_, idx) => idx !== currentIndex && !!_.itemType.id)
+            .map(item => item.itemType.id);
+
+        if (transactionRole === "receiver") {
+            // For receiver mode, show unique item types
+            const uniqueItemTypes = [];
+            const seenItemTypeIds = new Set();
+
+            items.forEach(warehouseItem => {
+                const itemTypeId = warehouseItem.itemType.id;
+                if (!seenItemTypeIds.has(itemTypeId) && !selectedItemTypeIds.includes(itemTypeId)) {
+                    seenItemTypeIds.add(itemTypeId);
+                    uniqueItemTypes.push(warehouseItem);
+                }
+            });
+
+            return uniqueItemTypes;
+        } else {
+            // For sender mode, use aggregated warehouse items
+            const aggregatedItems = aggregateWarehouseItems(
+                items.filter(warehouseItem => warehouseItem.itemStatus === "IN_WAREHOUSE")
+            );
+
+            return aggregatedItems.filter(aggregatedItem =>
+                !selectedItemTypeIds.includes(aggregatedItem.itemType.id)
+            );
+        }
+    };
+
+    // Function to render the item options in the dropdown
+    const renderItemOptions = (currentIndex) => {
+        const availableItems = getAvailableItemTypes(currentIndex);
+
+        if (transactionRole === "receiver") {
+            return availableItems.map((warehouseItem) => (
+                <option key={warehouseItem.itemType.id} value={warehouseItem.itemType.id}>
+                    {warehouseItem.itemType.name}
+                </option>
+            ));
+        } else {
+            return availableItems.map((aggregatedItem) => (
+                <option key={aggregatedItem.itemType.id} value={aggregatedItem.itemType.id}>
+                    {aggregatedItem.itemType.name} ({aggregatedItem.quantity} available)
+                </option>
+            ));
+        }
+    };
+
     return (
         <div className="modal-backdrop3">
+            {/* Snackbar Component */}
+            <Snackbar
+                type={snackbar.type}
+                text={snackbar.text}
+                isVisible={snackbar.isVisible}
+                onClose={hideSnackbar}
+                duration={4000}
+            />
+
             <div className="modal3">
                 <div className="modal-header3">
                     <h2>Update Transaction</h2>
@@ -455,17 +644,6 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
                         </svg>
                     </button>
                 </div>
-
-                {error && (
-                    <div className="error-message">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12" y2="16"/>
-                        </svg>
-                        <span>{error}</span>
-                    </div>
-                )}
 
                 <form className="form-transaction" onSubmit={handleUpdateTransaction}>
                     {/* Warehouse Role Selection - Full Width */}
@@ -547,30 +725,41 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
                                             required
                                         >
                                             <option value="" disabled>Select Item Type</option>
-                                            {console.log("items" + items)}
-                                            {
-                                                items
-                                                .filter(warehouseItem => {
-                                                    // If role is sender, show only items with status IN_WAREHOUSE
-                                                    return transactionRole !== "sender" || warehouseItem.itemStatus === "IN_WAREHOUSE";
-                                                })
-                                                .map((warehouseItem) => (
-                                                    <option key={warehouseItem.id} value={warehouseItem.itemType.id}>
-                                                        {warehouseItem.itemType.name} {transactionRole === "sender" ? `(${warehouseItem.quantity} available)` : ""}
-                                                    </option>
-                                                ))}
+                                            {renderItemOptions(index)}
                                         </select>
                                     </div>
 
                                     <div className="form-group3">
                                         <label>Quantity</label>
-                                        <input
-                                            type="number"
-                                            value={item.quantity}
-                                            onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                                            min="1"
-                                            required
-                                        />
+                                        <div className="ro-quantity-unit-container">
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                value={item.quantity}
+                                                onChange={(e) => {
+                                                    let value = e.target.value.replace(/[^0-9]/g, '');
+                                                    handleItemChange(index, 'quantity', value);
+                                                }}
+                                                onBlur={(e) => {
+                                                    let value = e.target.value.replace(/[^0-9]/g, '');
+                                                    if (value === '' || parseInt(value) < 1) {
+                                                        handleItemChange(index, 'quantity', '1');
+                                                    }
+                                                }}
+                                                required
+                                                className="ro-quantity-input"
+                                            />
+                                            {item.itemType?.id && (
+                                                <span className="ro-unit-label">
+                                                    {(() => {
+                                                        let unit = '';
+                                                        const warehouseItem = items.find(it => it.itemType.id === item.itemType.id);
+                                                        unit = warehouseItem?.itemType?.measuringUnit || '';
+                                                        return unit;
+                                                    })()}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -812,16 +1001,6 @@ const UpdatePendingTransactionModal = ({ transaction, isOpen, onClose, onUpdate,
                     </div>
                 </form>
             </div>
-
-            {showCreateNotification && (
-                <div className="notification success-notification3">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                        <path d="M22 4L12 14.01l-3-3"/>
-                    </svg>
-                    <span>Transaction Created Successfully</span>
-                </div>
-            )}
         </div>
     );
 };

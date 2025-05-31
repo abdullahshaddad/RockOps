@@ -360,7 +360,7 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         },
         {
             id: 'addedBy',
-            label: 'ADDED BY',
+            label: 'CREATED BY',
             width: '200px',
             render: (row) => row.addedBy || "N/A",
             filterType: 'text'

@@ -240,7 +240,18 @@ public class TransactionService {
         validateEntityExists(receiverType, receiverId);
 
         // ONLY validate availability if sender initiated (they're claiming they have the items)
-        if (sentFirst.equals(senderId)) {
+        // If sender initiated, validate AND immediately deduct inventory (they're claiming they sent it)
+        // If sender initiated AND is a warehouse, validate AND immediately deduct inventory
+        if (sentFirst.equals(senderId) && senderType == PartyType.WAREHOUSE) {
+            validateSenderHasAvailableInventory(senderType, senderId, items);
+
+            // Immediately deduct warehouse inventory since sender is claiming they sent these items
+            for (TransactionItem item : items) {
+                deductFromWarehouseInventory(senderId, item.getItemType(), item.getQuantity());
+            }
+            System.out.println("✅ Immediately deducted warehouse inventory from sender (they claim they sent it)");
+        } else if (sentFirst.equals(senderId)) {
+            // For equipment, just validate (keep original behavior)
             validateSenderHasAvailableInventory(senderType, senderId, items);
             System.out.println("✅ Validated sender has sufficient inventory (NO CHANGES MADE)");
         }
@@ -405,13 +416,53 @@ public class TransactionService {
     private void deductActualSentQuantityFromSender(Transaction transaction, TransactionItem item, int sentQuantity) {
         if (sentQuantity <= 0) return;
 
-        System.out.println("➖ Deducting " + sentQuantity + " from sender (what they claim they sent)");
+        // Check if sender initiated the transaction AND is a warehouse
+        if (transaction.getSentFirst().equals(transaction.getSenderId()) && transaction.getSenderType() == PartyType.WAREHOUSE) {
+            // Warehouse sender already deducted when creating transaction, so we might need to adjust
+            int originalQuantity = item.getQuantity();
+            int difference = originalQuantity - sentQuantity;
 
-        if (transaction.getSenderType() == PartyType.WAREHOUSE) {
-            deductFromWarehouseInventory(transaction.getSenderId(), item.getItemType(), sentQuantity);
-        } else if (transaction.getSenderType() == PartyType.EQUIPMENT) {
-            deductFromEquipmentConsumables(transaction.getSenderId(), item.getItemType(), sentQuantity);
+            if (difference > 0) {
+                // Sender originally claimed more than they actually sent, so add back the difference
+                System.out.println("↩️ Adding back " + difference + " to warehouse (they claimed to send more than they actually did)");
+                addBackToWarehouseInventory(transaction.getSenderId(), item.getItemType(), difference);
+            } else if (difference < 0) {
+                // Sender actually sent more than originally claimed, deduct the additional amount
+                int additionalAmount = Math.abs(difference);
+                System.out.println("➖ Deducting additional " + additionalAmount + " from warehouse (they sent more than originally claimed)");
+                deductFromWarehouseInventory(transaction.getSenderId(), item.getItemType(), additionalAmount);
+            }
+            // If difference == 0, no adjustment needed
+        } else {
+            // Either receiver initiated, or equipment is involved - use original logic
+            System.out.println("➖ Deducting " + sentQuantity + " from sender (original logic)");
+
+            if (transaction.getSenderType() == PartyType.WAREHOUSE) {
+                deductFromWarehouseInventory(transaction.getSenderId(), item.getItemType(), sentQuantity);
+            } else if (transaction.getSenderType() == PartyType.EQUIPMENT) {
+                deductFromEquipmentConsumables(transaction.getSenderId(), item.getItemType(), sentQuantity);
+            }
         }
+    }
+
+    private void addBackToWarehouseInventory(UUID warehouseId, ItemType itemType, int quantity) {
+        if (quantity <= 0) return;
+
+        System.out.println("↩️ Adding back " + quantity + " to warehouse inventory");
+
+        Warehouse warehouse = warehouseRepository.findById(warehouseId)
+                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found: " + warehouseId));
+
+        // Create a new item entry for the returned quantity
+        Item returnedItem = new Item();
+        returnedItem.setItemType(itemType);
+        returnedItem.setQuantity(quantity);
+        returnedItem.setItemStatus(ItemStatus.IN_WAREHOUSE);
+        returnedItem.setWarehouse(warehouse);
+        returnedItem.setResolved(false);
+
+        itemRepository.save(returnedItem);
+        System.out.println("✅ Added back " + quantity + " units to warehouse inventory");
     }
 
     private void addActualReceivedQuantityToReceiver(Transaction transaction, TransactionItem item, int receivedQuantity) {
@@ -506,7 +557,7 @@ public class TransactionService {
     // WAREHOUSE INVENTORY OPERATIONS (UNCHANGED)
     // ========================================
 
-    private void deductFromWarehouseInventory(UUID warehouseId, ItemType itemType, int quantity) {
+    private void deductFromWarehouseInventory(UUID warehouseId, ItemType itemType, int quantityToDeduct) {
         List<Item> availableItems = itemRepository.findAllByItemTypeIdAndWarehouseIdAndItemStatus(
                 itemType.getId(), warehouseId, ItemStatus.IN_WAREHOUSE);
 
@@ -514,18 +565,57 @@ public class TransactionService {
             throw new IllegalArgumentException("No available items in warehouse for: " + itemType.getName());
         }
 
-        Item item = availableItems.get(0);
-        if (item.getQuantity() < quantity) {
-            throw new IllegalArgumentException("Not enough quantity in warehouse for: " + itemType.getName());
+        // Calculate total available quantity across all items
+        int totalAvailable = availableItems.stream().mapToInt(Item::getQuantity).sum();
+        if (totalAvailable < quantityToDeduct) {
+            throw new IllegalArgumentException("Not enough quantity in warehouse for: " + itemType.getName() +
+                    ". Available: " + totalAvailable + ", Requested: " + quantityToDeduct);
         }
 
-        item.setQuantity(item.getQuantity() - quantity);
-        itemRepository.save(item);
-        System.out.println("✅ Deducted " + quantity + " from warehouse inventory");
+        // Sort items by creation date (oldest first) - FIFO approach
+        availableItems.sort((a, b) -> {
+            if (a.getCreatedAt() != null && b.getCreatedAt() != null) {
+                return a.getCreatedAt().compareTo(b.getCreatedAt());
+            }
+            return a.getId().compareTo(b.getId()); // Fallback to ID if no creation date
+        });
+
+        int remainingToDeduct = quantityToDeduct;
+        List<Item> itemsToDelete = new ArrayList<>();
+
+        System.out.println("🔄 Deducting " + quantityToDeduct + " from warehouse inventory using FIFO method:");
+
+        for (Item item : availableItems) {
+            if (remainingToDeduct <= 0) break;
+
+            int currentItemQuantity = item.getQuantity();
+
+            if (currentItemQuantity <= remainingToDeduct) {
+                // Use entire item and mark for deletion
+                remainingToDeduct -= currentItemQuantity;
+                itemsToDelete.add(item);
+                System.out.println("  ➖ Using entire item: " + currentItemQuantity + " (Item ID: " + item.getId() + ")");
+            } else {
+                // Partially use this item
+                item.setQuantity(currentItemQuantity - remainingToDeduct);
+                itemRepository.save(item);
+                System.out.println("  ➖ Partially using item: " + remainingToDeduct + " from " + currentItemQuantity +
+                        " (Item ID: " + item.getId() + ", Remaining: " + item.getQuantity() + ")");
+                remainingToDeduct = 0;
+            }
+        }
+
+        // Delete items that were completely used
+        if (!itemsToDelete.isEmpty()) {
+            itemRepository.deleteAll(itemsToDelete);
+            System.out.println("  🗑️ Deleted " + itemsToDelete.size() + " fully depleted items");
+        }
+
+        System.out.println("✅ Successfully deducted " + quantityToDeduct + " from warehouse inventory");
     }
 
     private void addToWarehouseInventory(Transaction transaction, TransactionItem transactionItem, int actualQuantity) {
-        System.out.println("📦 Adding " + actualQuantity + " units to warehouse inventory");
+        System.out.println("📦 Adding " + actualQuantity + " units to warehouse inventory as NEW ITEM ENTRY");
 
         // Get the receiving warehouse
         UUID receivingWarehouseId = transaction.getReceiverId();
@@ -534,38 +624,23 @@ public class TransactionService {
         Warehouse warehouse = warehouseRepository.findById(receivingWarehouseId)
                 .orElseThrow(() -> new IllegalArgumentException("Warehouse not found: " + receivingWarehouseId));
 
-        // 🔍 Check if there's already an existing item of this type in the warehouse
-        List<Item> existingItems = itemRepository.findAllByItemTypeIdAndWarehouseIdAndItemStatus(
-                transactionItem.getItemType().getId(),
-                receivingWarehouseId,
-                ItemStatus.IN_WAREHOUSE
-        );
+        // 🆕 ALWAYS create a new item entry (no more checking for existing items)
+        Item newItem = new Item();
+        newItem.setItemType(transactionItem.getItemType());
+        newItem.setQuantity(actualQuantity);
+        newItem.setItemStatus(ItemStatus.IN_WAREHOUSE);
+        newItem.setWarehouse(warehouse);
+        newItem.setTransactionItem(transactionItem); // ✅ Always link to TransactionItem for traceability
+        newItem.setResolved(false);
 
-        if (!existingItems.isEmpty()) {
-            // ✅ Add to existing item instead of creating new one
-            Item existingItem = existingItems.get(0); // Get the first available item
-            int newQuantity = existingItem.getQuantity() + actualQuantity;
-            existingItem.setQuantity(newQuantity);
-            itemRepository.save(existingItem);
+        itemRepository.save(newItem);
 
-            System.out.println("✅ Added " + actualQuantity + " to existing item. New total: " + newQuantity);
-        } else {
-            // 🆕 Create new item only if none exists
-            Item newItem = new Item();
-            newItem.setItemType(transactionItem.getItemType());
-            newItem.setQuantity(actualQuantity);
-            newItem.setItemStatus(ItemStatus.IN_WAREHOUSE);
-            newItem.setWarehouse(warehouse);
-            newItem.setTransactionItem(transactionItem);
-            newItem.setResolved(false);
+        System.out.println("✅ Created NEW item entry with quantity: " + actualQuantity +
+                " linked to transaction: " + transaction.getId() +
+                " (batch #" + transaction.getBatchNumber() + ")");
 
-            itemRepository.save(newItem);
-            System.out.println("✅ Created new item entry with quantity: " + actualQuantity);
-        }
-
-        System.out.println("✅ Successfully processed warehouse inventory addition");
+        System.out.println("✅ Successfully processed warehouse inventory addition - NEW ENTRY CREATED");
     }
-
     // ========================================
     // EQUIPMENT INVENTORY OPERATIONS (UNCHANGED)
     // ========================================
@@ -712,7 +787,7 @@ public class TransactionService {
             PartyType receiverType, UUID receiverId, List<TransactionItem> updatedItems,
             LocalDateTime transactionDate, String username, int batchNumber, TransactionPurpose purpose) {
 
-        System.out.println("🔄 Updating transaction - easy since no inventory was changed yet");
+        System.out.println("🔄 Updating transaction with inventory role change handling");
 
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
@@ -724,10 +799,40 @@ public class TransactionService {
         validateEntityExists(senderType, senderId);
         validateEntityExists(receiverType, receiverId);
 
+        // 🚨 NEW: Track if roles are changing
+        boolean senderRoleChanged = !transaction.getSenderId().equals(senderId) || transaction.getSenderType() != senderType;
+        boolean receiverRoleChanged = !transaction.getReceiverId().equals(receiverId) || transaction.getReceiverType() != receiverType;
+        boolean initiatorChanged = !transaction.getSentFirst().equals(senderId) && !transaction.getSentFirst().equals(receiverId);
+
+        System.out.println("🔍 Role change analysis:");
+        System.out.println("  - Sender changed: " + senderRoleChanged);
+        System.out.println("  - Receiver changed: " + receiverRoleChanged);
+        System.out.println("  - Initiator changed: " + initiatorChanged);
+
+        // 🚨 NEW: Handle inventory adjustments for role changes
+        // 🚨 NEW: Handle inventory adjustments for role changes
+        if (senderRoleChanged || receiverRoleChanged || initiatorChanged) {
+            handleTransactionRoleChangeInventoryAdjustments(transaction, senderType, senderId, receiverType, receiverId, updatedItems);
+        }
+
+// 🚨 NEW: Handle inventory adjustments for sender-initiated warehouse transactions (quantity changes)
+// 🚨 NEW: Handle inventory adjustments for sender-initiated warehouse transactions (quantity changes)
+        if (!senderRoleChanged && !receiverRoleChanged && !initiatorChanged &&
+                transaction.getSentFirst().equals(transaction.getSenderId()) &&
+                transaction.getSenderType() == PartyType.WAREHOUSE &&
+                senderType == PartyType.WAREHOUSE &&
+                senderId.equals(transaction.getSenderId())) {
+
+            System.out.println("🏭 Handling warehouse sender inventory adjustments for quantity changes");
+            handleWarehouseSenderInventoryUpdate(transaction, updatedItems);
+        }
+
+        // Validate new sender has inventory if they're now the initiator
         if (transaction.getSentFirst().equals(senderId)) {
             validateSenderHasAvailableInventory(senderType, senderId, updatedItems);
         }
 
+        // Update transaction details
         transaction.setSenderType(senderType);
         transaction.setSenderId(senderId);
         transaction.setReceiverType(receiverType);
@@ -740,6 +845,7 @@ public class TransactionService {
             transaction.setPurpose(purpose);
         }
 
+        // Update items
         transaction.getItems().clear();
         for (TransactionItem item : updatedItems) {
             item.setTransaction(transaction);
@@ -747,9 +853,132 @@ public class TransactionService {
             transaction.getItems().add(item);
         }
 
+        // 🚨 NEW: Apply new inventory changes if sender is now the initiator and is a warehouse
+        // 🚨 NEW: Apply new inventory changes if sender is now the initiator and is a warehouse
+// BUT ONLY if roles changed (not for quantity-only updates)
+        if (transaction.getSentFirst().equals(senderId) && senderType == PartyType.WAREHOUSE &&
+                (senderRoleChanged || receiverRoleChanged || initiatorChanged)) {
+            System.out.println("🏭 New sender is warehouse and initiator - deducting inventory for role change");
+            for (TransactionItem item : updatedItems) {
+                deductFromWarehouseInventory(senderId, item.getItemType(), item.getQuantity());
+            }
+        }
+
         return transactionRepository.save(transaction);
     }
 
+    /**
+     * 🆕 NEW METHOD: Handles inventory adjustments when transaction roles change
+     */
+    private void handleTransactionRoleChangeInventoryAdjustments(
+            Transaction currentTransaction,
+            PartyType newSenderType, UUID newSenderId,
+            PartyType newReceiverType, UUID newReceiverId,
+            List<TransactionItem> newItems) {
+
+        System.out.println("🔄 Handling inventory adjustments for role change");
+
+        // Step 1: Revert any previous inventory changes made during transaction creation
+        if (currentTransaction.getSentFirst().equals(currentTransaction.getSenderId()) &&
+                currentTransaction.getSenderType() == PartyType.WAREHOUSE) {
+
+            System.out.println("↩️ Reverting previous warehouse inventory deductions");
+
+            // Add back the original items that were deducted
+            for (TransactionItem originalItem : currentTransaction.getItems()) {
+                addBackToWarehouseInventory(
+                        currentTransaction.getSenderId(),
+                        originalItem.getItemType(),
+                        originalItem.getQuantity()
+                );
+                System.out.println("  ↩️ Added back " + originalItem.getQuantity() + " " + originalItem.getItemType().getName());
+            }
+        }
+
+        // Step 2: If warehouse is becoming receiver (was sender), add items that were received
+        if (currentTransaction.getSenderId().equals(newReceiverId) &&
+                currentTransaction.getSenderType() == PartyType.WAREHOUSE &&
+                newReceiverType == PartyType.WAREHOUSE) {
+
+            System.out.println("🔄 Warehouse changing from sender to receiver - no additional action needed");
+            // Items were already added back in Step 1
+        }
+
+        // Step 3: If warehouse is becoming sender (was receiver), we need to check if items exist
+        if (currentTransaction.getReceiverId().equals(newSenderId) &&
+                currentTransaction.getReceiverType() == PartyType.WAREHOUSE &&
+                newSenderType == PartyType.WAREHOUSE) {
+
+            System.out.println("🔄 Warehouse changing from receiver to sender");
+
+            // Remove any items that might have been added when this transaction was created as receiver-initiated
+            // This is more complex because we need to identify which items came from this specific transaction
+            // For now, we'll rely on the validation to ensure the warehouse has enough inventory
+            // The actual deduction will happen in the main update method
+        }
+
+        System.out.println("✅ Role change inventory adjustments completed");
+    }
+    /**
+     * 🆕 NEW METHOD: Handles inventory adjustments for warehouse senders when quantities change
+     */
+    private void handleWarehouseSenderInventoryUpdate(Transaction currentTransaction, List<TransactionItem> newItems) {
+        System.out.println("📊 Calculating inventory differences for warehouse sender update");
+
+        // Create maps for easy comparison
+        Map<UUID, Integer> oldQuantities = currentTransaction.getItems().stream()
+                .collect(Collectors.toMap(
+                        item -> item.getItemType().getId(),
+                        TransactionItem::getQuantity
+                ));
+
+        Map<UUID, Integer> newQuantities = newItems.stream()
+                .collect(Collectors.toMap(
+                        item -> item.getItemType().getId(),
+                        TransactionItem::getQuantity
+                ));
+
+        // Process each item type in the new transaction
+        for (TransactionItem newItem : newItems) {
+            UUID itemTypeId = newItem.getItemType().getId();
+            int newQuantity = newItem.getQuantity();
+            int oldQuantity = oldQuantities.getOrDefault(itemTypeId, 0);
+
+            int difference = newQuantity - oldQuantity;
+
+            System.out.println("🔢 Item: " + newItem.getItemType().getName());
+            System.out.println("   Old quantity: " + oldQuantity);
+            System.out.println("   New quantity: " + newQuantity);
+            System.out.println("   Difference: " + difference);
+
+            if (difference > 0) {
+                // New quantity is HIGHER than old quantity - need to deduct MORE
+                System.out.println("➖ Need to deduct additional: " + difference);
+                deductFromWarehouseInventory(currentTransaction.getSenderId(), newItem.getItemType(), difference);
+
+            } else if (difference < 0) {
+                // New quantity is LOWER than old quantity - need to ADD BACK
+                int addBackAmount = Math.abs(difference);
+                System.out.println("↩️ Need to add back: " + addBackAmount);
+                addBackToWarehouseInventory(currentTransaction.getSenderId(), newItem.getItemType(), addBackAmount);
+            } else {
+                // No change needed
+                System.out.println("✅ No change needed - quantities match");
+            }
+        }
+
+        // Handle removed items (items that were in old transaction but not in new)
+        for (TransactionItem oldItem : currentTransaction.getItems()) {
+            UUID itemTypeId = oldItem.getItemType().getId();
+            if (!newQuantities.containsKey(itemTypeId)) {
+                // Item was completely removed, add back the full original quantity
+                System.out.println("↩️ Item completely removed, adding back: " + oldItem.getQuantity() + " for " + oldItem.getItemType().getName());
+                addBackToWarehouseInventory(currentTransaction.getSenderId(), oldItem.getItemType(), oldItem.getQuantity());
+            }
+        }
+
+        System.out.println("✅ Warehouse sender inventory update completed");
+    }
     // ========================================
     // QUERY METHODS (UNCHANGED)
     // ========================================
