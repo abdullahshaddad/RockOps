@@ -6,7 +6,7 @@
     gap: 16px;
 }
 
-.stat-card {
+.hr-dashboard-stat-card {
     background-color: var(--section-background-color);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-sm);
@@ -17,12 +17,12 @@
     border: 1px solid var(--border-color);
 }
 
-.stat-card:hover {
+.hr-dashboard-stat-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-md);
 }
 
-.stat-icon {
+.hr-dashboard-stat-icon {
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -34,55 +34,55 @@
     flex-shrink: 0;
 }
 
-.stat-blue .stat-icon {
+.hr-dashboard-stat-blue .hr-dashboard-stat-icon {
     background-color: rgba(59, 130, 246, 0.1);
     color: var(--color-info);
 }
 
-.stat-green .stat-icon {
+.hr-dashboard-stat-green .hr-dashboard-stat-icon {
     background-color: rgba(16, 185, 129, 0.1);
     color: var(--color-success);
 }
 
-.stat-purple .stat-icon {
+.hr-dashboard-stat-purple .hr-dashboard-stat-icon {
     background-color: rgba(139, 92, 246, 0.1);
     color: var(--color-primary);
 }
 
-.stat-orange .stat-icon {
+.hr-dashboard-stat-orange .hr-dashboard-stat-icon {
     background-color: rgba(245, 158, 11, 0.1);
     color: var(--color-warning);
 }
 
 /* Dark mode adjustments for icon backgrounds */
-[data-theme="dark"] .stat-blue .stat-icon {
+[data-theme="dark"] .hr-dashboard-stat-blue .hr-dashboard-stat-icon {
     background-color: rgba(59, 130, 246, 0.2);
 }
 
-[data-theme="dark"] .stat-green .stat-icon {
+[data-theme="dark"] .hr-dashboard-stat-green .hr-dashboard-stat-icon {
     background-color: rgba(16, 185, 129, 0.2);
 }
 
-[data-theme="dark"] .stat-purple .stat-icon {
+[data-theme="dark"] .hr-dashboard-stat-purple .hr-dashboard-stat-icon {
     background-color: rgba(139, 92, 246, 0.2);
 }
 
-[data-theme="dark"] .stat-orange .stat-icon {
+[data-theme="dark"] .hr-dashboard-stat-orange .hr-dashboard-stat-icon {
     background-color: rgba(245, 158, 11, 0.2);
 }
 
-.stat-info {
+.hr-dashboard-stat-info {
     flex: 1;
 }
 
-.stat-value {
+.hr-dashboard-stat-value {
     font-size: 18px;
     font-weight: var(--bold-font-weight);
     margin: 0 0 4px 0;
     color: var(--head-title-color);
 }
 
-.stat-title {
+.hr-dashboard-stat-title {
     font-size: 14px;
     color: var(--color-text-secondary);
     margin: 0;
