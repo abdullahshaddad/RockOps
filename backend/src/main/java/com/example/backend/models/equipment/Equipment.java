@@ -90,7 +90,7 @@ public class Equipment {
 
     @ManyToOne
     @JoinColumn(name = "site_id", referencedColumnName = "id")
-    @JsonManagedReference
+    @JsonBackReference
     private Site site;
 
     @OneToOne

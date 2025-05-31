@@ -9,9 +9,11 @@ import com.example.backend.models.site.Site;
 import com.example.backend.models.site.SitePartner;
 import com.example.backend.models.warehouse.Warehouse;
 import com.example.backend.repositories.PartnerRepository;
+import com.example.backend.repositories.equipment.EquipmentRepository;
 import com.example.backend.repositories.hr.EmployeeRepository;
 import com.example.backend.repositories.site.SiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,13 +24,15 @@ public class SiteService
     private SiteRepository siteRepository;
     private PartnerRepository partnerRepository;
     private EmployeeRepository employeeRepository;
+    private EquipmentRepository equipmentRepository;
 
     @Autowired
-    public SiteService(SiteRepository siteRepository, PartnerRepository partnerRepository, EmployeeRepository employeeRepository)
+    public SiteService(SiteRepository siteRepository, PartnerRepository partnerRepository, EmployeeRepository employeeRepository, EquipmentRepository equipmentRepository)
     {
         this.siteRepository = siteRepository;
         this.partnerRepository = partnerRepository;
         this.employeeRepository = employeeRepository;
+        this.equipmentRepository = equipmentRepository;
     }
 
     public Site getSiteById(UUID id)
@@ -38,7 +42,9 @@ public class SiteService
     public List<Site> getAllSites() {
         List<Site> sites = siteRepository.findAll();
         for (Site site : sites) {
-            site.getEquipment().size(); // Force Hibernate to load equipment
+            // Force load the collections and set the counts
+            site.setEquipmentCount(site.getEquipment().size());
+            site.setEmployeeCount(site.getEmployees().size());
         }
         return sites;
     }
@@ -146,6 +152,11 @@ public class SiteService
 
     public List<Employee> getUnassignedEmployees() {
         return employeeRepository.findBySiteIsNull();
+    }
+
+    public List<Equipment> getUnassignedEquipment() {
+        List<Equipment> availableEquipment = equipmentRepository.findBySiteIsNull();
+        return availableEquipment;
     }
 
 }

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import DataTable from "../../../../components/common/DataTable/DataTable.jsx";
-import { useTranslation } from 'react-i18next';
-import { useAuth } from "../../../../contexts/AuthContext.jsx";
-import { siteService } from "../../../../services/siteService";
-import { useNavigate } from "react-router-dom";
+import {useTranslation} from 'react-i18next';
+import {useAuth} from "../../../../contexts/AuthContext.jsx";
+import {siteService} from "../../../../services/siteService";
+import {useNavigate} from "react-router-dom";
 import "../SiteDetails.scss";
 
-const SiteEmployeesTab = ({ siteId }) => {
-    const { t } = useTranslation();
+const SiteEmployeesTab = ({siteId}) => {
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const [employeeData, setEmployeeData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ const SiteEmployeesTab = ({ siteId }) => {
     const [showModal, setShowModal] = useState(false);
     const [availableEmployees, setAvailableEmployees] = useState([]);
     const [assigningEmployee, setAssigningEmployee] = useState(null);
-    const { currentUser } = useAuth();
+    const {currentUser} = useAuth();
 
     const isSiteAdmin = currentUser?.role === "SITE_ADMIN" || currentUser?.role === "ADMIN";
 
@@ -25,8 +25,8 @@ const SiteEmployeesTab = ({ siteId }) => {
 
     const columns = [
         {
-            header: 'Employee ID',
-            accessor: 'employeeID',
+            header: 'ID',
+            accessor: 'conventionalId',
             sortable: true
         },
         {
@@ -89,7 +89,7 @@ const SiteEmployeesTab = ({ siteId }) => {
             const data = response.data;
 
             if (Array.isArray(data)) {
-                const transformedData = data.map(item => {
+                const transformedData = data.map((item, index) => {
                     let departmentName = "Unknown";
                     if (item.jobPosition?.department?.name) {
                         departmentName = item.jobPosition.department.name;
@@ -100,6 +100,7 @@ const SiteEmployeesTab = ({ siteId }) => {
                     }
 
                     return {
+                        conventionalId: `EMP-${String(index + 1).padStart(3, '0')}`,
                         employeeID: item.id,
                         employeeName: `${item.firstName || ''} ${item.lastName || ''}`.trim(),
                         mobileNumber: item.phoneNumber || 'N/A',
@@ -126,10 +127,10 @@ const SiteEmployeesTab = ({ siteId }) => {
         try {
             const response = await siteService.getUnassignedEmployees();
             console.log('Unassigned employees response:', response); // Debug log
-            
+
             // Ensure we have data and it's an array
             const data = response?.data || [];
-            
+
             // Filter for unassigned employees and transform the data
             const unassignedEmployees = Array.isArray(data) ? data.map(emp => ({
                 id: emp.id,
@@ -185,18 +186,18 @@ const SiteEmployeesTab = ({ siteId }) => {
     }
 
     return (
-        <div className="tab-content">
-            <div className="tab-header">
-                <div className="header-content">
-                    <h3>{t('site.siteEmployeesReport')}</h3>
-                    {isSiteAdmin && (
-                        <div className="btn-primary-container">
-                            <button className="btn-primary" onClick={handleOpenModal}>
-                                Add Employee
-                            </button>
-                        </div>
-                    )}
-                </div>
+        <div className="employee-tab-content">
+
+            <div className="departments-header">
+                <h3>{t('site.siteEmployeesReport')}</h3>
+                {isSiteAdmin && (
+                    <div className="btn-primary-container">
+                        <button className="btn-primary" onClick={handleOpenModal}>
+                            Add Employee
+                        </button>
+                    </div>
+                )}
+
             </div>
 
             {error ? (
@@ -229,7 +230,7 @@ const SiteEmployeesTab = ({ siteId }) => {
                             <h2>{t('site.assignEmployee')}</h2>
                             <button className="assign-employee-modal-close-button" onClick={handleCloseModal}>×</button>
                         </div>
-                        
+
                         <div className="assign-employee-modal-body">
                             {availableEmployees.length === 0 ? (
                                 <div className="assign-employee-no-employees">
@@ -239,36 +240,37 @@ const SiteEmployeesTab = ({ siteId }) => {
                                 <div className="assign-employee-table-container">
                                     <table className="assign-employee-table">
                                         <thead>
-                                            <tr>
-                                                <th>{t('common.name')}</th>
-                                                <th>{t('hr.dashboard.position')}</th>
-                                                <th>{t('hr.dashboard.department')}</th>
-                                                <th>{t('hr.contractType')}</th>
-                                                <th>{t('common.action')}</th>
-                                            </tr>
+                                        <tr>
+                                            <th>{t('common.name')}</th>
+                                            <th>{t('hr.dashboard.position')}</th>
+                                            <th>{t('hr.dashboard.department')}</th>
+                                            <th>{t('hr.contractType')}</th>
+                                            <th>{t('common.action')}</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            {availableEmployees.map((employee) => (
-                                                <tr key={employee.id}>
-                                                    <td>{employee.firstName} {employee.lastName}</td>
-                                                    <td>{employee.jobPositionName || 'Not Specified'}</td>
-                                                    <td>{employee.jobPositionDepartment || 'Not Specified'}</td>
-                                                    <td>
-                                                        <span className={`status-badge ${employee.jobPositionType?.toLowerCase()}`}>
+                                        {availableEmployees.map((employee) => (
+                                            <tr key={employee.id}>
+                                                <td>{employee.firstName} {employee.lastName}</td>
+                                                <td>{employee.jobPositionName || 'Not Specified'}</td>
+                                                <td>{employee.jobPositionDepartment || 'Not Specified'}</td>
+                                                <td>
+                                                        <span
+                                                            className={`status-badge ${employee.jobPositionType?.toLowerCase()}`}>
                                                             {employee.jobPositionType || 'Not Specified'}
                                                         </span>
-                                                    </td>
-                                                    <td>
-                                                        <button
-                                                            className="assign-employee-btn"
-                                                            onClick={() => handleAssignEmployee(employee.id)}
-                                                            disabled={assigningEmployee === employee.id}
-                                                        >
-                                                            {assigningEmployee === employee.id ? 'Assigning...' : t('site.assign')}
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        className="assign-employee-btn"
+                                                        onClick={() => handleAssignEmployee(employee.id)}
+                                                        disabled={assigningEmployee === employee.id}
+                                                    >
+                                                        {assigningEmployee === employee.id ? 'Assigning...' : t('site.assign')}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
                                         </tbody>
                                     </table>
                                 </div>

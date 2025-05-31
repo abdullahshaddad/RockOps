@@ -1,16 +1,38 @@
 import React, { useState, useEffect } from "react";
-import DataTable from "../../../components/common/DataTable/DataTable.jsx";
-import { FaEdit } from 'react-icons/fa';
 import "./WarehouseViewTransactions.scss";
 import UpdatePendingTransactionModal from "./UpdatePendingTransactionModal.jsx";
+import DataTable from "../../../components/common/DataTable/DataTable.jsx"; // Updated import
+import Snackbar from "../../../components/common/Snackbar/Snackbar.jsx"; // Import your existing snackbar
 
 const PendingTransactionsTable = ({ warehouseId }) => {
     const [loading, setLoading] = useState(false);
     const [pendingTransactions, setPendingTransactions] = useState([]);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
-    const [showSuccessNotification, setShowSuccessNotification] = useState(false);
-    const [notificationMessage, setNotificationMessage] = useState("");
+
+    // Replace old notification states with snackbar state
+    const [snackbar, setSnackbar] = useState({
+        isOpen: false,
+        message: "",
+        type: "success"
+    });
+
+    // Helper function to show snackbar
+    const showSnackbar = (message, type = "success") => {
+        setSnackbar({
+            isOpen: true,
+            message,
+            type
+        });
+    };
+
+    // Helper function to close snackbar
+    const closeSnackbar = () => {
+        setSnackbar({
+            ...snackbar,
+            isOpen: false
+        });
+    };
 
     // Fetch transactions when component mounts or warehouseId changes
     useEffect(() => {
@@ -137,20 +159,17 @@ const PendingTransactionsTable = ({ warehouseId }) => {
                 // Refresh the transactions list
                 await fetchPendingTransactions();
 
-                // Show success notification
-                setNotificationMessage("Transaction successfully updated");
-                setShowSuccessNotification(true);
-                setTimeout(() => {
-                    setShowSuccessNotification(false);
-                }, 3000);
-
+                // Show success snackbar
+                showSnackbar("Transaction successfully updated", "success");
                 return true;
             } else {
                 const errorData = await response.json();
+                showSnackbar("Failed to update transaction", "error");
                 throw new Error(errorData.message || "Failed to update transaction");
             }
         } catch (error) {
             console.error("Error updating transaction:", error);
+            showSnackbar("Error updating transaction", "error");
             throw error;
         }
     };
@@ -161,105 +180,204 @@ const PendingTransactionsTable = ({ warehouseId }) => {
         setSelectedTransaction(null);
     };
 
-    // Define columns for DataTable
+    // Format date helper function
+    const formatDate = (dateString) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleDateString('en-GB');
+    };
+
+    const formatDateTime = (dateString) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
+    };
+
+    // Define table columns for DataTable
     const columns = [
         {
-            header: 'Items',
-            accessor: 'items.length',
+            header: 'ITEMS',
+            accessor: 'items',
             sortable: true,
+            width: '200px',
+            minWidth: '120px',
             render: (row) => row.items?.length || 0
         },
         {
-            header: 'Sender',
-            accessor: 'sender.name',
+            header: 'SENDER',
+            accessor: 'sender',
             sortable: true,
-            render: (row) => row.sender?.name || "N/A"
+            width: '200px',
+            minWidth: '150px',
+            render: (row) => {
+                if (!row.sender) return "N/A";
+                return row.sender.name || row.sender.fullModelName || row.sender.equipment?.fullModelName || "N/A";
+            }
         },
         {
-            header: 'Receiver',
-            accessor: 'receiver.name',
+            header: 'RECEIVER',
+            accessor: 'receiver',
             sortable: true,
-            render: (row) => row.receiver?.name || row.receiver?.equipment?.fullModelName || "N/A"
+            width: '200px',
+            minWidth: '150px',
+            render: (row) => {
+                if (!row.receiver) return "N/A";
+                return row.receiver.name || row.receiver.fullModelName || row.receiver.equipment?.fullModelName || "N/A";
+            }
         },
         {
-            header: 'Batch Number',
+            header: 'BATCH NUMBER',
             accessor: 'batchNumber',
             sortable: true,
+            width: '200px',
+            minWidth: '120px',
             render: (row) => row.batchNumber || "N/A"
         },
         {
-            header: 'Transaction Date',
+            header: 'TRANSACTION DATE',
             accessor: 'transactionDate',
             sortable: true,
-            render: (row) => row.transactionDate ? new Date(row.transactionDate).toLocaleDateString('en-GB') : "N/A"
+            width: '200px',
+            minWidth: '150px',
+            render: (row) => formatDate(row.transactionDate)
         },
         {
-            header: 'Created At',
+            header: 'CREATED AT',
             accessor: 'createdAt',
             sortable: true,
-            render: (row) => row.createdAt ? new Date(row.createdAt).toLocaleString('en-GB', {
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
-            }) : "N/A"
+            width: '200px',
+            minWidth: '150px',
+            render: (row) => formatDateTime(row.createdAt)
         },
         {
-            header: 'Added By',
+            header: 'CREATED BY',
             accessor: 'addedBy',
-            sortable: true
+            sortable: true,
+            width: '200px',
+            minWidth: '120px',
+            render: (row) => row.addedBy || "N/A"
+        },
+        {
+            header: 'STATUS',
+            accessor: 'status',
+            sortable: true,
+            width: '200px',
+            minWidth: '100px',
+            render: (row) => (
+                <span className={`status-badge3 ${row.status?.toLowerCase()}`}>
+                    {row.status}
+                </span>
+            )
         }
     ];
 
-    // Action configuration for DataTable
+    // Filterable columns for DataTable
+    const filterableColumns = [
+        {
+            header: 'ITEMS',
+            accessor: 'items',
+            filterType: 'number'
+        },
+        {
+            header: 'SENDER',
+            accessor: 'sender',
+            filterType: 'text'
+        },
+        {
+            header: 'RECEIVER',
+            accessor: 'receiver',
+            filterType: 'text'
+        },
+        {
+            header: 'BATCH NUMBER',
+            accessor: 'batchNumber',
+            filterType: 'number'
+        },
+        {
+            header: 'TRANSACTION DATE',
+            accessor: 'transactionDate',
+            filterType: 'text'
+        },
+        {
+            header: 'CREATED AT',
+            accessor: 'createdAt',
+            filterType: 'text'
+        },
+        {
+            header: 'CREATED BY',
+            accessor: 'addedBy',
+            filterType: 'text'
+        }
+    ];
+
+    // Actions array for DataTable
     const actions = [
         {
-            label: 'Edit transaction',
-            icon: <FaEdit />,
-            onClick: (row) => handleOpenUpdateModal(row),
-            className: 'primary'
+            label: 'Edit',
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+            ),
+            className: 'edit-button3',
+            onClick: (row) => handleOpenUpdateModal(row)
         }
     ];
 
     return (
-        <div className="transaction-table-pending">
-            <div className="left-section3">
-                <h2 className="transaction-section-title">Pending Transactions</h2>
-                <div className="item-count3">{pendingTransactions.length} pending transactions</div>
+        <div className="transaction-table-section">
+            <div className="table-header-section">
+                <div className="left-section3">
+                    <h2 className="transaction-section-title">Pending Transactions</h2>
+                    <div className="item-count3">{pendingTransactions.length} pending transactions</div>
+                </div>
             </div>
-            <div className="section-description">(Transactions you've initiated that are waiting for approval)</div>
 
+            <div className="section-description">
+                (Transactions you've initiated that are waiting for approval)
+            </div>
+
+            {/* DataTable Component */}
             <DataTable
                 data={pendingTransactions}
                 columns={columns}
                 loading={loading}
-                showSearch={true}
-                showFilters={true}
-                filterableColumns={columns.filter(col => col.sortable)}
-                itemsPerPageOptions={[10, 25, 50]}
-                defaultItemsPerPage={10}
+                emptyMessage="You haven't created any transactions that are waiting for approval"
                 actions={actions}
                 className="pending-transactions-table"
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={filterableColumns}
+                itemsPerPageOptions={[5, 10, 15, 20]}
+                defaultItemsPerPage={10}
+                actionsColumnWidth="200px"
             />
 
-            {/* Update Modal */}
+            {/* Update Transaction Modal */}
             {isUpdateModalOpen && selectedTransaction && (
                 <UpdatePendingTransactionModal
+                    transaction={selectedTransaction}
                     isOpen={isUpdateModalOpen}
                     onClose={handleCloseUpdateModal}
-                    transaction={selectedTransaction}
                     onUpdate={handleUpdateTransaction}
+                    warehouseId={warehouseId}
                 />
             )}
 
-            {/* Success notification */}
-            {showSuccessNotification && (
-                <div className="notification3 success-notification3">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                        <path d="M22 4L12 14.01l-3-3"/>
-                    </svg>
-                    <span>{notificationMessage}</span>
-                </div>
-            )}
+            {/* Snackbar Component - Replace old notifications */}
+            <Snackbar
+                isOpen={snackbar.isOpen}
+                message={snackbar.message}
+                type={snackbar.type}
+                onClose={closeSnackbar}
+                duration={3000}
+            />
         </div>
     );
 };
