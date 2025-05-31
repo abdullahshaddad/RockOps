@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './EmployeeModals.scss';
 
-const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) => {
+const AddEmployeeModal = ({ onClose, onSave, jobPositions, sites }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -9,23 +9,25 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
         email: '',
         phoneNumber: '',
         mobilePhone: '',
-        contractType: 'FULL_TIME',
-        gender: '',
-        birthDate: '',
-        hireDate: '',
         address: '',
         city: '',
         country: '',
-        region: '',
-        jobPositionId: '',
-        siteId: '',
-        salaryMultiplier: 1.0,
-        nationalIDNumber: '',
+        birthDate: '',
+        hireDate: '',
         maritalStatus: '',
         militaryStatus: '',
+        nationalIDNumber: '',
+        gender: '',
+        status: 'ACTIVE',
         education: '',
-        emergencyContactName: '',
-        emergencyContactPhone: ''
+        // Financial details
+        bonus: '',
+        commission: '',
+        baseSalaryOverride: '',
+        salaryMultiplier: 1.0,
+        // Relationships
+        jobPositionId: '',
+        siteId: ''
     });
 
     const [photoFile, setPhotoFile] = useState(null);
@@ -33,49 +35,35 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
     const [idBackFile, setIdBackFile] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
     const [errors, setErrors] = useState({});
+    const [isFromCandidate, setIsFromCandidate] = useState(false);
+    const [candidateId, setCandidateId] = useState(null);
 
-    // Initialize form with employee data
+    // Check for pre-populated data from a candidate
     useEffect(() => {
-        if (employee) {
-            // Convert dates from ISO string to YYYY-MM-DD format for input fields
-            const formatDate = (dateString) => {
-                if (!dateString) return '';
-                const date = new Date(dateString);
-                return date.toISOString().split('T')[0];
-            };
+        const prepopulatedData = sessionStorage.getItem('prepopulatedEmployeeData');
 
-            setFormData({
-                firstName: employee.firstName || '',
-                lastName: employee.lastName || '',
-                middleName: employee.middleName || '',
-                email: employee.email || '',
-                phoneNumber: employee.phoneNumber || '',
-                mobilePhone: employee.mobilePhone || '',
-                contractType: employee.contractType || 'FULL_TIME',
-                gender: employee.gender || '',
-                birthDate: formatDate(employee.birthDate),
-                hireDate: formatDate(employee.hireDate),
-                address: employee.address || '',
-                city: employee.city || '',
-                country: employee.country || '',
-                region: employee.region || '',
-                jobPositionId: employee.jobPositionId ? employee.jobPositionId.toString() : '',
-                siteId: employee.siteId || '',
-                salaryMultiplier: employee.salaryMultiplier || 1.0,
-                nationalIDNumber: employee.nationalIDNumber || '',
-                maritalStatus: employee.maritalStatus || '',
-                militaryStatus: employee.militaryStatus || '',
-                education: employee.education || '',
-                emergencyContactName: employee.emergencyContactName || '',
-                emergencyContactPhone: employee.emergencyContactPhone || ''
-            });
+        if (prepopulatedData) {
+            const parsedData = JSON.parse(prepopulatedData);
 
-            // Set photo preview if available
-            if (employee.photoUrl) {
-                setPhotoPreview(employee.photoUrl);
+            // Update form data with the pre-populated data
+            setFormData(prevState => ({
+                ...prevState,
+                ...parsedData
+            }));
+
+            // Save candidate ID if available
+            if (parsedData.candidateId) {
+                setCandidateId(parsedData.candidateId);
+                setIsFromCandidate(true);
             }
+
+            // Clear the session storage to prevent re-using the data accidentally
+            sessionStorage.removeItem('prepopulatedEmployeeData');
         }
-    }, [employee]);
+    }, []);
+
+    const selectedJobPosition = formData.jobPositionId ?
+        jobPositions.find(pos => String(pos.id).trim() === String(formData.jobPositionId).trim()) : null;
 
     // Handle form input changes
     const handleChange = (e) => {
@@ -98,18 +86,25 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
     const handleFileChange = (e) => {
         const { name, files } = e.target;
 
-        // Handle different file types
-        if (name === 'photo') {
-            if (files[0]) {
-                setPhotoFile(files[0]);
-                // Create preview URL for photo
-                const previewUrl = URL.createObjectURL(files[0]);
-                setPhotoPreview(previewUrl);
-            }
-        } else if (name === 'idFront') {
-            if (files[0]) setIdFrontFile(files[0]);
-        } else if (name === 'idBack') {
-            if (files[0]) setIdBackFile(files[0]);
+        if (name === 'photo' && files[0]) {
+            setPhotoFile(files[0]);
+            setPhotoPreview(URL.createObjectURL(files[0]));
+        } else if (name === 'idFront' && files[0]) {
+            setIdFrontFile(files[0]);
+        } else if (name === 'idBack' && files[0]) {
+            setIdBackFile(files[0]);
+        }
+    };
+
+    // Handle number input changes (for financial fields)
+    const handleNumberChange = (e) => {
+        const { name, value } = e.target;
+        // Allow empty value or valid number
+        if (value === '' || !isNaN(parseFloat(value))) {
+            setFormData({
+                ...formData,
+                [name]: value
+            });
         }
     };
 
@@ -121,7 +116,11 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
         if (!formData.firstName) newErrors.firstName = 'First name is required';
         if (!formData.lastName) newErrors.lastName = 'Last name is required';
         if (!formData.email) newErrors.email = 'Email is required';
-        if (!formData.siteId) newErrors.siteId = 'Site is required';
+        if (!formData.jobPositionId) newErrors.jobPositionId = 'Job position is required';
+        if (!formData.birthDate) newErrors.birthDate = 'Date of Birth is required';
+        if (!formData.nationalIDNumber) newErrors.nationalIDNumber = 'National ID is required';
+        if (!formData.country) newErrors.country = 'Country is required';
+        if (!formData.gender) newErrors.gender = 'Gender is required';
 
         // Email validation
         if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
@@ -142,32 +141,49 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
         e.preventDefault();
 
         if (validateForm()) {
-            // Convert jobPositionId to number if it's not empty
-            const modifiedFormData = {
+            // Prepare final data according to DTO structure
+            const finalData = {
                 ...formData,
-                status: 'ACTIVE', // Always set status to ACTIVE
-                jobPositionId: formData.jobPositionId ? parseInt(formData.jobPositionId) : null,
+                jobPositionId: formData.jobPositionId ? formData.jobPositionId : null,
+                // Convert number strings to appropriate types for API
+                bonus: formData.bonus ? parseFloat(formData.bonus) : null,
+                commission: formData.commission ? parseFloat(formData.commission) : null,
+                baseSalaryOverride: formData.baseSalaryOverride ? parseFloat(formData.baseSalaryOverride) : null,
+                salaryMultiplier: formData.salaryMultiplier ? parseFloat(formData.salaryMultiplier) : 1.0,
+                // Convert empty date strings to null to prevent backend parsing errors
+                birthDate: formData.birthDate && formData.birthDate.trim() !== '' ? formData.birthDate : null,
+                hireDate: formData.hireDate && formData.hireDate.trim() !== '' ? formData.hireDate : null
             };
 
-            onSave(modifiedFormData, photoFile, idFrontFile, idBackFile);
+            // Remove siteId as it's not in the DTO
+            const { siteId, ...dtoData } = finalData;
+
+            // Add candidate ID if from candidate conversion
+            if (isFromCandidate && candidateId) {
+                dtoData.candidateId = candidateId;
+            }
+
+            onSave(dtoData, photoFile, idFrontFile, idBackFile);
         }
     };
-
-    // Get selected job position details
-    const getSelectedJobPosition = () => {
-        if (!formData.jobPositionId) return null;
-        return jobPositions.find(pos => pos.id === parseInt(formData.jobPositionId));
-    };
-
-    const selectedJobPosition = getSelectedJobPosition();
 
     return (
         <div className="r4m-modal-overlay">
             <div className="r4m-employee-modal">
                 <div className="r4m-modal-header">
-                    <h2>Edit Employee: {employee.fullName}</h2>
+                    <h2>{isFromCandidate ? 'Hire Candidate as Employee' : 'Add New Employee'}</h2>
                     <button className="r4m-close-button" onClick={onClose}>×</button>
                 </div>
+
+                {isFromCandidate && (
+                    <div className="r4m-candidate-banner">
+                        <i className="fas fa-user-check"></i>
+                        <span>
+                            This form is pre-filled with candidate information.
+                            Please complete the additional required fields to finalize the hiring process.
+                        </span>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit}>
                     <div className="r4m-modal-body">
@@ -188,7 +204,7 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                                     </div>
                                     <div className="r4m-file-inputs">
                                         <div className="r4m-form-group">
-                                            <label>Update Photo</label>
+                                            <label>Photo</label>
                                             <input
                                                 type="file"
                                                 name="photo"
@@ -197,7 +213,7 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                                             />
                                         </div>
                                         <div className="r4m-form-group">
-                                            <label>Update ID Front</label>
+                                            <label>ID Front</label>
                                             <input
                                                 type="file"
                                                 name="idFront"
@@ -206,7 +222,7 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                                             />
                                         </div>
                                         <div className="r4m-form-group">
-                                            <label>Update ID Back</label>
+                                            <label>ID Back</label>
                                             <input
                                                 type="file"
                                                 name="idBack"
@@ -252,33 +268,79 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                                 </div>
 
                                 <div className="r4m-form-group">
-                                    <label>Gender</label>
-                                    <select name="gender" value={formData.gender} onChange={handleChange}>
+                                    <label>Gender *</label>
+                                    <select
+                                        name="gender"
+                                        value={formData.gender}
+                                        onChange={handleChange}
+                                        className={errors.gender ? 'error' : ''}
+                                    >
                                         <option value="">Select Gender</option>
                                         <option value="MALE">Male</option>
                                         <option value="FEMALE">Female</option>
                                         <option value="OTHER">Other</option>
                                     </select>
+                                    {errors.gender && <span className="r4m-error-message">{errors.gender}</span>}
                                 </div>
 
                                 <div className="r4m-form-group">
-                                    <label>Date of Birth</label>
+                                    <label>Date of Birth *</label>
                                     <input
                                         type="date"
                                         name="birthDate"
                                         value={formData.birthDate}
                                         onChange={handleChange}
+                                        className={errors.birthDate ? 'error' : ''}
                                     />
+                                    {errors.birthDate && <span className="r4m-error-message">{errors.birthDate}</span>}
                                 </div>
 
                                 <div className="r4m-form-group">
-                                    <label>National ID Number</label>
+                                    <label>National ID Number *</label>
                                     <input
                                         type="text"
                                         name="nationalIDNumber"
                                         value={formData.nationalIDNumber}
                                         onChange={handleChange}
+                                        className={errors.nationalIDNumber ? 'error' : ''}
                                     />
+                                    {errors.nationalIDNumber && <span className="r4m-error-message">{errors.nationalIDNumber}</span>}
+                                </div>
+
+                                <div className="r4m-form-group">
+                                    <label>Marital Status</label>
+                                    <select name="maritalStatus" value={formData.maritalStatus} onChange={handleChange}>
+                                        <option value="">Select Status</option>
+                                        <option value="SINGLE">Single</option>
+                                        <option value="MARRIED">Married</option>
+                                        <option value="DIVORCED">Divorced</option>
+                                        <option value="WIDOWED">Widowed</option>
+                                    </select>
+                                </div>
+
+                                <div className="r4m-form-group">
+                                    <label>Military Status</label>
+                                    <select name="militaryStatus" value={formData.militaryStatus} onChange={handleChange}>
+                                        <option value="">Select Status</option>
+                                        <option value="NONE">None</option>
+                                        <option value="ACTIVE">Active</option>
+                                        <option value="VETERAN">Veteran</option>
+                                        <option value="RESERVE">Reserve</option>
+                                        <option value="EXEMPT">Exempt</option>
+                                    </select>
+                                </div>
+
+                                <div className="r4m-form-group">
+                                    <label>Education</label>
+                                    <select name="education" value={formData.education} onChange={handleChange}>
+                                        <option value="">Select Education Level</option>
+                                        <option value="HIGH_SCHOOL">High School</option>
+                                        <option value="ASSOCIATE">Associate Degree</option>
+                                        <option value="BACHELOR">Bachelor's Degree</option>
+                                        <option value="MASTER">Master's Degree</option>
+                                        <option value="DOCTORATE">Doctorate</option>
+                                        <option value="OTHER">Other</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -341,34 +403,17 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                                 </div>
 
                                 <div className="r4m-form-group">
-                                    <label>Region</label>
+                                    <label>Country *</label>
                                     <input
                                         type="text"
-                                        name="region"
-                                        value={formData.region}
+                                        name="country"
+                                        value={formData.country}
                                         onChange={handleChange}
+                                        className={errors.country ? 'error' : ''}
                                     />
+                                    {errors.country && <span className="r4m-error-message">{errors.country}</span>}
                                 </div>
 
-                                <div className="r4m-form-group">
-                                    <label>Emergency Contact Name</label>
-                                    <input
-                                        type="text"
-                                        name="emergencyContactName"
-                                        value={formData.emergencyContactName}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-
-                                <div className="r4m-form-group">
-                                    <label>Emergency Contact Phone</label>
-                                    <input
-                                        type="tel"
-                                        name="emergencyContactPhone"
-                                        value={formData.emergencyContactPhone}
-                                        onChange={handleChange}
-                                    />
-                                </div>
                             </div>
 
                             {/* Employment Information Column */}
@@ -376,27 +421,12 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                                 <h3>Employment Information</h3>
 
                                 <div className="r4m-form-group">
-                                    <label>Site *</label>
-                                    <select
-                                        name="siteId"
-                                        value={formData.siteId}
-                                        onChange={handleChange}
-                                        className={errors.siteId ? 'error' : ''}
-                                    >
-                                        <option value="">Select Site</option>
-                                        {sites.map(site => (
-                                            <option key={site.id} value={site.id}>{site.name}</option>
-                                        ))}
-                                    </select>
-                                    {errors.siteId && <span className="r4m-error-message">{errors.siteId}</span>}
-                                </div>
-
-                                <div className="r4m-form-group">
-                                    <label>Job Position</label>
+                                    <label>Job Position *</label>
                                     <select
                                         name="jobPositionId"
                                         value={formData.jobPositionId}
                                         onChange={handleChange}
+                                        className={errors.jobPositionId ? 'error' : ''}
                                     >
                                         <option value="">Select Job Position</option>
                                         {jobPositions.map(pos => (
@@ -405,18 +435,19 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.jobPositionId && <span className="r4m-error-message">{errors.jobPositionId}</span>}
                                 </div>
 
-                                <div className="r4m-form-group">
-                                    <label>Contract Type</label>
-                                    <select name="contractType" value={formData.contractType} onChange={handleChange}>
-                                        <option value="FULL_TIME">Full Time</option>
-                                        <option value="PART_TIME">Part Time</option>
-                                        <option value="CONTRACT">Contract</option>
-                                        <option value="TEMPORARY">Temporary</option>
-                                        <option value="INTERNSHIP">Internship</option>
-                                    </select>
-                                </div>
+                                {selectedJobPosition && (
+                                    <div className="r4m-job-details">
+                                        <h4>Position Details</h4>
+                                        <p><strong>Position:</strong> {selectedJobPosition.positionName}</p>
+                                        <p><strong>Department:</strong> {selectedJobPosition.department}</p>
+                                        <p><strong>Type:</strong> {selectedJobPosition.type || 'FULL_TIME'}</p>
+                                        <p><strong>Work hours:</strong> {selectedJobPosition.workingHours || 'N/A'}</p>
+                                        <p><strong>Base Salary:</strong> ${selectedJobPosition.baseSalary?.toFixed(2) || 'N/A'}</p>
+                                    </div>
+                                )}
 
                                 <div className="r4m-form-group">
                                     <label>Hire Date</label>
@@ -428,6 +459,34 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                                     />
                                 </div>
 
+                                {isFromCandidate && (
+                                    <div className="r4m-prev-employment">
+                                        <h4>Previous Employment</h4>
+                                        <p>
+                                            <strong>Position:</strong> {formData.previousPosition || 'N/A'}
+                                        </p>
+                                        <p>
+                                            <strong>Company:</strong> {formData.previousCompany || 'N/A'}
+                                        </p>
+                                    </div>
+                                )}
+
+                                <h4>Compensation</h4>
+
+                                <div className="r4m-form-group">
+                                    <label>Base Salary Override</label>
+                                    <input
+                                        type="number"
+                                        name="baseSalaryOverride"
+                                        min="0"
+                                        step="0.01"
+                                        value={formData.baseSalaryOverride}
+                                        onChange={handleNumberChange}
+                                        placeholder={selectedJobPosition?.baseSalary || 'Enter amount'}
+                                    />
+                                </div>
+
+
                                 <div className="r4m-form-group">
                                     <label>Salary Multiplier</label>
                                     <input
@@ -436,19 +495,50 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
                                         min="0.1"
                                         step="0.1"
                                         value={formData.salaryMultiplier}
-                                        onChange={handleChange}
+                                        onChange={handleNumberChange}
+                                    />
+                                </div>
+
+                                <div className="r4m-form-group">
+                                    <label>Bonus</label>
+                                    <input
+                                        type="number"
+                                        name="bonus"
+                                        min="0"
+                                        step="0.01"
+                                        value={formData.bonus}
+                                        onChange={handleNumberChange}
+                                    />
+                                </div>
+
+                                <div className="r4m-form-group">
+                                    <label>Commission</label>
+                                    <input
+                                        type="number"
+                                        name="commission"
+                                        min="0"
+                                        step="0.01"
+                                        value={formData.commission}
+                                        onChange={handleNumberChange}
                                     />
                                 </div>
 
                                 {selectedJobPosition && (
                                     <div className="r4m-salary-info">
                                         <p>
-                                            <strong>Monthly Salary: </strong>
-                                            ${((selectedJobPosition.baseSalary || 0) * formData.salaryMultiplier / 12).toFixed(2)}
+                                            <strong>Base Salary: </strong>
+                                            ${formData.baseSalaryOverride ?
+                                            parseFloat(formData.baseSalaryOverride).toFixed(2) :
+                                            (selectedJobPosition.baseSalary || 0).toFixed(2)}
                                         </p>
                                         <p>
-                                            <strong>Annual Salary: </strong>
-                                            ${((selectedJobPosition.baseSalary || 0) * formData.salaryMultiplier).toFixed(2)}
+                                            <strong>Adjusted Annual Salary: </strong>
+                                            ${(
+                                            (formData.baseSalaryOverride ?
+                                                parseFloat(formData.baseSalaryOverride) :
+                                                (selectedJobPosition.baseSalary || 0)) *
+                                            parseFloat(formData.salaryMultiplier)
+                                        ).toFixed(2)}
                                         </p>
                                     </div>
                                 )}
@@ -458,7 +548,9 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
 
                     <div className="r4m-modal-footer">
                         <button type="button" className="r4m-cancel-btn" onClick={onClose}>Cancel</button>
-                        <button type="submit" className="r4m-save-btn">Update Employee</button>
+                        <button type="submit" className="r4m-save-btn">
+                            {isFromCandidate ? 'Complete Hiring Process' : 'Save Employee'}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -466,4 +558,4 @@ const EditEmployeeModal = ({ employee, onClose, onSave, jobPositions, sites }) =
     );
 };
 
-export default EditEmployeeModal;
+export default AddEmployeeModal;

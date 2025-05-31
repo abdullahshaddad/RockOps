@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import Table from "../../../components/common/OurTable/Table.jsx";
+import DataTable from "../../../components/common/DataTable/DataTable.jsx"; // Updated import
 import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx";
 import "./WarehouseViewItemTypesTable.scss";
 
@@ -118,114 +118,120 @@ const WarehouseViewItemTypesTable = () => {
         setShowNotification(true);
     };
 
-    // Define table columns
+    // Define table columns for DataTable
     const columns = [
         {
-            id: 'itemCategory.name',
-            label: 'ITEM CATEGORY',
+            header: 'ITEM CATEGORY',
+            accessor: 'itemCategory.name',
+            sortable: true,
             width: '250px',
             minWidth: '150px',
-            sortable: true,
-            filterable: true,
-            filterType: 'select',
             render: (row) => (
                 <span className="category-tag">
                     {row.itemCategory ? row.itemCategory.name : "No Category"}
                 </span>
-            ),
-            sortFunction: (a, b) => {
-                const aVal = a.itemCategory ? a.itemCategory.name : '';
-                const bVal = b.itemCategory ? b.itemCategory.name : '';
-                return aVal.localeCompare(bVal);
-            }
+            )
         },
         {
-            id: 'name',
-            label: 'ITEM TYPE',
-            width: '220px',
-            minWidth: '150px',
+            header: 'ITEM TYPE',
+            accessor: 'name',
             sortable: true,
-            filterable: true,
-            filterType: 'text'
+            width: '220px',
+            minWidth: '150px'
         },
         {
-            id: 'minQuantity',
-            label: 'MIN QUANTITY',
+            header: 'MIN QUANTITY',
+            accessor: 'minQuantity',
+            sortable: true,
             width: '220px',
             minWidth: '120px',
-            sortable: true,
-            filterable: true,
-            filterType: 'number',
-            align: 'left',
-            sortType: 'number'
-        },
-        {
-            id: 'measuringUnit',
-            label: 'UNIT',
-            width: '200px',
-            minWidth: '100px',
-            sortable: true,
-            filterable: true,
-            filterType: 'select',
             align: 'left'
         },
         {
-            id: 'serialNumber',
-            label: 'SERIAL NUMBER',
-            width: '200px',
-            minWidth: '130px',
+            header: 'UNIT',
+            accessor: 'measuringUnit',
             sortable: true,
-            filterable: true,
-            filterType: 'text'
+            width: '200px',
+            minWidth: '100px',
+            align: 'left'
         },
         {
-            id: 'comment',
-            label: 'COMMENT',
-            flexWeight: 2,
-            minWidth: '250px',
+            header: 'SERIAL NUMBER',
+            accessor: 'serialNumber',
             sortable: true,
-            filterable: true,
-            filterType: 'text',
+            width: '200px',
+            minWidth: '130px'
+        },
+        {
+            header: 'COMMENT',
+            accessor: 'comment',
+            sortable: true,
+            width: '250px',
+            minWidth: '250px',
             render: (row) => row.comment || "No comment"
         }
     ];
 
-    // Action configuration
-    const actionConfig = {
-        label: 'ACTIONS',
-        width: '120px',
-        renderActions: (row) => (
-            <div className="table-actions">
-                <button
-                    className="edit-button0"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        openItemModal(row);
-                    }}
-                    title="Edit item type"
-                >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                    </svg>
-                </button>
-                <button
-                    className="delete-button0"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        deleteItemType(row.id);
-                    }}
-                    title="Delete item type"
-                >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-                        <line x1="10" y1="11" x2="10" y2="17" />
-                        <line x1="14" y1="11" x2="14" y2="17" />
-                    </svg>
-                </button>
-            </div>
-        )
-    };
+    // Filterable columns for DataTable
+    const filterableColumns = [
+        {
+            header: 'ITEM CATEGORY',
+            accessor: 'itemCategory.name',
+            filterType: 'select'
+        },
+        {
+            header: 'ITEM TYPE',
+            accessor: 'name',
+            filterType: 'text'
+        },
+        {
+            header: 'MIN QUANTITY',
+            accessor: 'minQuantity',
+            filterType: 'number'
+        },
+        {
+            header: 'UNIT',
+            accessor: 'measuringUnit',
+            filterType: 'select'
+        },
+        {
+            header: 'SERIAL NUMBER',
+            accessor: 'serialNumber',
+            filterType: 'text'
+        },
+        {
+            header: 'COMMENT',
+            accessor: 'comment',
+            filterType: 'text'
+        }
+    ];
+
+    // Actions array for DataTable
+    const actions = [
+        {
+            label: 'Edit',
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+            ),
+            className: 'edit-button0',
+            onClick: (row) => openItemModal(row)
+        },
+        {
+            label: 'Delete',
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                    <line x1="10" y1="11" x2="10" y2="17" />
+                    <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+            ),
+            className: 'delete-button0',
+            onClick: (row) => deleteItemType(row.id)
+        }
+    ];
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -427,18 +433,20 @@ const WarehouseViewItemTypesTable = () => {
                 </div>
             </div>
 
-            {/* Table with integrated search and filters */}
-            <Table
-                columns={columns}
+            {/* DataTable with integrated search and filters */}
+            <DataTable
                 data={tableData}
-                isLoading={loading}
+                columns={columns}
+                loading={loading}
                 emptyMessage="No item types found. Try adjusting your search or add a new item type"
-                actionConfig={actionConfig}
+                actions={actions}
                 className="item-types-table"
-                itemsPerPage={15}
-                enablePagination={true}
-                enableSorting={true}
-                enableFiltering={true}
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={filterableColumns}
+                itemsPerPageOptions={[10, 15, 20, 25]}
+                defaultItemsPerPage={15}
+                actionsColumnWidth="160px"
             />
 
             {/* Add button */}

@@ -193,6 +193,19 @@ const CandidatesTable = ({ vacancyId }) => {
         return date.toLocaleDateString();
     };
 
+    // Calculate remaining days
+    const calculateRemainingDays = (closingDate) => {
+        if (!closingDate) return 'N/A';
+        const today = new Date();
+        const closing = new Date(closingDate);
+        const diffTime = closing - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 0) return 'Closed';
+        if (diffDays === 0) return 'Today';
+        return `${diffDays} days`;
+    };
+
     // Get candidate status badge
     const getCandidateStatusBadge = (status) => {
         const statusColors = {
@@ -208,7 +221,7 @@ const CandidatesTable = ({ vacancyId }) => {
         const colorClass = statusColors[status] || 'info';
 
         return (
-            <span className={`candidate-status-badge candidate-status-badge--${colorClass}`}>
+            <span className={`status-badge status-badge--${colorClass}`}>
                 {status?.replace('_', ' ') || 'APPLIED'}
             </span>
         );
@@ -295,23 +308,30 @@ const CandidatesTable = ({ vacancyId }) => {
             {/* Vacancy Statistics */}
             {vacancyStats && (
                 <div className="vacancy-stats">
-
-                    <div className=" vacancy-stats-grid">
-                        <div className=" vacancy-stat-card">
-                            <div className=" vacancy-stat-number">{vacancyStats.remainingPositions}</div>
-                            <div className=" vacancy-stat-label">Remaining Positions</div>
+                    <div className="vacancy-stats-grid">
+                        <div className="vacancy-stat-card">
+                            <div className="vacancy-stat-number">{vacancyStats.remainingPositions}</div>
+                            <div className="vacancy-stat-label">Remaining Positions</div>
                         </div>
-                        <div className=" vacancy-stat-card">
-                            <div className=" vacancy-stat-number">{vacancyStats.hiredCount}</div>
-                            <div className=" vacancy-stat-label">Hired</div>
+                        <div className="vacancy-stat-card">
+                            <div className="vacancy-stat-number">{vacancyStats.hiredCount}</div>
+                            <div className="vacancy-stat-label">Hired</div>
                         </div>
-                        <div className=" vacancy-stat-card">
-                            <div className=" vacancy-stat-number">{vacancyStats.totalPositions}</div>
-                            <div className=" vacancy-stat-label">Total Positions</div>
+                        <div className="vacancy-stat-card">
+                            <div className="vacancy-stat-number">{vacancyStats.totalPositions}</div>
+                            <div className="vacancy-stat-label">Total Positions</div>
                         </div>
-                        <div className=" vacancy-stat-card">
-                            <div className=" vacancy-stat-number">{Math.round(vacancyStats.filledPercentage)}%</div>
-                            <div className=" vacancy-stat-label">Filled</div>
+                        <div className="vacancy-stat-card">
+                            <div className="vacancy-stat-number">{Math.round(vacancyStats.filledPercentage)}%</div>
+                            <div className="vacancy-stat-label">Filled</div>
+                        </div>
+                        <div className="vacancy-stat-card">
+                            <div className={`vacancy-stat-number ${calculateRemainingDays(vacancyStats.closingDate) === 'Closed' ? 'remaining-days-closed' : 
+                                calculateRemainingDays(vacancyStats.closingDate) === 'Today' ? 'remaining-days-today' : 
+                                parseInt(calculateRemainingDays(vacancyStats.closingDate)) <= 7 ? 'remaining-days-urgent' : 'remaining-days-normal'}`}>
+                                {calculateRemainingDays(vacancyStats.closingDate)}
+                            </div>
+                            <div className="vacancy-stat-label">Time Remaining</div>
                         </div>
                     </div>
                     {vacancyStats.isFull && (

@@ -4,16 +4,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './EmployeeDetails.scss';
 
 // Import tab components
-import PersonalInfoTab from './tabs/PersonalInfoTab';
-import EmploymentTab from './tabs/EmploymentTab';
-import DocumentsTab from './tabs/DocumentsTab';
-import CompensationTab from './tabs/CompensationTab';
-import AttendanceTab from './tabs/AttendanceTab';
-import DeductionsTab from './tabs/DeductionsTab';
-import CommissionsTab from './tabs/CommissionsTab';
-import LoansTab from './tabs/LoansTab';
-import PayslipsTab from './tabs/PayslipsTab';
-import VacationTab from './tabs/VacationTab';
+import PersonalInfoTab from '../tabs/PersonalInfoTab.jsx';
+import EmploymentTab from '../tabs/EmploymentTab.jsx';
+import DocumentsTab from '../tabs/DocumentsTab.jsx';
+import CompensationTab from '../tabs/CompensationTab.jsx';
+import AttendanceTab from '../tabs/AttendanceTab.jsx';
+import DeductionsTab from '../tabs/DeductionsTab.jsx';
+import CommissionsTab from '../tabs/CommissionsTab.jsx';
+import LoansTab from '../tabs/LoansTab.jsx';
+import PayslipsTab from '../tabs/PayslipsTab.jsx';
+import VacationTab from '../tabs/VacationTab.jsx';
 
 const EmployeeDetails = () => {
     const { id } = useParams();
@@ -62,6 +62,16 @@ const EmployeeDetails = () => {
             month: 'long',
             day: 'numeric'
         });
+    };
+
+    // Calculate days since hire
+    const calculateDaysSinceHire = (hireDate) => {
+        if (!hireDate) return 'N/A';
+        const today = new Date();
+        const hire = new Date(hireDate);
+        const diffTime = today - hire;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        return `${diffDays} days`;
     };
 
     // Format currency for display - moved to a utility function to be used by all tabs
@@ -162,8 +172,8 @@ const EmployeeDetails = () => {
                     <div className="employee-quick-stats">
                         <div className="stat-item">
                             <span className="stat-label">Status</span>
-                            <span className={`stat-value status-badge ${employee.status?.toLowerCase() || 'active'}`}>
-                                {employee.status || 'Active'}
+                            <span className={`status-badge ${employee.status?.toLowerCase() || 'active'}`}>
+                                {employee.status || 'N/A'}
                             </span>
                         </div>
                         <div className="stat-item">
@@ -172,7 +182,12 @@ const EmployeeDetails = () => {
                         </div>
                         <div className="stat-item">
                             <span className="stat-label">Hire Date</span>
-                            <span className="stat-value">{formatDate(employee.hireDate)}</span>
+                            <span className="stat-value">
+                                {formatDate(employee.hireDate)}
+                                <span className="days-since-hire">
+                                    ({calculateDaysSinceHire(employee.hireDate)})
+                                </span>
+                            </span>
                         </div>
                     </div>
                 </div>

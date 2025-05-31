@@ -88,7 +88,7 @@ public class HREmployeeService {
                 // Add salary data for monthly totals
                 for (String month : monthlySalaries.keySet()) {
                     monthlySalaries.put(month, monthlySalaries.get(month).add(
-                            salary.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP)));
+                            salary));
                 }
             }
         }
@@ -507,11 +507,11 @@ public class HREmployeeService {
         employee.setBaseSalaryOverride(dto.getBaseSalaryOverride());
 
         // Set dates if provided
-        if (dto.getBirthDate() != null) {
+        if (dto.getBirthDate() != null && !dto.getBirthDate().trim().isEmpty()) {
             employee.setBirthDate(LocalDate.parse(dto.getBirthDate()));
         }
 
-        if (dto.getHireDate() != null) {
+        if (dto.getHireDate() != null && !dto.getHireDate().trim().isEmpty()) {
             employee.setHireDate(LocalDate.parse(dto.getHireDate()));
         }
 
@@ -559,11 +559,11 @@ public class HREmployeeService {
         if (dto.getBaseSalaryOverride() != null) employee.setBaseSalaryOverride(dto.getBaseSalaryOverride());
 
         // Update dates if provided
-        if (dto.getBirthDate() != null) {
+        if (dto.getBirthDate() != null && !dto.getBirthDate().trim().isEmpty()) {
             employee.setBirthDate(LocalDate.parse(dto.getBirthDate()));
         }
 
-        if (dto.getHireDate() != null) {
+        if (dto.getHireDate() != null && !dto.getHireDate().trim().isEmpty()) {
             employee.setHireDate(LocalDate.parse(dto.getHireDate()));
         }
 

@@ -13,9 +13,9 @@ import VacancyList from "./pages/HR/Vacancy/VacancyList.jsx";
 import PositionsList from "./pages/HR/JobPosition/PositionsList.jsx";
 import EmployeesList from "./pages/HR/Employee/EmployeesList.jsx";
 import HRLayout from "./pages/HR/HRLayout.jsx";
-import EmployeeDetails from "./pages/HR/Employee/EmployeeDetails.jsx";
+import EmployeeDetails from "./pages/HR/Employee/details/EmployeeDetails.jsx";
 import AttendancePage from "./pages/HR/Attendance/AttendancePage.jsx";
-import VacancyDetails from "./pages/HR/Vacancy/VacancyDetails.jsx";
+import VacancyDetails from "./pages/HR/Vacancy/details/VacancyDetails.jsx";
 import DepartmentsList from "./pages/HR/Departments/DepartmentsList.jsx";
 import AllSites from "./pages/site/AllSites/AllSites.jsx";
 import SitesLayout from "./pages/site/SitesLayout.jsx";
@@ -136,7 +136,7 @@ function App() {
                                         allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN"]}><ProcurementOffers/></RoleRoute>}/>
 
                                     <Route path="/procurement/purchase-orders" element={
-                                        <RoleRoute allowedRoles={["ADMIN", "PROCUREMENT"]}>
+                                        <RoleRoute allowedRoles={["ADMIN", "PROCUREMENT", "SITE_ADMIN"]}>
                                             <PurchaseOrders/>
                                         </RoleRoute>
                                     }/>

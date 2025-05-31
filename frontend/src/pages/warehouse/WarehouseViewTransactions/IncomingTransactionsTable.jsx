@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./WarehouseViewTransactions.scss";
 import "./AcceptRejectModal.scss";
-import Table from "../../../components/common/OurTable/Table.jsx";
+import DataTable from "../../../components/common/DataTable/DataTable.jsx"; // Updated import
 import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx";
 
 const IncomingTransactionsTable = ({ warehouseId }) => {
@@ -310,90 +310,130 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         });
     };
 
-    // Define table columns
+    // Define table columns for DataTable
     const columns = [
         {
-            id: 'items',
-            label: 'ITEMS',
+            header: 'ITEMS',
+            accessor: 'items',
+            sortable: true,
             width: '200px',
-            render: (row) => row.items?.length || 0,
-            sortType: 'number',
-            filterType: 'number'
+            minWidth: '120px',
+            render: (row) => row.items?.length || 0
         },
         {
-            id: 'sender',
-            label: 'SENDER',
+            header: 'SENDER',
+            accessor: 'sender',
+            sortable: true,
             width: '200px',
-            render: (row) => getEntityDisplayName(row.sender, row.senderType),
-            filterType: 'text'
+            minWidth: '150px',
+            render: (row) => getEntityDisplayName(row.sender, row.senderType)
         },
         {
-            id: 'receiver',
-            label: 'RECEIVER',
+            header: 'RECEIVER',
+            accessor: 'receiver',
+            sortable: true,
             width: '200px',
-            render: (row) => getEntityDisplayName(row.receiver, row.receiverType),
-            filterType: 'text'
+            minWidth: '150px',
+            render: (row) => getEntityDisplayName(row.receiver, row.receiverType)
         },
         {
-            id: 'batchNumber',
-            label: 'BATCH NUMBER',
+            header: 'BATCH NUMBER',
+            accessor: 'batchNumber',
+            sortable: true,
             width: '200px',
-            render: (row) => row.batchNumber || "N/A",
-            sortType: 'number',
-            filterType: 'number'
+            minWidth: '120px',
+            render: (row) => row.batchNumber || "N/A"
         },
         {
-            id: 'transactionDate',
-            label: 'TRANSACTION DATE',
+            header: 'TRANSACTION DATE',
+            accessor: 'transactionDate',
+            sortable: true,
             width: '200px',
-            render: (row) => formatDate(row.transactionDate),
-            sortType: 'date',
-            filterType: 'text'
+            minWidth: '150px',
+            render: (row) => formatDate(row.transactionDate)
         },
         {
-            id: 'createdAt',
-            label: 'CREATED AT',
+            header: 'CREATED AT',
+            accessor: 'createdAt',
+            sortable: true,
             width: '200px',
-            render: (row) => formatDateTime(row.createdAt),
-            sortType: 'date',
-            filterType: 'text'
+            minWidth: '150px',
+            render: (row) => formatDateTime(row.createdAt)
         },
         {
-            id: 'addedBy',
-            label: 'CREATED BY',
+            header: 'CREATED BY',
+            accessor: 'addedBy',
+            sortable: true,
             width: '200px',
-            render: (row) => row.addedBy || "N/A",
-            filterType: 'text'
+            minWidth: '120px',
+            render: (row) => row.addedBy || "N/A"
         },
         {
-            id: 'status',
-            label: 'STATUS',
+            header: 'STATUS',
+            accessor: 'status',
+            sortable: true,
             width: '200px',
+            minWidth: '100px',
             render: (row) => (
                 <span className={`status-badge3 ${row.status?.toLowerCase()}`}>
                     {row.status}
                 </span>
-            ),
-            filterType: 'select'
+            )
         }
     ];
 
-    // Define action configuration
-    const actionConfig = {
-        label: 'ACTIONS',
-        width: '200px',
-        renderActions: (row) => (
-            <button
-                className="accept-button3"
-                onClick={() => openAcceptModal(row)}
-                title="Accept transaction"
-            >
+    // Filterable columns for DataTable
+    const filterableColumns = [
+        {
+            header: 'ITEMS',
+            accessor: 'items',
+            filterType: 'number'
+        },
+        {
+            header: 'SENDER',
+            accessor: 'sender',
+            filterType: 'text'
+        },
+        {
+            header: 'RECEIVER',
+            accessor: 'receiver',
+            filterType: 'text'
+        },
+        {
+            header: 'BATCH NUMBER',
+            accessor: 'batchNumber',
+            filterType: 'number'
+        },
+        {
+            header: 'TRANSACTION DATE',
+            accessor: 'transactionDate',
+            filterType: 'text'
+        },
+        {
+            header: 'CREATED AT',
+            accessor: 'createdAt',
+            filterType: 'text'
+        },
+        {
+            header: 'CREATED BY',
+            accessor: 'addedBy',
+            filterType: 'text'
+        }
+    ];
+
+    // Actions array for DataTable
+    const actions = [
+        {
+            label: 'Accept',
+            icon: (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M5 13l4 4L19 7"/>
                 </svg>
-            </button>
-        )
-    };
+            ),
+            className: 'accept-button3',
+            onClick: (row) => openAcceptModal(row)
+        }
+    ];
 
     return (
         <div className="transaction-table-section">
@@ -408,18 +448,20 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                 (Transactions waiting for your approval)
             </div>
 
-            {/* New Table Component */}
-            <Table
-                columns={columns}
+            {/* DataTable Component */}
+            <DataTable
                 data={pendingTransactions}
-                isLoading={loading}
+                columns={columns}
+                loading={loading}
                 emptyMessage="There are no transactions waiting for your approval"
-                actionConfig={actionConfig}
+                actions={actions}
                 className="incoming-transactions-table"
-                itemsPerPage={10}
-                enablePagination={true}
-                enableSorting={true}
-                enableFiltering={true}
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={filterableColumns}
+                itemsPerPageOptions={[5, 10, 15, 20]}
+                defaultItemsPerPage={10}
+                actionsColumnWidth="200px"
             />
 
             {/* Modal for accepting transaction with multiple items */}

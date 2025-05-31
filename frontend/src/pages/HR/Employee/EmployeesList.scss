@@ -153,28 +153,6 @@
     }
 }
 
-/* Button Styles */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    text-decoration: none;
-
-    &-primary {
-        background-color: var(--color-primary);
-        color: var(--color-text-inverse);
-
-        &:hover {
-            background-color: var(--color-primary-dark);
-        }
-    }
-}
 
 /* Filter Select Styles */
 .filter-select {

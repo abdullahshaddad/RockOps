@@ -50,13 +50,13 @@ const SalaryStatisticsCard = ({ data }) => {
     return (
         <div className="salary-stats-container">
             {stats.map((stat, index) => (
-                <div key={index} className={`stat-card stat-${stat.color}`}>
-                    <div className="stat-icon">
+                <div key={index} className={`hr-dashboard-stat-card hr-dashboard-stat-${stat.color}`}>
+                    <div className="hr-dashboard-stat-icon">
                         {stat.icon}
                     </div>
-                    <div className="stat-info">
-                        <h3 className="stat-value">{stat.value}</h3>
-                        <p className="stat-title">{stat.title}</p>
+                    <div className="hr-dashboard-stat-info">
+                        <h3 className="hr-dashboard-stat-value">{stat.value}</h3>
+                        <p className="hr-dashboard-stat-title">{stat.title}</p>
                     </div>
                 </div>
             ))}
