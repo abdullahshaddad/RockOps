@@ -1,3 +1,93 @@
+// Snackbar with Snackbar2 design - exact same animations and styling
+.snackbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 1100;
+  opacity: 0;
+  transition: transform 0.535s ease, opacity 0.535s ease; // Match this to the animationDuration value
+
+  &.slide-in {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  &.slide-out {
+    transform: translateX(-50%) translateY(-100px);
+    opacity: 0;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.success-snackbar {
+  background-color: #ecfdf5; // Light green background
+  border-left: 4px solid #4ade80;
+
+  svg {
+    color: #16a34a;
+  }
+
+  span {
+    color: #065f46; // Darker green text
+  }
+}
+
+.error-snackbar {
+  background-color: #fef2f2; // Light red background
+  border-left: 4px solid #f87171;
+
+  svg {
+    color: #dc2626;
+  }
+
+  span {
+    color: #991b1b; // Darker red text
+  }
+}
+
+.info-snackbar {
+  background-color: #eff6ff; // Light blue background
+  border-left: 4px solid #60a5fa;
+
+  svg {
+    color: #2563eb;
+  }
+
+  span {
+    color: #1e40af; // Darker blue text
+  }
+}
+
+.warning-snackbar {
+  background-color: #fffbeb; // Light yellow background
+  border-left: 4px solid #fbbf24;
+
+  svg {
+    color: #d97706;
+  }
+
+  span {
+    color: #92400e; // Darker yellow text
+  }
+}
+
+// Legacy styles for backwards compatibility (kept but not used with new design)
 .global-notification {
   position: fixed;
   top: 20px;
@@ -14,12 +104,12 @@
   animation: slideDownFade 0.3s ease, slideUpFade 0.3s ease 2.7s;
   min-width: 300px;
   max-width: 500px;
-}
 
-.global-notification > div:first-child {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 }
 
 @keyframes slideDownFade {
@@ -48,48 +138,48 @@
   background-color: #f0fdf4;
   border: 1px solid #dcfce7;
   color: #166534;
-}
 
-.success-notification svg {
-  color: #16a34a;
-  width: 20px;
-  height: 20px;
+  svg {
+    color: #16a34a;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .error-notification {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
   color: #991b1b;
-}
 
-.error-notification svg {
-  color: #dc2626;
-  width: 20px;
-  height: 20px;
+  svg {
+    color: #dc2626;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .info-notification {
   background-color: #eff6ff;
   border: 1px solid #dbeafe;
   color: #1e40af;
-}
 
-.info-notification svg {
-  color: #3b82f6;
-  width: 20px;
-  height: 20px;
+  svg {
+    color: #3b82f6;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .warning-notification {
   background-color: #fffbeb;
   border: 1px solid #fef3c7;
   color: #92400e;
-}
 
-.warning-notification svg {
-  color: #f59e0b;
-  width: 20px;
-  height: 20px;
+  svg {
+    color: #f59e0b;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 // Styles for action buttons in confirmation snackbars
