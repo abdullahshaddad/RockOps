@@ -30,7 +30,7 @@ export const EQUIPMENT_ENDPOINTS = {
     SARKY_ANALYTICS: (equipmentId) => `/api/equipment/${equipmentId}/sarky-analytics`,
     // Transaction endpoints
     SEND_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/send-transaction`,
-    RECEIVE_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/receive-transaction`,
+    RECEIVE_TRANSACTION: (equipmentId) => `/api/equipment/${equipmentId}/receive-transaction`
 };
 
 // Equipment Types module endpoints

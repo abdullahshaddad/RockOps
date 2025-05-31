@@ -595,6 +595,7 @@
 .form-group3.full-width {
   width: 100%;
   margin-top:20px;
+  margin-bottom: 4rem;
 }
 
 /* Labels with consistent styling */
@@ -1212,8 +1213,8 @@ label {
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
-  width: 12px; /* Reduced from 14px */
-  height: 12px; /* Reduced from 14px */
+  width: 10px; /* Reduced from 14px */
+  height: 30px; /* Reduced from 14px */
   border: 1.5px solid #ccc; /* Thinner border */
   border-radius: 50%;
   display: flex;
@@ -1273,42 +1274,42 @@ label {
 }
 
 .add-item-button {
-  background-color: transparent; /* Remove background */
-  border: none; /* Remove border */
+  background-color: transparent !important; // No background
+  border: none !important; // No border
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: #4f85e5; /* Blue text color */
+  color: #3b82f6 !important; // Blue text
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
+  border-radius: 6px;
   transition: all 0.2s ease;
-  text-decoration: none; /* No underline initially */
-}
 
-.add-item-button:hover {
-  background-color: transparent; /* Keep transparent on hover */
-  color: #3b72d9; /* Darker blue on hover */
-  transform: translateY(-1px); /* Slight upward movement on hover */
-}
+  &:hover {
+    background-color: rgba(59, 130, 246, 0.1) !important; // Light blue background on hover
+    color: #2563eb !important; // Slightly darker blue on hover
+    transform: translateY(-1px);
+  }
 
-.add-item-button:active {
-  transform: translateY(0); /* Return to normal on click */
-}
+  &:active {
+    transform: translateY(0);
+    background-color: rgba(59, 130, 246, 0.15) !important;
+  }
 
-.add-item-button:before {
-  content: '+';
-  font-size: 18px;
-  font-weight: 600;
+  &:before {
+    content: '+';
+    font-size: 16px;
+    font-weight: 600;
+  }
 }
-
 .transaction-item-container {
   background-color: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 35px;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Add this line for the shadow */
 }

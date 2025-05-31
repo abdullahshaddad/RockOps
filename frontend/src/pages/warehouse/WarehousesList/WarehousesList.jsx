@@ -446,7 +446,7 @@ const WarehousesList = () => {
 
     return (
         <div className="warehouse-list-container">
-            <div className="warehouse-list-header">
+            <div className="departments-header">
                 <h1 className="warehouse-list-title">Warehouses</h1>
 
 

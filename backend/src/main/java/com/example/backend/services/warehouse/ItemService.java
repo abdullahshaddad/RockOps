@@ -46,31 +46,25 @@ public class ItemService {
 
 
     }
-
-    public Item createItem(UUID itemTypeId, UUID warehouseId, int initialQuantity) {
+    public Item createItem(UUID itemTypeId, UUID warehouseId, int initialQuantity, String username) {
         ItemType itemType = itemTypeRepository.findById(itemTypeId)
                 .orElseThrow(() -> new IllegalArgumentException("ItemType not found"));
 
         Warehouse warehouse = warehouseRepository.findById(warehouseId)
                 .orElseThrow(() -> new IllegalArgumentException("Warehouse not found"));
 
-        Optional<Item> existingItemOpt = itemRepository.findByItemTypeAndWarehouse(itemType, warehouse);
-
-        if (existingItemOpt.isPresent()) {
-            Item existingItem = existingItemOpt.get();
-            existingItem.setQuantity(existingItem.getQuantity() + initialQuantity);
-            existingItem.setItemStatus(ItemStatus.IN_WAREHOUSE);
-            return itemRepository.save(existingItem);
-        }
-
+        // Always create a new item instead of merging
         Item newItem = new Item();
         newItem.setItemType(itemType);
         newItem.setWarehouse(warehouse);
         newItem.setQuantity(initialQuantity);
         newItem.setItemStatus(ItemStatus.IN_WAREHOUSE);
+        newItem.setCreatedAt(LocalDateTime.now()); // set createdAt here
+        newItem.setCreatedBy(username);
 
         return itemRepository.save(newItem);
     }
+
 
     // CLEAN RESOLUTION METHOD - No deletions, just mark as resolved
     @Transactional
@@ -272,5 +266,15 @@ public class ItemService {
             System.out.println("Using fallback query for warehouse: " + warehouseId);
             return itemResolutionRepository.findByItemWarehouseIdOrderByResolvedAtDesc(warehouseId);
         }
+    }
+
+    public List<Item> getItemTransactionDetails(UUID warehouseId, UUID itemTypeId) {
+        // Get all items of this type in the warehouse with their transaction details
+        List<Item> items = itemRepository.findAllByItemTypeIdAndWarehouseIdAndItemStatusWithTransactionDetails(
+                itemTypeId, warehouseId, ItemStatus.IN_WAREHOUSE);
+
+        System.out.println("Found " + items.size() + " item entries for type " + itemTypeId + " in warehouse " + warehouseId);
+
+        return items;
     }
 }

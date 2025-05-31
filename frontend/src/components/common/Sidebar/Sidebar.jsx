@@ -335,7 +335,7 @@ const Sidebar = () => {
                                     }}
                                 >
 
-                                <span className="menu-icon">{item.icon}</span>
+                                    <span className="menu-icon">{item.icon}</span>
                                     <span className="menu-title">{t(item.title)}</span>
                                     {item.hasSubmenu && (
                                         <span className="submenu-toggle">

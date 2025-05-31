@@ -1,24 +1,38 @@
 import React, { useState, useEffect } from "react";
-import DataTable from "../../../components/common/DataTable/DataTable.jsx";
-import { FaCheck, FaTimes } from 'react-icons/fa';
 import "./WarehouseViewTransactions.scss";
 import "./AcceptRejectModal.scss";
+import DataTable from "../../../components/common/DataTable/DataTable.jsx"; // Updated import
+import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx";
 
 const IncomingTransactionsTable = ({ warehouseId }) => {
     const [loading, setLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
     const [pendingTransactions, setPendingTransactions] = useState([]);
     const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [receivedQuantities, setReceivedQuantities] = useState({});
     const [rejectionReason, setRejectionReason] = useState("");
-    const [showAcceptNotification, setShowAcceptNotification] = useState(false);
-    const [showRejectNotification, setShowRejectNotification] = useState(false);
     const [comments, setComments] = useState("");
     const [acceptError, setAcceptError] = useState("");
     const [rejectError, setRejectError] = useState("");
     const [processingAction, setProcessingAction] = useState(false);
+
+    // Replace old notification states with snackbar state
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
+    const [notificationType, setNotificationType] = useState('success');
+
+    // Helper function to show snackbar
+    const showSnackbar = (message, type = "success") => {
+        setNotificationMessage(message);
+        setNotificationType(type);
+        setShowNotification(true);
+    };
+
+    // Helper function to close snackbar
+    const closeSnackbar = () => {
+        setShowNotification(false);
+    };
 
     // Fetch transactions when component mounts or warehouseId changes
     useEffect(() => {
@@ -158,16 +172,6 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         }
     };
 
-    // Filter transactions based on search term
-    const filteredTransactions = searchTerm ?
-        pendingTransactions.filter((item) =>
-            item.itemType?.itemCategory?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.itemType?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.sender?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.receiver?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (item.batchNumber && item.batchNumber.toString().includes(searchTerm))
-        ) : pendingTransactions;
-
     // Function to open accept modal
     const openAcceptModal = (transaction) => {
         setSelectedTransaction(transaction);
@@ -222,7 +226,6 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         try {
             const token = localStorage.getItem('token');
 
-
             let username = "system"; // Default fallback
             const userInfoString = localStorage.getItem('userInfo');
 
@@ -260,12 +263,7 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                 // Successfully accepted transaction
                 fetchPendingTransactions(); // Refresh data
                 setIsAcceptModalOpen(false);
-                setShowAcceptNotification(true);
-
-                // Show notification for 3 seconds
-                setTimeout(() => {
-                    setShowAcceptNotification(false);
-                }, 3000);
+                showSnackbar("Transaction Accepted Successfully", "success");
             } else {
                 // Try to get error details from the response
                 let errorMessage = "Failed to accept transaction";
@@ -276,82 +274,13 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                     console.error("Error parsing error response:", e);
                 }
                 setAcceptError(errorMessage);
+                showSnackbar("Failed to accept transaction", "error");
                 console.error("Failed to accept transaction:", errorMessage);
             }
         } catch (error) {
             setAcceptError("Network error. Please try again.");
+            showSnackbar("Network error. Please try again.", "error");
             console.error("Error accepting transaction:", error);
-        } finally {
-            setProcessingAction(false);
-        }
-    };
-
-    // Function to reject transaction
-    const handleRejectTransaction = async (e) => {
-        e.preventDefault();
-        setProcessingAction(true);
-        setRejectError("");
-
-        if (!rejectionReason.trim()) {
-            setRejectError("Please provide a rejection reason");
-            setProcessingAction(false);
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem('token');
-
-            let username = "system"; // Default fallback
-            const userInfoString = localStorage.getItem('userInfo');
-
-            if (userInfoString) {
-                try {
-                    const userInfo = JSON.parse(userInfoString);
-                    if (userInfo.username) {
-                        username = userInfo.username;
-                    }
-                } catch (error) {
-                    console.error("Error parsing user info:", error);
-                }
-            }
-
-            const response = await fetch(`http://localhost:8080/api/v1/transactions/${selectedTransaction.id}/reject`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    username: username,
-                    rejectionReason: rejectionReason
-                }),
-            });
-
-            if (response.ok) {
-                // Successfully rejected transaction
-                fetchPendingTransactions(); // Refresh data
-                setIsRejectModalOpen(false);
-                setShowRejectNotification(true);
-
-                // Show notification for 3 seconds
-                setTimeout(() => {
-                    setShowRejectNotification(false);
-                }, 3000);
-            } else {
-                // Try to get error details from the response
-                let errorMessage = "Failed to reject transaction";
-                try {
-                    const errorData = await response.text();
-                    errorMessage = errorData || errorMessage;
-                } catch (e) {
-                    console.error("Error parsing error response:", e);
-                }
-                setRejectError(errorMessage);
-                console.error("Failed to reject transaction:", errorMessage);
-            }
-        } catch (error) {
-            setRejectError("Network error. Please try again.");
-            console.error("Error rejecting transaction:", error);
         } finally {
             setProcessingAction(false);
         }
@@ -360,94 +289,179 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
     // Helper function to format entity name for display
     const getEntityDisplayName = (entity, entityType) => {
         if (!entity) return "N/A";
-
-        // Return formatted name based on entity type
         return entity.name || "N/A";
     };
 
-    // Define columns for DataTable
+    // Format date helper functions
+    const formatDate = (dateString) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleDateString('en-GB');
+    };
+
+    const formatDateTime = (dateString) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
+    };
+
+    // Define table columns for DataTable
     const columns = [
         {
-            header: 'Items',
-            accessor: 'items.length',
+            header: 'ITEMS',
+            accessor: 'items',
             sortable: true,
+            width: '200px',
+            minWidth: '120px',
             render: (row) => row.items?.length || 0
         },
         {
-            header: 'Sender',
-            accessor: 'sender.name',
+            header: 'SENDER',
+            accessor: 'sender',
             sortable: true,
+            width: '200px',
+            minWidth: '150px',
             render: (row) => getEntityDisplayName(row.sender, row.senderType)
         },
         {
-            header: 'Receiver',
-            accessor: 'receiver.name',
+            header: 'RECEIVER',
+            accessor: 'receiver',
             sortable: true,
+            width: '200px',
+            minWidth: '150px',
             render: (row) => getEntityDisplayName(row.receiver, row.receiverType)
         },
         {
-            header: 'Batch Number',
+            header: 'BATCH NUMBER',
             accessor: 'batchNumber',
             sortable: true,
+            width: '200px',
+            minWidth: '120px',
             render: (row) => row.batchNumber || "N/A"
         },
         {
-            header: 'Transaction Date',
+            header: 'TRANSACTION DATE',
             accessor: 'transactionDate',
             sortable: true,
-            render: (row) => row.transactionDate ? new Date(row.transactionDate).toLocaleDateString('en-GB') : "N/A"
+            width: '200px',
+            minWidth: '150px',
+            render: (row) => formatDate(row.transactionDate)
         },
         {
-            header: 'Created At',
+            header: 'CREATED AT',
             accessor: 'createdAt',
             sortable: true,
-            render: (row) => row.createdAt ? new Date(row.createdAt).toLocaleString('en-GB', {
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
-            }) : "N/A"
+            width: '200px',
+            minWidth: '150px',
+            render: (row) => formatDateTime(row.createdAt)
         },
         {
-            header: 'Added By',
+            header: 'CREATED BY',
             accessor: 'addedBy',
-            sortable: true
+            sortable: true,
+            width: '200px',
+            minWidth: '120px',
+            render: (row) => row.addedBy || "N/A"
+        },
+        {
+            header: 'STATUS',
+            accessor: 'status',
+            sortable: true,
+            width: '200px',
+            minWidth: '100px',
+            render: (row) => (
+                <span className={`status-badge3 ${row.status?.toLowerCase()}`}>
+                    {row.status}
+                </span>
+            )
         }
     ];
 
-    // Action configuration for DataTable
-    const actions = [
+    // Filterable columns for DataTable
+    const filterableColumns = [
         {
-            label: 'Accept transaction',
-            icon: <FaCheck />,
-            onClick: (row) => openAcceptModal(row),
-            className: 'success'
+            header: 'ITEMS',
+            accessor: 'items',
+            filterType: 'number'
         },
         {
-            label: 'Reject transaction',
-            icon: <FaTimes />,
-            onClick: (row) => openRejectModal(row),
-            className: 'danger'
+            header: 'SENDER',
+            accessor: 'sender',
+            filterType: 'text'
+        },
+        {
+            header: 'RECEIVER',
+            accessor: 'receiver',
+            filterType: 'text'
+        },
+        {
+            header: 'BATCH NUMBER',
+            accessor: 'batchNumber',
+            filterType: 'number'
+        },
+        {
+            header: 'TRANSACTION DATE',
+            accessor: 'transactionDate',
+            filterType: 'text'
+        },
+        {
+            header: 'CREATED AT',
+            accessor: 'createdAt',
+            filterType: 'text'
+        },
+        {
+            header: 'CREATED BY',
+            accessor: 'addedBy',
+            filterType: 'text'
+        }
+    ];
+
+    // Actions array for DataTable
+    const actions = [
+        {
+            label: 'Accept',
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 13l4 4L19 7"/>
+                </svg>
+            ),
+            className: 'accept-button3',
+            onClick: (row) => openAcceptModal(row)
         }
     ];
 
     return (
-        <div className="transaction-table-pending">
-            <div className="left-section3">
-                <h2 className="transaction-section-title">Incoming Transactions</h2>
-                <div className="item-count3">{pendingTransactions.length} incoming transactions</div>
+        <div className="transaction-table-section">
+            <div className="table-header-section">
+                <div className="left-section3">
+                    <h2 className="transaction-section-title">Incoming Transactions</h2>
+                    <div className="item-count3">{pendingTransactions.length} incoming transactions</div>
+                </div>
             </div>
-            <div className="section-description">(Transactions waiting for your approval)</div>
 
+            <div className="section-description">
+                (Transactions waiting for your approval)
+            </div>
+
+            {/* DataTable Component */}
             <DataTable
                 data={pendingTransactions}
                 columns={columns}
                 loading={loading}
-                showSearch={true}
-                showFilters={true}
-                filterableColumns={columns.filter(col => col.sortable)}
-                itemsPerPageOptions={[10, 25, 50]}
-                defaultItemsPerPage={10}
+                emptyMessage="There are no transactions waiting for your approval"
                 actions={actions}
                 className="incoming-transactions-table"
+                showSearch={true}
+                showFilters={true}
+                filterableColumns={filterableColumns}
+                itemsPerPageOptions={[5, 10, 15, 20]}
+                defaultItemsPerPage={10}
+                actionsColumnWidth="200px"
             />
 
             {/* Modal for accepting transaction with multiple items */}
@@ -641,123 +655,14 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                 </div>
             )}
 
-            {/* Modal for rejecting transaction */}
-            {isRejectModalOpen && selectedTransaction && (
-                <div className="modal-backdrop">
-                    <div className="flat-modal">
-                        {/* Header */}
-                        <div className="flat-modal-header">
-                            <h2>Reject Transaction</h2>
-                            <button
-                                className="close-modal-btn"
-                                onClick={() => setIsRejectModalOpen(false)}
-                                disabled={processingAction}
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M18 6L6 18M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-
-                        {/* Content */}
-                        <div className="flat-modal-content">
-                            {/* Transaction Info */}
-                            <div className="transaction-info-section">
-                                <div className="info-row">
-                                    <div className="info-col">
-                                        <div className="info-label">Batch Number</div>
-                                        <div className="info-value">{selectedTransaction.batchNumber || "N/A"}</div>
-                                    </div>
-                                    <div className="info-col">
-                                        <div className="info-label">Transaction Date</div>
-                                        <div className="info-value">
-                                            {selectedTransaction.transactionDate
-                                                ? new Date(selectedTransaction.transactionDate).toLocaleDateString("en-GB")
-                                                : "N/A"}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="info-row">
-                                    <div className="info-col">
-                                        <div className="info-label">Sender</div>
-                                        <div className="info-value">{getEntityDisplayName(selectedTransaction.sender, selectedTransaction.senderType)}</div>
-                                    </div>
-                                    <div className="info-col">
-                                        <div className="info-label">Receiver</div>
-                                        <div className="info-value">{getEntityDisplayName(selectedTransaction.receiver, selectedTransaction.receiverType)}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Rejection Reason */}
-                            <div className="rejection-section">
-                                <div className="rejection-label">
-                                    Rejection Reason <span className="required-mark">*</span>
-                                </div>
-                                <textarea
-                                    value={rejectionReason}
-                                    onChange={(e) => setRejectionReason(e.target.value)}
-                                    placeholder="Please provide a reason for rejecting this transaction..."
-                                    required
-                                    disabled={processingAction}
-                                />
-                            </div>
-
-                            {/* Error message */}
-                            {rejectError && (
-                                <div className="error-message">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <line x1="12" y1="8" x2="12" y2="12" />
-                                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                                    </svg>
-                                    <span>{rejectError}</span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Footer */}
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="reject-button"
-                                onClick={handleRejectTransaction}
-                                disabled={processingAction || !rejectionReason.trim()}
-                            >
-                                {processingAction ? "Processing..." : (
-                                    <>
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M18 6L6 18M6 6l12 12" />
-                                        </svg>
-                                        Reject Transaction
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Notifications */}
-            {showAcceptNotification && (
-                <div className="notification3 success-notification3">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                        <path d="M22 4L12 14.01l-3-3"/>
-                    </svg>
-                    <span>Transaction Accepted Successfully</span>
-                </div>
-            )}
-
-            {showRejectNotification && (
-                <div className="notification3 reject-notification3">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                    <span>Transaction Rejected Successfully</span>
-                </div>
-            )}
+            {/* Snackbar Component - Replace old notifications */}
+            <Snackbar
+                type={notificationType}
+                text={notificationMessage}
+                isVisible={showNotification}
+                onClose={closeSnackbar}
+                duration={3000}
+            />
         </div>
     );
 };

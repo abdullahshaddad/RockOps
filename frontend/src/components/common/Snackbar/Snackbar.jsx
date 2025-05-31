@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Snackbar.scss';
 
 /**
@@ -12,17 +12,54 @@ import './Snackbar.scss';
  * @param {boolean} props.persistent - Whether the snackbar should stay open until manually closed
  */
 const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000, persistent = false }) => {
+    const [visible, setVisible] = useState(false);
+    const [animationState, setAnimationState] = useState('hidden');
+
+    // Animation timings (in ms)
+    const slideInDuration = 165;
+    const animationDuration = 535; // Should match CSS transition time exactly
+
     useEffect(() => {
-        if (show && !persistent) {
+        if (show) {
+            // First make it visible
+            setVisible(true);
+
+            // Then trigger the slide-in animation after a brief delay
+            setTimeout(() => {
+                setAnimationState('slide-in');
+            }, slideInDuration);
+
+            // Start hiding after 'duration' ms (only if not persistent)
+            if (!persistent) {
+                const hideTimer = setTimeout(() => {
+                    // Trigger slide-out animation
+                    setAnimationState('slide-out');
+
+                    // Remove from DOM after animation completes
+                    const removeTimer = setTimeout(() => {
+                        setVisible(false);
+                        if (onClose) onClose();
+                    }, animationDuration);
+
+                    return () => clearTimeout(removeTimer);
+                }, duration); // This is the time the snackbar stays visible before hiding
+
+                return () => clearTimeout(hideTimer);
+            }
+        } else {
+            // If show changes to false
+            setAnimationState('slide-out');
+
             const timer = setTimeout(() => {
-                if (onClose) onClose();
-            }, duration);
+                setVisible(false);
+            }, animationDuration);
 
             return () => clearTimeout(timer);
         }
-    }, [show, onClose, duration, persistent]);
+    }, [show, duration, onClose, persistent]);
 
-    if (!show) return null;
+    // Don't render anything if not visible
+    if (!visible) return null;
 
     // Define icons for different Snackbar types
     const getIcon = () => {
@@ -64,11 +101,9 @@ const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000, p
     };
 
     return (
-        <div className={`global-notification ${type}-notification`}>
-            <div>
-                {getIcon()}
-                <span>{message}</span>
-            </div>
+        <div className={`snackbar ${type}-snackbar ${animationState}`}>
+            {getIcon()}
+            <span>{message}</span>
         </div>
     );
 };

@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "../../../../components/common/DataTable/DataTable";
 import { useTranslation } from 'react-i18next';
+import {useNavigate} from "react-router-dom";
 
 const SiteMerchantsTab = ({ siteId }) => {
     const { t } = useTranslation();
     const [merchantData, setMerchantData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    const handleRowClick = (row) => {
+        navigate(`/merchants/${row.id}`);
+    };
 
     // Define columns for DataTable
     const columns = [
         {
             header: 'ID',
-            accessor: 'id',
+            accessor: 'conventionalId',
             sortable: true
         },
         {
@@ -26,13 +32,13 @@ const SiteMerchantsTab = ({ siteId }) => {
             sortable: true
         },
         {
-            header: 'Category',
-            accessor: 'category',
+            header: 'Address',
+            accessor: 'address',
             sortable: true
         },
         {
-            header: 'Total Sales',
-            accessor: 'totalSales',
+            header: 'Contact Number',
+            accessor: 'contactPhone',
             sortable: true
         }
     ];
@@ -65,12 +71,13 @@ const SiteMerchantsTab = ({ siteId }) => {
             const data = await response.json();
 
             if (Array.isArray(data)) {
-                const transformedData = data.map((item) => ({
+                const transformedData = data.map((item, index) => ({
+                    conventionalId: `ME-${String(index + 1).padStart(3, '0')}`,
                     id: item.id,
                     merchantName: item.name,
                     merchantType: item.merchantType,
-                    category: item.category,
-                    totalSales: item.totalSales,
+                    address: item.address,
+                    contactPhone: item.contactPhone,
                 }));
 
                 setMerchantData(transformedData);
@@ -95,18 +102,18 @@ const SiteMerchantsTab = ({ siteId }) => {
 
     return (
         <div className="site-merchants-tab">
-            <div className="tab-header">
+            <div className="departments-header">
                 <h3>{t('site.siteMerchantsReport')}</h3>
             </div>
 
-            <div className="merchants-stats">
-                {Object.entries(merchantTypeCounts).map(([type, count]) => (
-                    <div className="stat-card" key={type}>
-                        <div className="stat-title">{type}</div>
-                        <div className="stat-value">{count}</div>
-                    </div>
-                ))}
-            </div>
+            {/*<div className="merchants-stats">*/}
+            {/*    {Object.entries(merchantTypeCounts).map(([type, count]) => (*/}
+            {/*        <div className="stat-card" key={type}>*/}
+            {/*            <div className="stat-title">{type}</div>*/}
+            {/*            <div className="stat-value">{count}</div>*/}
+            {/*        </div>*/}
+            {/*    ))}*/}
+            {/*</div>*/}
 
             {error ? (
                 <div className="error-container">{error}</div>
@@ -121,6 +128,7 @@ const SiteMerchantsTab = ({ siteId }) => {
                         filterableColumns={columns}
                         itemsPerPageOptions={[10, 25, 50, 100]}
                         defaultItemsPerPage={10}
+                        onRowClick={handleRowClick}
                         tableTitle="Merchants List"
                     />
                 </div>
