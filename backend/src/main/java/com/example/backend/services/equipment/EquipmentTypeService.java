@@ -155,9 +155,9 @@ public class EquipmentTypeService {
                 .head("Operations Manager")
                 .baseSalary(calculateBaseSalary(equipmentType))
                 .probationPeriod(90) // 90 days probation
-                .type("FULL_TIME")
+                .contractType(JobPosition.ContractType.MONTHLY)
                 .experienceLevel(determineExperienceLevel(equipmentType))
-                .workingDays(6) // 6 days a week
+                .monthlyBaseSalary(calculateBaseSalary(equipmentType))
                 .shifts("Day Shift")
                 .workingHours(8)
                 .vacations("21 days annual leave")
