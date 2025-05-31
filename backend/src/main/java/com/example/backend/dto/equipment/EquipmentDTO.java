@@ -45,6 +45,7 @@ public class EquipmentDTO {
     private String imageUrl;
     private UUID purchasedFromId;
     private String purchasedFromName;
+    private boolean drivable;
 
     // Convert Entity to DTO
     public static EquipmentDTO fromEntity(Equipment equipment) {
@@ -83,6 +84,7 @@ public class EquipmentDTO {
         dto.setStatus(equipment.getStatus());
         dto.setRelatedDocuments(equipment.getRelatedDocuments());
         dto.setWorkedHours(equipment.getWorkedHours());
+        dto.setDrivable(equipment.getType() != null ? equipment.getType().isDrivable() : false);
 
         // Handle site
         if (equipment.getSite() != null) {
