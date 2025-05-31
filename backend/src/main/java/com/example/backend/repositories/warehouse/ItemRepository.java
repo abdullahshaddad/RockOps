@@ -59,4 +59,16 @@ public interface ItemRepository extends JpaRepository<Item, UUID> {
             "LEFT JOIN FETCH ti.transaction t " +
             "WHERE i.warehouse = :warehouse")
     List<Item> findByWarehouseWithTransactionItems(@Param("warehouse") Warehouse warehouse);
+
+    @Query("SELECT i FROM Item i " +
+            "LEFT JOIN FETCH i.transactionItem ti " +
+            "LEFT JOIN FETCH ti.transaction t " +
+            "WHERE i.itemType.id = :itemTypeId " +
+            "AND i.warehouse.id = :warehouseId " +
+            "AND i.itemStatus = :itemStatus " +
+            "ORDER BY t.completedAt DESC")
+    List<Item> findAllByItemTypeIdAndWarehouseIdAndItemStatusWithTransactionDetails(
+            @Param("itemTypeId") UUID itemTypeId,
+            @Param("warehouseId") UUID warehouseId,
+            @Param("itemStatus") ItemStatus itemStatus);
 }
