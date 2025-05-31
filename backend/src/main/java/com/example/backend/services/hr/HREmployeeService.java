@@ -88,7 +88,7 @@ public class HREmployeeService {
                 // Add salary data for monthly totals
                 for (String month : monthlySalaries.keySet()) {
                     monthlySalaries.put(month, monthlySalaries.get(month).add(
-                            salary.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP)));
+                            salary));
                 }
             }
         }
