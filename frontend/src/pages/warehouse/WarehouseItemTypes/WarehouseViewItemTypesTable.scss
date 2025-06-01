@@ -191,13 +191,12 @@
 .category-tag {
   display: inline-block;
   padding: 6px 12px;
-  background-color: var(--color-info);
+  background-color: #81d4fa; /* Nice light blue */
   color: var(--color-text-inverse);
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
-  margin-left:-0.5rem;
-
+  margin-left: -0.5rem;
 }
 
 .status-tag {
