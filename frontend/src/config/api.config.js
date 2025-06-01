@@ -13,6 +13,7 @@ export const EQUIPMENT_ENDPOINTS = {
     STATUS_DTO: (id) => `/api/equipment/status/dto/${id}`,
     BY_TYPE: (typeId) => `/api/equipment/type/${typeId}`,
     CONSUMABLES: (equipmentId) => `/api/equipment/${equipmentId}/consumables`,
+    CONSUMABLES_ANALYTICS: (equipmentId) => `/api/equipment/${equipmentId}/consumables/analytics`,
     MAINTENANCE: (equipmentId) => `/api/equipment/${equipmentId}/maintenance`,
     MAINTENANCE_TECHNICIANS: (equipmentId) => `/api/equipment/${equipmentId}/maintenance/technicians`,
     MAINTENANCE_BY_ID: (equipmentId, maintenanceId) => `/api/equipment/${equipmentId}/maintenance/${maintenanceId}`,

@@ -6,7 +6,7 @@ import { inSiteMaintenanceService } from '../../../../services/inSiteMaintenance
 import apiClient from '../../../../utils/apiClient';
 import './EquipmentDashboard.scss';
 
-const EquipmentDashboard = forwardRef(({ equipmentId }, ref) => {
+const   EquipmentDashboard = forwardRef(({ equipmentId }, ref) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [dashboardData, setDashboardData] = useState({
@@ -15,6 +15,7 @@ const EquipmentDashboard = forwardRef(({ equipmentId }, ref) => {
         maintenanceHistory: [],
         maintenanceAnalytics: null,
         sarkyAnalytics: null,
+        consumableAnalytics: null,
         summaryStats: {
             totalWorkHours: 0,
             totalConsumables: 0,
@@ -40,7 +41,8 @@ const EquipmentDashboard = forwardRef(({ equipmentId }, ref) => {
                 consumablesResponse,
                 sarkyResponse,
                 sarkyAnalyticsResponse,
-                maintenanceAnalyticsResponse
+                maintenanceAnalyticsResponse,
+                consumableAnalyticsResponse
             ] = await Promise.allSettled([
                 // Fetch consumables data using equipment service
                 equipmentService.getEquipmentConsumables(equipmentId),
@@ -49,7 +51,9 @@ const EquipmentDashboard = forwardRef(({ equipmentId }, ref) => {
                 // Fetch new sarky analytics data using equipment service
                 equipmentService.getSarkyAnalyticsForEquipment(equipmentId),
                 // Fetch maintenance analytics using InSite maintenance service
-                inSiteMaintenanceService.getAnalytics(equipmentId)
+                inSiteMaintenanceService.getAnalytics(equipmentId),
+                // Fetch consumable analytics using equipment service
+                equipmentService.getConsumableAnalytics(equipmentId)
             ]);
 
             // Process consumables data
@@ -69,6 +73,13 @@ const EquipmentDashboard = forwardRef(({ equipmentId }, ref) => {
             if (maintenanceAnalyticsResponse.status === 'fulfilled' && maintenanceAnalyticsResponse.value?.data) {
                 maintenanceAnalytics = maintenanceAnalyticsResponse.value.data;
                 console.log('Maintenance Analytics Data:', maintenanceAnalytics);
+            }
+
+            // Get consumable analytics data
+            let consumableAnalytics = null;
+            if (consumableAnalyticsResponse.status === 'fulfilled' && consumableAnalyticsResponse.value?.data) {
+                consumableAnalytics = consumableAnalyticsResponse.value.data;
+                console.log('Consumable Analytics Data:', consumableAnalytics);
             }
 
             // Use sarky analytics data for work hours chart if available, otherwise fallback to old processing
@@ -116,6 +127,7 @@ const EquipmentDashboard = forwardRef(({ equipmentId }, ref) => {
                 maintenanceHistory: maintenanceHistoryData,
                 maintenanceAnalytics: maintenanceAnalytics,
                 sarkyAnalytics: sarkyAnalytics,
+                consumableAnalytics: consumableAnalytics,
                 summaryStats
             });
 
@@ -525,19 +537,19 @@ const EquipmentDashboard = forwardRef(({ equipmentId }, ref) => {
                         <div className="chart-legend">
                             <div className="legend-item">
                                 <span className="legend-color" style={{ backgroundColor: '#10b981' }}></span>
-                                <span className="legend-label">Completed Events</span>
+                                <span className="legend-label">Completed</span>
                             </div>
                             <div className="legend-item">
                                 <span className="legend-color" style={{ backgroundColor: '#f59e0b' }}></span>
-                                <span className="legend-label">In Progress Events</span>
+                                <span className="legend-label">In Progress</span>
                             </div>
                             <div className="legend-item">
                                 <span className="legend-color" style={{ backgroundColor: '#3b82f6' }}></span>
-                                <span className="legend-label">Scheduled Events</span>
+                                <span className="legend-label">Scheduled</span>
                             </div>
                             <div className="legend-item">
                                 <span className="legend-color" style={{ backgroundColor: '#ef4444' }}></span>
-                                <span className="legend-label">Cancelled Events</span>
+                                <span className="legend-label">Cancelled</span>
                             </div>
                         </div>
                     </div>
@@ -647,6 +659,174 @@ const EquipmentDashboard = forwardRef(({ equipmentId }, ref) => {
                             </div>
                         </div>
                     </div>
+                )}
+
+                {/* Consumable Insights Section */}
+                {dashboardData.consumableAnalytics && (
+                    <>
+                        {/* Low Stock Alert */}
+                        {dashboardData.consumableAnalytics.lowStockItems?.length > 0 && (
+                            <div className="chart-card alert-card">
+                                <h3>⚠️ Low Stock Alert</h3>
+                                <div className="alert-content">
+                                    <p className="alert-summary">
+                                        {dashboardData.consumableAnalytics.lowStockItems.length} items are running low (≤5 units)
+                                    </p>
+                                    <div className="low-stock-items">
+                                        {dashboardData.consumableAnalytics.lowStockItems.map((item, index) => (
+                                            <div key={index} className="low-stock-item">
+                                                <span className="item-name">{item.itemName}</span>
+                                                <span className="item-quantity">{item.currentQuantity} units</span>
+                                                <span className="item-category">{item.category}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Top Consumables Chart */}
+                        {dashboardData.consumableAnalytics.topConsumables && 
+                         Object.keys(dashboardData.consumableAnalytics.topConsumables).length > 0 && (
+                            <div className="chart-card">
+                                <h3>Most Used Consumables</h3>
+                                <div className="chart-container">
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <BarChart 
+                                            data={Object.entries(dashboardData.consumableAnalytics.topConsumables).map(([name, quantity]) => ({
+                                                itemName: name.length > 20 ? name.substring(0, 20) + '...' : name,
+                                                fullName: name,
+                                                quantity: quantity
+                                            }))}
+                                            margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis 
+                                                dataKey="itemName"
+                                                angle={-45}
+                                                textAnchor="end"
+                                                height={80}
+                                            />
+                                            <YAxis />
+                                            <Tooltip 
+                                                formatter={(value, name, props) => [`${value} units`, 'Total Used']}
+                                                labelFormatter={(label, payload) => {
+                                                    return payload?.[0]?.payload?.fullName || label;
+                                                }}
+                                            />
+                                            <Bar dataKey="quantity" fill="#10b981" name="Total Used" />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Category Breakdown Chart */}
+                        {dashboardData.consumableAnalytics.categoryBreakdown && 
+                         Object.keys(dashboardData.consumableAnalytics.categoryBreakdown).length > 0 && (
+                            <div className="chart-card">
+                                <h3>Consumables by Category</h3>
+                                <div className="chart-container">
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <PieChart>
+                                            <Pie
+                                                data={Object.entries(dashboardData.consumableAnalytics.categoryBreakdown).map(([category, stats]) => ({
+                                                    name: category,
+                                                    value: stats.totalQuantity,
+                                                    items: stats.totalItems,
+                                                    avgQuantity: Math.round(stats.avgQuantity * 100) / 100
+                                                }))}
+                                                cx="50%"
+                                                cy="50%"
+                                                labelLine={false}
+                                                label={renderCustomLabel}
+                                                outerRadius={80}
+                                                fill="#8884d8"
+                                                dataKey="value"
+                                                nameKey="name"
+                                            >
+                                                {Object.entries(dashboardData.consumableAnalytics.categoryBreakdown).map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip 
+                                                formatter={(value, name, props) => [
+                                                    `${value} units (${props.payload.items} items)`,
+                                                    props.payload.name
+                                                ]}
+                                            />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                    <div className="chart-legend">
+                                        {Object.entries(dashboardData.consumableAnalytics.categoryBreakdown).map(([category, stats], index) => (
+                                            <div key={category} className="legend-item">
+                                                <span 
+                                                    className="legend-color" 
+                                                    style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
+                                                ></span>
+                                                <span className="legend-label">
+                                                    {category} ({stats.totalQuantity} units)
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Monthly Consumption Trends */}
+                        {dashboardData.consumableAnalytics.monthlyTrends && 
+                         Object.keys(dashboardData.consumableAnalytics.monthlyTrends).length > 0 && (
+                            <div className="chart-card">
+                                <h3>Monthly Consumption Trends</h3>
+                                <div className="chart-container">
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <AreaChart 
+                                            data={Object.entries(dashboardData.consumableAnalytics.monthlyTrends)
+                                                .map(([month, stats]) => ({
+                                                    month: month,
+                                                    totalQuantity: stats.totalQuantity,
+                                                    totalItems: stats.totalItems,
+                                                    uniqueTypes: stats.uniqueTypes
+                                                }))
+                                                .sort((a, b) => a.month.localeCompare(b.month))
+                                            }
+                                        >
+                                            <defs>
+                                                <linearGradient id="colorQuantity" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis 
+                                                dataKey="month" 
+                                                tickFormatter={formatMonth}
+                                            />
+                                            <YAxis />
+                                            <Tooltip 
+                                                labelFormatter={formatMonth}
+                                                formatter={(value, name) => {
+                                                    if (name === 'totalQuantity') return [`${value} units`, 'Total Consumed'];
+                                                    if (name === 'totalItems') return [`${value} items`, 'Total Items'];
+                                                    if (name === 'uniqueTypes') return [`${value} types`, 'Unique Types'];
+                                                    return [`${value}`, name];
+                                                }}
+                                            />
+                                            <Area 
+                                                type="monotone" 
+                                                dataKey="totalQuantity" 
+                                                stroke="#10b981" 
+                                                fillOpacity={1} 
+                                                fill="url(#colorQuantity)" 
+                                                name="Total Consumed"
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
 
                 {/* Sarky Analytics Charts - Only show if data exists */}
