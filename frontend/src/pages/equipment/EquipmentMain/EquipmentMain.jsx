@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaPlus, FaTags, FaFilter, FaSearch, FaExclamationCircle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { FaPlus, FaFilter, FaSearch, FaExclamationCircle } from "react-icons/fa";
 import EquipmentModal from "./components/EquipmentModal/EquipmentModal.jsx";
 import "./EquipmentMain.scss";
 import equipmentImage from "../../../assets/imgs/equipment_icon.png";
@@ -325,15 +324,6 @@ const EquipmentMain = () => {
 
                     {/* Action buttons */}
                     <div className="equipment-actions-buttons">
-                        <Link to="/equipment/type-management" className="equipment-type-button">
-                            <FaTags /> Manage Types
-                        </Link>
-                        <Link to="/equipment/brand-management" className="equipment-brand-button">
-                            <FaTags /> Manage Brands
-                        </Link>
-                        <Link to="/equipment/work-type-management" className="equipment-work-type-button">
-                            <FaTags /> Manage Work Types
-                        </Link>
                         <button className="equipment-add-button" onClick={handleAddEquipment}>
                             <FaPlus /> Add Equipment
                         </button>

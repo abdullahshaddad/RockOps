@@ -29,7 +29,9 @@ import {
     FaTruck,
     FaUser,
     FaUsers,
-    FaWarehouse
+    FaWarehouse,
+    FaTags,
+    FaListAlt
 } from 'react-icons/fa';
 
 import logoImage from '../../../assets/logos/Logo.png';
@@ -64,6 +66,23 @@ const Sidebar = () => {
         // Clean up
         return () => window.removeEventListener('resize', checkIfMobile);
     }, []);
+
+    // Auto-expand submenus when on submenu pages
+    useEffect(() => {
+        const currentPath = location.pathname;
+        const newExpandedMenus = {...expandedMenus};
+        
+        menuItems.forEach(item => {
+            if (item.hasSubmenu && item.submenuItems) {
+                const isOnSubmenuPage = item.submenuItems.some(sub => currentPath === sub.path);
+                if (isOnSubmenuPage) {
+                    newExpandedMenus[item.title] = true;
+                }
+            }
+        });
+        
+        setExpandedMenus(newExpandedMenus);
+    }, [location.pathname]);
 
     // Toggle submenu expansion
     const toggleSubmenu = (title) => {
@@ -108,7 +127,40 @@ const Sidebar = () => {
             title: 'Equipment',
             icon: <FaTruck/>,
             path: '/equipment',
-            roles: ['ADMIN', 'USER', 'SITE_ADMIN', 'PROCUREMENT', 'WAREHOUSE_MANAGER', 'SECRETARY', 'EQUIPMENT_MANAGER', 'HR_MANAGER', 'HR_EMPLOYEE']
+            roles: ['ADMIN', 'USER', 'SITE_ADMIN', 'PROCUREMENT', 'WAREHOUSE_MANAGER', 'SECRETARY', 'EQUIPMENT_MANAGER', 'HR_MANAGER', 'HR_EMPLOYEE'],
+            hasSubmenu: true,
+            submenuItems: [
+                {
+                    title: 'Equipment List',
+                    icon: <FaTruck/>,
+                    path: '/equipment',
+                    roles: ['ADMIN', 'USER', 'SITE_ADMIN', 'PROCUREMENT', 'WAREHOUSE_MANAGER', 'SECRETARY', 'EQUIPMENT_MANAGER', 'HR_MANAGER', 'HR_EMPLOYEE']
+                },
+                {
+                    title: 'Equipment Types',
+                    icon: <FaTags/>,
+                    path: '/equipment/type-management',
+                    roles: ['ADMIN', 'EQUIPMENT_MANAGER']
+                },
+                {
+                    title: 'Equipment Brands',
+                    icon: <FaTags/>,
+                    path: '/equipment/brand-management',
+                    roles: ['ADMIN', 'EQUIPMENT_MANAGER']
+                },
+                {
+                    title: 'Work Types',
+                    icon: <FaListAlt/>,
+                    path: '/equipment/work-type-management',
+                    roles: ['ADMIN', 'EQUIPMENT_MANAGER']
+                },
+                {
+                    title: 'Maintenance Types',
+                    icon: <FaTools/>,
+                    path: '/equipment/maintenance-type-management',
+                    roles: ['ADMIN', 'EQUIPMENT_MANAGER']
+                }
+            ]
         },
         {
             title: 'Warehouses',
@@ -261,9 +313,17 @@ const Sidebar = () => {
                                 <NavLink
                                     to={item.hasSubmenu ? '#' : item.path}
                                     className={() => {
-                                        const isSubActive = item.hasSubmenu && item.submenuItems.some(sub => location.pathname.startsWith(sub.path));
-                                        const isDirectActive = location.pathname === item.path;
-                                        return `menu-item ${(isSubActive || isDirectActive) ? 'active' : ''}`;
+                                        if (item.hasSubmenu) {
+                                            // For submenu parents, only show active if we're exactly on the parent path
+                                            // or if we're on a submenu item (but the submenu item itself will handle its own active state)
+                                            const isOnParentPath = location.pathname === item.path;
+                                            const isOnSubmenuPath = item.submenuItems.some(sub => location.pathname === sub.path);
+                                            return `menu-item ${isOnParentPath ? 'active' : ''}`;
+                                        } else {
+                                            // For regular menu items, only exact match
+                                            const isDirectActive = location.pathname === item.path;
+                                            return `menu-item ${isDirectActive ? 'active' : ''}`;
+                                        }
                                     }}
                                     onClick={(e) => {
                                         if (item.hasSubmenu) {
@@ -275,7 +335,7 @@ const Sidebar = () => {
                                     }}
                                 >
 
-                                <span className="menu-icon">{item.icon}</span>
+                                    <span className="menu-icon">{item.icon}</span>
                                     <span className="menu-title">{t(item.title)}</span>
                                     {item.hasSubmenu && (
                                         <span className="submenu-toggle">
@@ -296,7 +356,10 @@ const Sidebar = () => {
                                                 <NavLink
                                                     key={subItem.title}
                                                     to={subItem.path}
-                                                    className={`submenu-item ${isActive ? 'active' : ''}`}
+                                                    className={() => {
+                                                        const isActive = location.pathname === subItem.path;
+                                                        return `submenu-item ${isActive ? 'active' : ''}`;
+                                                    }}
                                                     onClick={() => {
                                                         if (isMobile) {
                                                             setIsExpanded(false);

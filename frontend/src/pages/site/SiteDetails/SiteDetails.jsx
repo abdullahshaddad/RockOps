@@ -103,17 +103,7 @@ const SiteDetails = () => {
 
     return (
         <div className="site-details-container">
-            <div className="site-details-header">
-                <button className="back-button" onClick={() => navigate('/sites')}>
-                    <span className="back-icon">←</span> Back to Sites
-                </button>
-                {/*<div className="header-actions">*/}
-                {/*    <button className="edit-button" onClick={() => navigate(`/sites/edit/${siteId}`)}>*/}
-                {/*        Edit Site*/}
-                {/*    </button>*/}
-                {/*</div>*/}
-            </div>
-
+            
             <div className="site-details-content">
                 <div className="site-compact-header">
                     <div className="site-basic-info">
@@ -122,7 +112,7 @@ const SiteDetails = () => {
                                 src={site.photoUrl || 'https://via.placeholder.com/60?text=Site'}
                                 alt={site.name}
                             />
-                            <div className={`status-indicator ${site.status?.toLowerCase() || 'active'}`}></div>
+                            <div className={`site-status-indicator ${site.status?.toLowerCase() || 'active'}`}></div>
                         </div>
                         <div className="site-title">
                             <h1>{site.name}</h1>

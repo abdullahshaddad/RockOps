@@ -98,6 +98,13 @@ const EquipmentDetails = () => {
         }
     };
 
+    // Handler for when sarky data changes
+    const handleSarkyDataChange = () => {
+        if (dashboardRef.current) {
+            dashboardRef.current.refreshDashboard();
+        }
+    };
+
     // Refresh all data after a successful transaction
     const refreshAllTabs = () => {
         if (consumablesInventoryRef.current) {
@@ -172,6 +179,34 @@ const EquipmentDetails = () => {
                 <div className="center-content">
                     <div className="label">EQUIPMENT NAME</div>
                     <div className="value">{equipmentData?.name || "Equipment"}</div>
+                    
+                    {/* Driver Information Section */}
+                    <div className="driver-info-section">
+                        <div className="driver-config">
+                            <span className={`driver-status ${equipmentData?.drivable ? 'drivable' : 'non-drivable'}`}>
+                                {equipmentData?.drivable ? '🚗 Driver Assignable' : '🔧 No Driver Required'}
+                            </span>
+                        </div>
+                        
+                        {equipmentData?.drivable && (
+                            <div className="driver-assignments">
+                                <div className="driver-item">
+                                    <span className="driver-label">Main Driver:</span>
+                                    <span className="driver-name">
+                                        {equipmentData?.mainDriverName || 'Not Assigned'}
+                                    </span>
+                                </div>
+                                {equipmentData?.subDriverName && (
+                                    <div className="driver-item">
+                                        <span className="driver-label">Sub Driver:</span>
+                                        <span className="driver-name">
+                                            {equipmentData.subDriverName}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="right-side">
                     <button className="info-button-eq" onClick={handleViewFullDetails}>
@@ -366,6 +401,7 @@ const EquipmentDetails = () => {
                                     equipmentId={params.EquipmentID}
                                     onSarkyAdded={refreshSarkyLog}
                                     equipmentData={equipmentData}
+                                    onDataChange={handleSarkyDataChange}
                                 />
                             </div>
                         </div>

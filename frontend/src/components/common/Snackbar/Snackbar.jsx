@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Snackbar.scss';
 
 /**
@@ -12,17 +12,63 @@ import './Snackbar.scss';
  * @param {boolean} props.persistent - Whether the snackbar should stay open until manually closed
  */
 const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000, persistent = false }) => {
+    const [visible, setVisible] = useState(false);
+    const [animationState, setAnimationState] = useState('hidden');
+
+    // Animation timings (in ms)
+    const slideInDuration = 165;
+    const animationDuration = 535; // Should match CSS transition time exactly
+
     useEffect(() => {
-        if (show && !persistent) {
+        if (show) {
+            // First make it visible
+            setVisible(true);
+
+            // Then trigger the slide-in animation after a brief delay
+            setTimeout(() => {
+                setAnimationState('slide-in');
+            }, slideInDuration);
+
+            // Start hiding after 'duration' ms (only if not persistent)
+            if (!persistent) {
+                const hideTimer = setTimeout(() => {
+                    // Trigger slide-out animation
+                    setAnimationState('slide-out');
+
+                    // Remove from DOM after animation completes
+                    const removeTimer = setTimeout(() => {
+                        setVisible(false);
+                        if (onClose) onClose();
+                    }, animationDuration);
+
+                    return () => clearTimeout(removeTimer);
+                }, duration); // This is the time the snackbar stays visible before hiding
+
+                return () => clearTimeout(hideTimer);
+            }
+        } else {
+            // If show changes to false
+            setAnimationState('slide-out');
+
             const timer = setTimeout(() => {
-                if (onClose) onClose();
-            }, duration);
+                setVisible(false);
+            }, animationDuration);
 
             return () => clearTimeout(timer);
         }
-    }, [show, onClose, duration, persistent]);
+    }, [show, duration, onClose, persistent]);
 
-    if (!show) return null;
+    // Manual close handler for persistent snackbars
+    const handleManualClose = () => {
+        setAnimationState('slide-out');
+        setTimeout(() => {
+            setVisible(false);
+            if (onClose) onClose();
+        }, animationDuration);
+    };
+
+    // Don't render anything if not visible
+    if (!visible) return null;
 
     // Define icons for different Snackbar types
     const getIcon = () => {
@@ -63,12 +109,33 @@ const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000, p
         }
     };
 
+    // Check if message contains line breaks to determine layout
+    const hasMultipleLines = typeof message === 'string' && message.includes('\n');
+
     return (
-        <div className={`global-notification ${type}-notification`}>
-            <div>
+        <div className={`snackbar ${type}-snackbar ${animationState} ${persistent ? 'persistent' : ''} ${hasMultipleLines ? 'multi-line' : ''}`}>
+            <div className="snackbar-icon">
                 {getIcon()}
-                <span>{message}</span>
             </div>
+            <div className="snackbar-content">
+                {hasMultipleLines ? (
+                    <pre className="snackbar-message">{message}</pre>
+                ) : (
+                    <span className="snackbar-message">{message}</span>
+                )}
+            </div>
+            {persistent && (
+                <button 
+                    className="snackbar-close-button" 
+                    onClick={handleManualClose}
+                    aria-label="Close notification"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            )}
         </div>
     );
 };

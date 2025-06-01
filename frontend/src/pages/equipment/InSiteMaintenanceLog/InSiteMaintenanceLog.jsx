@@ -1,8 +1,11 @@
 // InSiteMaintenanceLog.jsx
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import axios from 'axios';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import { inSiteMaintenanceService } from '../../../services/inSiteMaintenanceService';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
 import './InSiteMaintenanceLog.scss';
 import MaintenanceTransactionModal from '../MaintenanceTransactionModal/MaintenanceTransactionModal';
+import MaintenanceAddModal from '../MaintenanceAddModal/MaintenanceAddModal';
 import DataTable from '../../../components/common/DataTable/DataTable.jsx';
 
 const InSiteMaintenanceLog = forwardRef(({ equipmentId, onAddMaintenanceClick, onAddTransactionClick, showAddButton = true, showHeader = true }, ref) => {
@@ -11,31 +14,34 @@ const InSiteMaintenanceLog = forwardRef(({ equipmentId, onAddMaintenanceClick, o
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [isMaintenanceTransactionModalOpen, setIsMaintenanceTransactionModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedMaintenanceId, setSelectedMaintenanceId] = useState(null);
     const [selectedBatchNumber, setSelectedBatchNumber] = useState(null);
+    const [editingMaintenance, setEditingMaintenance] = useState(null);
 
-    const token = localStorage.getItem('token');
-    const axiosInstance = axios.create({
-        headers: { Authorization: `Bearer ${token}` }
-    });
+    const { showSuccess, showError, showInfo, showWarning, hideSnackbar } = useSnackbar();
 
     const fetchMaintenanceRecords = async () => {
         try {
             setLoading(true);
-            const response = await axiosInstance.get(`http://localhost:8080/api/equipment/${equipmentId}/maintenance`);
+            const response = await inSiteMaintenanceService.getByEquipmentId(equipmentId);
 
             // Transform data for display
             const transformedData = await Promise.all(
                 response.data.map(async (record) => {
                     // Get transaction info
                     const transactionCount = record.relatedTransactions?.length || 0;
+                    
+                    // Extract maintenance type name from the MaintenanceType object
+                    const maintenanceTypeName = record.maintenanceType?.name || record.maintenanceType || 'N/A';
 
                     return {
                         id: record.id,
                         technicianName: record.technician ? `${record.technician.firstName} ${record.technician.lastName}` : "N/A",
                         technicianId: record.technician?.id || null,
                         maintenanceDate: record.maintenanceDate,
-                        maintenanceType: record.maintenanceType,
+                        maintenanceType: maintenanceTypeName,
+                        maintenanceTypeId: record.maintenanceType?.id || null,
                         description: record.description,
                         status: record.status,
                         batchNumber: record.batchNumber,
@@ -91,7 +97,7 @@ const InSiteMaintenanceLog = forwardRef(({ equipmentId, onAddMaintenanceClick, o
     // View transactions details
     const handleViewTransactions = (record) => {
         if (record.transactionCount === 0) {
-            alert("No transactions linked to this maintenance record.");
+            showInfo("No transactions linked to this maintenance record.");
             return;
         }
 
@@ -100,7 +106,7 @@ const InSiteMaintenanceLog = forwardRef(({ equipmentId, onAddMaintenanceClick, o
             `Transaction ID: ${t.id}\nBatch Number: ${t.batchNumber}\nStatus: ${t.status}\nItems: ${t.items?.length || 0}`
         ).join('\n\n');
 
-        alert(`Maintenance: ${record.maintenanceType}\n\nLinked Transactions:\n${transactionDetails}`);
+        showInfo(`Maintenance: ${record.maintenanceType}\n\nLinked Transactions:\n${transactionDetails}`);
     };
 
     // Handle adding transaction to maintenance
@@ -129,14 +135,91 @@ const InSiteMaintenanceLog = forwardRef(({ equipmentId, onAddMaintenanceClick, o
     };
 
     const handleEditMaintenance = (row) => {
-        // Handle edit maintenance logic here
-        console.log('Edit maintenance:', row);
+        setEditingMaintenance(row);
+        setIsEditModalOpen(true);
     };
 
-    const handleDeleteMaintenance = (row) => {
-        // Handle delete maintenance logic here
-        console.log('Delete maintenance:', row);
+    const handleDeleteMaintenance = async (row) => {
+        // Custom message with buttons
+        const message = `Are you sure you want to delete this maintenance record?`;
+
+        // Show persistent confirmation warning that won't auto-hide
+        showWarning(message, 0, true);
+
+        // Create action buttons in the DOM
+        setTimeout(() => {
+            const snackbar = document.querySelector('.global-notification');
+            if (snackbar) {
+                // Create and append action buttons container
+                const actionContainer = document.createElement('div');
+                actionContainer.className = 'snackbar-actions';
+
+                // Yes button
+                const yesButton = document.createElement('button');
+                yesButton.innerText = 'YES';
+                yesButton.className = 'snackbar-action-button confirm';
+                yesButton.onclick = async () => {
+                    try {
+                        await inSiteMaintenanceService.delete(equipmentId, row.id);
+                        fetchMaintenanceRecords(); // Refresh the list
+                        showSuccess('Maintenance record deleted successfully!');
+                    } catch (error) {
+                        console.error('Error deleting maintenance record:', error);
+                        showError('Failed to delete maintenance record. Please try again.');
+                    }
+                    hideSnackbar();
+                };
+
+                // No button
+                const noButton = document.createElement('button');
+                noButton.innerText = 'NO';
+                noButton.className = 'snackbar-action-button cancel';
+                noButton.onclick = () => {
+                    hideSnackbar();
+                };
+
+                actionContainer.appendChild(yesButton);
+                actionContainer.appendChild(noButton);
+                snackbar.appendChild(actionContainer);
+            }
+        }, 100);
     };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setEditingMaintenance(null);
+    };
+
+    const handleMaintenanceUpdated = () => {
+        fetchMaintenanceRecords();
+        handleCloseEditModal();
+    };
+
+    // Define columns without the manual Actions column
+    const columns = [
+        { header: 'Technician', accessor: 'technicianName' },
+        { header: 'Date', accessor: 'maintenanceDate', body: (rowData) => formatDate(rowData.maintenanceDate) },
+        { header: 'Type', accessor: 'maintenanceType' },
+        { header: 'Description', accessor: 'description', body: (rowData) => rowData.description?.length > 50 ? `${rowData.description.substring(0, 50)}...` : rowData.description },
+        { header: 'Status', accessor: 'status', body: (rowData) => <span className={`r4m-status-badge r4m-${rowData.status.toLowerCase()}`}>{rowData.status}</span> },
+        { header: 'Related Transactions', accessor: 'transactionCount', body: (rowData) => rowData.transactionCount > 0 ? <button className="r4m-view-transactions-button" onClick={() => handleViewTransactions(rowData)}>{rowData.transactionCount} transaction{rowData.transactionCount !== 1 ? 's' : ''}</button> : <span className="r4m-no-transactions">None</span> }
+    ];
+
+    // Define actions using DataTable's actions prop with proper styling
+    const actions = [
+        {
+            label: 'Edit',
+            icon: <FaEdit />,
+            onClick: (row) => handleEditMaintenance(row),
+            className: 'primary'
+        },
+        {
+            label: 'Delete',
+            icon: <FaTrash />,
+            onClick: (row) => handleDeleteMaintenance(row),
+            className: 'danger'
+        }
+    ];
 
     // Define filterable columns - these should match the column objects
     const filterableColumns = [
@@ -183,44 +266,15 @@ const InSiteMaintenanceLog = forwardRef(({ equipmentId, onAddMaintenanceClick, o
                 ) : (
                     <DataTable
                         data={filteredRecords}
-                        columns={[
-                            { header: 'Technician', accessor: 'technicianName' },
-                            { header: 'Date', accessor: 'maintenanceDate', body: (rowData) => formatDate(rowData.maintenanceDate) },
-                            { header: 'Type', accessor: 'maintenanceType' },
-                            { header: 'Description', accessor: 'description', body: (rowData) => rowData.description?.length > 50 ? `${rowData.description.substring(0, 50)}...` : rowData.description },
-                            { header: 'Status', accessor: 'status', body: (rowData) => <span className={`r4m-status-badge r4m-${rowData.status.toLowerCase()}`}>{rowData.status}</span> },
-                            { header: 'Related Transactions', accessor: 'transactionCount', body: (rowData) => rowData.transactionCount > 0 ? <button className="r4m-view-transactions-button" onClick={() => handleViewTransactions(rowData)}>{rowData.transactionCount} transaction{rowData.transactionCount !== 1 ? 's' : ''}</button> : <span className="r4m-no-transactions">None</span> },
-                            { header: 'Actions', accessor: 'actions', body: (rowData) => (
-                                <div className="r4m-actions-cell">
-                                    <button className="r4m-edit-button" title="Edit Maintenance">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                        </svg>
-                                    </button>
-                                    <button className="r4m-transaction-button" title="Add Transaction" onClick={() => handleAddTransactionToMaintenance(rowData)}>
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M12 2v20M2 12h20" />
-                                        </svg>
-                                    </button>
-                                    <button className="r4m-delete-button" title="Delete Maintenance">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            ) }
-                        ]}
+                        columns={columns}
+                        actions={actions}
                         onRowClick={handleRowClick}
                         loading={loading}
                         tableTitle="Maintenance Records"
                         showSearch={true}
                         showFilters={true}
                         filterableColumns={filterableColumns}
-                        actions={[
-                            { label: 'Edit', onClick: (row) => handleEditMaintenance(row) },
-                            { label: 'Delete', onClick: (row) => handleDeleteMaintenance(row) }
-                        ]}
+                        emptyStateMessage="No maintenance records found."
                     />
                 ) }
             </div>
@@ -242,6 +296,17 @@ const InSiteMaintenanceLog = forwardRef(({ equipmentId, onAddMaintenanceClick, o
                     maintenanceId={selectedMaintenanceId}
                     initialBatchNumber={selectedBatchNumber}
                     onTransactionAdded={handleTransactionAdded}
+                />
+            )}
+
+            {/* Edit Maintenance Modal */}
+            {isEditModalOpen && editingMaintenance && (
+                <MaintenanceAddModal
+                    isOpen={isEditModalOpen}
+                    onClose={handleCloseEditModal}
+                    equipmentId={equipmentId}
+                    onMaintenanceAdded={handleMaintenanceUpdated}
+                    editingMaintenance={editingMaintenance}
                 />
             )}
         </div>

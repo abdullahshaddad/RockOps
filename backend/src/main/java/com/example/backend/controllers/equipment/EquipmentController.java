@@ -154,6 +154,22 @@ public class EquipmentController {
         return ResponseEntity.ok(equipmentService.checkDriverCompatibility(equipmentId, employeeId));
     }
 
+    /**
+     * Get supported work types for a specific equipment type
+     */
+    @GetMapping("/type/{typeId}/supported-work-types")
+    public ResponseEntity<List<WorkTypeDTO>> getSupportedWorkTypesForEquipmentType(@PathVariable UUID typeId) {
+        return ResponseEntity.ok(equipmentService.getSupportedWorkTypesForEquipmentType(typeId));
+    }
+
+    /**
+     * Get sarky analytics data for a specific equipment
+     */
+    @GetMapping("/{equipmentId}/sarky-analytics")
+    public ResponseEntity<EquipmentSarkyAnalyticsDTO> getSarkyAnalyticsForEquipment(@PathVariable UUID equipmentId) {
+        return ResponseEntity.ok(equipmentService.getSarkyAnalyticsForEquipment(equipmentId));
+    }
+
     // Update in EquipmentController.java
     @GetMapping("/{equipmentId}/consumables/by-category/{category}")
     public ResponseEntity<List<ConsumableDetailDTO>> getEquipmentConsumablesByCategory(

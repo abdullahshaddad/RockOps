@@ -392,68 +392,57 @@ const EquipmentModal = ({ isOpen, onClose, onSave, equipmentToEdit = null }) => 
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-
-        // Clear type change warning when user acknowledges by making a change
-        if (typeChangeWarning && (name === 'mainDriverId' || name === 'subDriverId')) {
-            setTypeChangeWarning(false);
-        }
-
-        // Handle date inputs
-        if (name === 'purchasedDate' || name === 'deliveredDate') {
-            // For date inputs, store the original format (yyyy-mm-dd) in formData
+        const { name, value, type, checked } = e.target;
+        
+        // Handle checkbox inputs
+        if (type === 'checkbox') {
             setFormData(prev => ({
                 ...prev,
-                [name]: value
+                [name]: checked
             }));
-
-            // If the value is empty, clear the display value too
-            if (!value) {
-                setDisplayValues(prev => ({
-                    ...prev,
-                    [name]: ""
-                }));
-                return;
-            }
-
-            // Convert to display format (dd/mm/yyyy) for the user
-            try {
-                const [year, month, day] = value.split('-');
-                const formattedDate = `${day}/${month}/${year}`;
-
-                setDisplayValues(prev => ({
-                    ...prev,
-                    [name]: formattedDate
-                }));
-            } catch (error) {
-                console.error("Error formatting date:", error);
-                // Keep the original value if there's an error
-                setDisplayValues(prev => ({
-                    ...prev,
-                    [name]: value
-                }));
-            }
+            
+            setFormTouched(true);
+            return;
         }
-        // Handle numeric inputs with thousand separators
-        else if (name === 'egpPrice' || name === 'dollarPrice' || name === 'workedHours') {
-            // Store the formatted value for display
+
+        // Handle number inputs with comma formatting
+        if (name === 'egpPrice' || name === 'dollarPrice') {
+            const numericValue = parseNumberInput(value);
+            setFormData(prev => ({
+                ...prev,
+                [name]: numericValue
+            }));
             setDisplayValues(prev => ({
                 ...prev,
-                [name]: value.replace(/[^\d,]/g, '')  // Remove any character that's not a digit or comma
+                [name]: formatNumberWithCommas(numericValue)
             }));
-
-            // Store the actual numeric value in formData
+        } else if (name === 'workedHours') {
+            const numericValue = parseNumberInput(value);
             setFormData(prev => ({
                 ...prev,
-                [name]: parseNumberInput(value)
+                [name]: numericValue
+            }));
+            setDisplayValues(prev => ({
+                ...prev,
+                [name]: formatNumberWithCommas(numericValue)
+            }));
+        } else if (name === 'purchasedDate' || name === 'deliveredDate') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+            setDisplayValues(prev => ({
+                ...prev,
+                [name]: formatDateForDisplay(value)
             }));
         } else {
-            // For non-numeric fields, update as normal
             setFormData(prev => ({
                 ...prev,
                 [name]: value
             }));
         }
+
+        setFormTouched(true);
     };
 
     const handleTypeChange = (e) => {
@@ -699,6 +688,8 @@ const EquipmentModal = ({ isOpen, onClose, onSave, equipmentToEdit = null }) => 
     };
 
     const currentEquipmentType = equipmentTypes.find(t => t.id === formData.typeId)?.name || '';
+    const currentEquipmentTypeData = equipmentTypes.find(t => t.id === formData.typeId);
+    const isEquipmentTypeDrivable = currentEquipmentTypeData?.drivable || false;
 
     // If modal is not open, don't render anything
     if (!isOpen) return null;
@@ -848,10 +839,16 @@ const EquipmentModal = ({ isOpen, onClose, onSave, equipmentToEdit = null }) => 
                                             </option>
                                         ))}
                                     </select>
-                                    {formData.typeId && (
+                                    {formData.typeId && isEquipmentTypeDrivable && (
                                         <div className="field-hint">
                                             <FaInfoCircle />
                                             <span>Drivers for this equipment must have the job position: {currentEquipmentType} Driver</span>
+                                        </div>
+                                    )}
+                                    {formData.typeId && !isEquipmentTypeDrivable && (
+                                        <div className="field-hint">
+                                            <FaInfoCircle />
+                                            <span>This equipment type does not require a driver</span>
                                         </div>
                                     )}
                                 </div>
@@ -1092,70 +1089,84 @@ const EquipmentModal = ({ isOpen, onClose, onSave, equipmentToEdit = null }) => 
 
                         {/* Tab 3: Additional Info */}
                         <div className={`equipment-modal-tab-content ${tabIndex === 2 ? 'active' : ''}`}>
-                            <div className="equipment-modal-form-row">
-                                <div className="equipment-modal-form-group">
-                                    <label htmlFor="mainDriverId">Main Driver</label>
-                                    <select
-                                        id="mainDriverId"
-                                        name="mainDriverId"
-                                        value={formData.mainDriverId}
-                                        onChange={handleInputChange}
-                                        disabled={!formData.typeId || availableMainDrivers.length === 0}
-                                    >
-                                        <option value="">Select main driver</option>
-                                        {availableMainDrivers.map(driver => (
-                                            <option key={driver.id} value={driver.id}>
-                                                {driver.fullName} - {driver.position}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {!formData.typeId && (
-                                        <div className="field-hint">
+                            {isEquipmentTypeDrivable && formData.typeId && (
+                                <div className="equipment-modal-form-row">
+                                    <div className="equipment-modal-form-group">
+                                        <label htmlFor="mainDriverId">Main Driver</label>
+                                        <select
+                                            id="mainDriverId"
+                                            name="mainDriverId"
+                                            value={formData.mainDriverId}
+                                            onChange={handleInputChange}
+                                            disabled={!formData.typeId || availableMainDrivers.length === 0}
+                                        >
+                                            <option value="">Select main driver</option>
+                                            {availableMainDrivers.map(driver => (
+                                                <option key={driver.id} value={driver.id}>
+                                                    {driver.fullName} - {driver.position}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {!formData.typeId && (
+                                            <div className="field-hint">
+                                                <FaInfoCircle />
+                                                <span>Please select an equipment type first</span>
+                                            </div>
+                                        )}
+                                        {formData.typeId && availableMainDrivers.length === 0 && (
+                                            <div className="field-hint warning">
+                                                <FaExclamationCircle />
+                                                <span>
+                {eligibleDrivers.length === 0
+                    ? `No eligible drivers found for this equipment type. Drivers must have the job position: ${currentEquipmentType} Driver`
+                    : 'All eligible drivers are already assigned or selected as sub driver'
+                }
+            </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="equipment-modal-form-group">
+                                        <label htmlFor="subDriverId">Sub Driver</label>
+                                        <select
+                                            id="subDriverId"
+                                            name="subDriverId"
+                                            value={formData.subDriverId}
+                                            onChange={handleInputChange}
+                                            disabled={!formData.typeId || availableSubDrivers.length === 0}
+                                        >
+                                            <option value="">Select sub driver</option>
+                                            {availableSubDrivers.map(driver => (
+                                                <option key={driver.id} value={driver.id}>
+                                                    {driver.fullName} - {driver.position}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {formData.typeId && availableSubDrivers.length === 0 && (
+                                            <div className="field-hint warning">
+                                                <FaExclamationCircle />
+                                                <span>
+                {eligibleDrivers.length === 0
+                    ? `No eligible drivers found for this equipment type`
+                    : 'All eligible drivers are already assigned or selected as main driver'
+                }
+            </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {(!isEquipmentTypeDrivable && formData.typeId) && (
+                                <div className="equipment-modal-form-row">
+                                    <div className="equipment-modal-form-group full-width">
+                                        <div className="info-message">
                                             <FaInfoCircle />
-                                            <span>Please select an equipment type first</span>
+                                            <span>This equipment type ({currentEquipmentType}) does not require a driver. Driver assignment is disabled.</span>
                                         </div>
-                                    )}
-                                    {formData.typeId && availableMainDrivers.length === 0 && (
-                                        <div className="field-hint warning">
-                                            <FaExclamationCircle />
-                                            <span>
-            {eligibleDrivers.length === 0
-                ? `No eligible drivers found for this equipment type. Drivers must have the job position: ${currentEquipmentType} Driver`
-                : 'All eligible drivers are already assigned or selected as sub driver'
-            }
-        </span>
-                                        </div>
-                                    )}
+                                    </div>
                                 </div>
-                                <div className="equipment-modal-form-group">
-                                    <label htmlFor="subDriverId">Sub Driver</label>
-                                    <select
-                                        id="subDriverId"
-                                        name="subDriverId"
-                                        value={formData.subDriverId}
-                                        onChange={handleInputChange}
-                                        disabled={!formData.typeId || availableSubDrivers.length === 0}
-                                    >
-                                        <option value="">Select sub driver</option>
-                                        {availableSubDrivers.map(driver => (
-                                            <option key={driver.id} value={driver.id}>
-                                                {driver.fullName} - {driver.position}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {formData.typeId && availableSubDrivers.length === 0 && (
-                                        <div className="field-hint warning">
-                                            <FaExclamationCircle />
-                                            <span>
-            {eligibleDrivers.length === 0
-                ? `No eligible drivers found for this equipment type`
-                : 'All eligible drivers are already assigned or selected as main driver'
-            }
-        </span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                            )}
+                            
                             <div className="equipment-modal-form-row">
                                 <div className="equipment-modal-form-group">
                                     <label htmlFor="workedHours">Worked Hours</label>

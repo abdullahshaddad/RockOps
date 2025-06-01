@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { workTypeService } from '../../../services/workTypeService';
+import { equipmentService } from '../../../services/equipmentService';
 import { useSnackbar } from '../../../contexts/SnackbarContext';
 import { createErrorHandlers } from '../../../utils/errorHandler';
 import DataTable from '../../../components/common/DataTable/DataTable';
@@ -8,6 +9,7 @@ import './EquipmentTypeManagement.scss';
 
 const WorkTypeManagement = () => {
     const [workTypes, setWorkTypes] = useState([]);
+    const [equipmentTypes, setEquipmentTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -17,6 +19,7 @@ const WorkTypeManagement = () => {
         description: '',
         active: true
     });
+    const [selectedEquipmentTypes, setSelectedEquipmentTypes] = useState([]);
     const [deletingWorkType, setDeletingWorkType] = useState(null);
 
     // Use the snackbar context
@@ -33,9 +36,34 @@ const WorkTypeManagement = () => {
             if (response.data) {
                 // Filter to only show active work types
                 const activeWorkTypes = response.data.filter(workType => workType.active);
-                setWorkTypes(activeWorkTypes);
                 
-                if (activeWorkTypes.length === 0) {
+                // For each work type, get the equipment types that support it
+                const workTypesWithEquipmentTypes = await Promise.all(
+                    activeWorkTypes.map(async (workType) => {
+                        try {
+                            // Get all equipment types and filter those that support this work type
+                            const allEquipmentTypesResponse = await equipmentService.getAllEquipmentTypes();
+                            const supportingEquipmentTypes = allEquipmentTypesResponse.data.filter(equipmentType => 
+                                equipmentType.supportedWorkTypes && 
+                                equipmentType.supportedWorkTypes.some(wt => wt.id === workType.id)
+                            );
+                            return {
+                                ...workType,
+                                supportingEquipmentTypes
+                            };
+                        } catch (error) {
+                            console.error(`Error fetching equipment types for work type ${workType.id}:`, error);
+                            return {
+                                ...workType,
+                                supportingEquipmentTypes: []
+                            };
+                        }
+                    })
+                );
+                
+                setWorkTypes(workTypesWithEquipmentTypes);
+                
+                if (workTypesWithEquipmentTypes.length === 0) {
                     showInfo('No active work types found. Add your first work type!');
                 }
             } else {
@@ -51,11 +79,23 @@ const WorkTypeManagement = () => {
         }
     };
 
+    // Fetch all equipment types
+    const fetchEquipmentTypes = async () => {
+        try {
+            const response = await equipmentService.getAllEquipmentTypes();
+            setEquipmentTypes(response.data);
+        } catch (err) {
+            console.error('Error fetching equipment types:', err);
+            showError('Failed to load equipment types.');
+        }
+    };
+
     useEffect(() => {
         fetchWorkTypes();
+        fetchEquipmentTypes();
     }, []);
 
-    const handleOpenModal = (workType = null) => {
+    const handleOpenModal = async (workType = null) => {
         if (workType) {
             setEditingWorkType(workType);
             setFormData({
@@ -63,6 +103,12 @@ const WorkTypeManagement = () => {
                 description: workType.description || '',
                 active: workType.active
             });
+            
+            // Get equipment types that currently support this work type
+            const supportingEquipmentTypeIds = workType.supportingEquipmentTypes 
+                ? workType.supportingEquipmentTypes.map(et => et.id) 
+                : [];
+            setSelectedEquipmentTypes(supportingEquipmentTypeIds);
         } else {
             setEditingWorkType(null);
             setFormData({
@@ -70,6 +116,7 @@ const WorkTypeManagement = () => {
                 description: '',
                 active: true
             });
+            setSelectedEquipmentTypes([]);
         }
         setShowModal(true);
     };
@@ -82,16 +129,61 @@ const WorkTypeManagement = () => {
         }));
     };
 
+    const handleEquipmentTypeChange = (equipmentTypeId) => {
+        setSelectedEquipmentTypes(prev => {
+            if (prev.includes(equipmentTypeId)) {
+                return prev.filter(id => id !== equipmentTypeId);
+            } else {
+                return [...prev, equipmentTypeId];
+            }
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
+            let workTypeId;
+            
             if (editingWorkType) {
                 await workTypeService.update(editingWorkType.id, formData);
+                workTypeId = editingWorkType.id;
                 showSuccess(`Work type "${formData.name}" has been updated successfully`);
             } else {
-                await workTypeService.create(formData);
+                const response = await workTypeService.create(formData);
+                workTypeId = response.data.id;
                 showSuccess(`Work type "${formData.name}" has been added successfully`);
+            }
+
+            // Update equipment type assignments if we have a work type ID
+            if (workTypeId) {
+                try {
+                    // For each equipment type, update their supported work types
+                    const allEquipmentTypes = await equipmentService.getAllEquipmentTypes();
+                    
+                    for (const equipmentType of allEquipmentTypes.data) {
+                        const currentWorkTypeIds = equipmentType.supportedWorkTypes 
+                            ? equipmentType.supportedWorkTypes.map(wt => wt.id) 
+                            : [];
+                        
+                        if (selectedEquipmentTypes.includes(equipmentType.id)) {
+                            // Add this work type if not already present
+                            if (!currentWorkTypeIds.includes(workTypeId)) {
+                                const updatedWorkTypeIds = [...currentWorkTypeIds, workTypeId];
+                                await equipmentService.setSupportedWorkTypesForEquipmentType(equipmentType.id, updatedWorkTypeIds);
+                            }
+                        } else {
+                            // Remove this work type if present
+                            if (currentWorkTypeIds.includes(workTypeId)) {
+                                const updatedWorkTypeIds = currentWorkTypeIds.filter(id => id !== workTypeId);
+                                await equipmentService.setSupportedWorkTypesForEquipmentType(equipmentType.id, updatedWorkTypeIds);
+                            }
+                        }
+                    }
+                } catch (equipmentTypeError) {
+                    console.error('Error updating equipment type assignments:', equipmentTypeError);
+                    showError('Work type saved, but failed to update equipment type assignments');
+                }
             }
 
             setShowModal(false);
@@ -170,6 +262,21 @@ const WorkTypeManagement = () => {
             header: 'Description',
             accessor: 'description',
             sortable: true
+        },
+        {
+            header: 'Supporting Equipment Types',
+            accessor: 'supportingEquipmentTypes',
+            sortable: false,
+            render: (row) => {
+                const equipmentTypeNames = row.supportingEquipmentTypes ? 
+                    row.supportingEquipmentTypes.map(et => et.name).join(', ') : 
+                    'None';
+                return (
+                    <span className="equipment-types-list">
+                        {equipmentTypeNames.length > 60 ? equipmentTypeNames.substring(0, 60) + '...' : equipmentTypeNames}
+                    </span>
+                );
+            }
         }
     ];
 
@@ -218,7 +325,7 @@ const WorkTypeManagement = () => {
             {/* Modal for adding/editing work types */}
             {showModal && (
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                    <div className="modal-content work-type-modal" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
                             <h2>{editingWorkType ? 'Edit Work Type' : 'Add Work Type'}</h2>
                             <button className="modal-close" onClick={() => setShowModal(false)}>
@@ -266,16 +373,39 @@ const WorkTypeManagement = () => {
                                     Inactive work types will not be available for selection when creating Sarky entries
                                 </small>
                             </div>
-                            <div className="form-actions">
-                                <button
-                                    type="button"
-                                    className="cancel-button"
-                                    onClick={() => setShowModal(false)}
-                                >
+                            <div className="form-group">
+                                <label>Equipment Types that can perform this work type</label>
+                                <div className="work-types-grid">
+                                    {equipmentTypes.map(equipmentType => (
+                                        <div key={equipmentType.id} className="work-type-item">
+                                            <label className="checkbox-label">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedEquipmentTypes.includes(equipmentType.id)}
+                                                    onChange={() => handleEquipmentTypeChange(equipmentType.id)}
+                                                />
+                                                <span className="checkmark"></span>
+                                                <span className="work-type-name">{equipmentType.name}</span>
+                                                {equipmentType.description && (
+                                                    <span className="work-type-description">{equipmentType.description}</span>
+                                                )}
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                                {equipmentTypes.length === 0 && (
+                                    <p className="no-work-types">No equipment types available. Please create equipment types first.</p>
+                                )}
+                                <small className="form-help-text">
+                                    Select which equipment types can perform this type of work. This determines which work types are available when logging Sarky entries for specific equipment.
+                                </small>
+                            </div>
+                            <div className="modal-actions">
+                                <button type="button" onClick={() => setShowModal(false)}>
                                     Cancel
                                 </button>
-                                <button type="submit" className="submit-button">
-                                    {editingWorkType ? 'Update' : 'Add'} Work Type
+                                <button type="submit" className="save-button">
+                                    {editingWorkType ? 'Update' : 'Add'}
                                 </button>
                             </div>
                         </form>
