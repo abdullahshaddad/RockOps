@@ -151,7 +151,7 @@ const WarehouseViewItemTypesTable = () => {
             header: 'UNIT',
             accessor: 'measuringUnit',
             sortable: true,
-            width: '200px',
+            width: '210px',
             minWidth: '100px',
             align: 'left'
         },
@@ -159,16 +159,8 @@ const WarehouseViewItemTypesTable = () => {
             header: 'SERIAL NUMBER',
             accessor: 'serialNumber',
             sortable: true,
-            width: '200px',
+            width: '230px',
             minWidth: '130px'
-        },
-        {
-            header: 'COMMENT',
-            accessor: 'comment',
-            sortable: true,
-            width: '250px',
-            minWidth: '250px',
-            render: (row) => row.comment || "No comment"
         }
     ];
 
@@ -198,11 +190,6 @@ const WarehouseViewItemTypesTable = () => {
             header: 'SERIAL NUMBER',
             accessor: 'serialNumber',
             filterType: 'text'
-        },
-        {
-            header: 'COMMENT',
-            accessor: 'comment',
-            filterType: 'text'
         }
     ];
 
@@ -216,7 +203,7 @@ const WarehouseViewItemTypesTable = () => {
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
             ),
-            className: 'edit-button0',
+            className: 'edit',
             onClick: (row) => openItemModal(row)
         },
         {
@@ -228,7 +215,7 @@ const WarehouseViewItemTypesTable = () => {
                     <line x1="14" y1="11" x2="14" y2="17" />
                 </svg>
             ),
-            className: 'delete-button0',
+            className: 'delete',
             onClick: (row) => deleteItemType(row.id)
         }
     ];
@@ -444,8 +431,8 @@ const WarehouseViewItemTypesTable = () => {
                 showSearch={true}
                 showFilters={true}
                 filterableColumns={filterableColumns}
-                itemsPerPageOptions={[10, 15, 20, 25]}
-                defaultItemsPerPage={15}
+                itemsPerPageOptions={[5, 10, 15, 20]}
+                defaultItemsPerPage={10}
                 actionsColumnWidth="160px"
             />
 
