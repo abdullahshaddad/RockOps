@@ -16,6 +16,7 @@ public class ConsumableDetailDTO {
     private LocalDateTime lastUpdated;
     private LocalDateTime transactionDate; // Add this field
     private UUID transactionId;
+    private Integer batchNumber; // Add batch number field
     private String status; // Add this field
 
 
@@ -37,6 +38,7 @@ public class ConsumableDetailDTO {
             dto.setTransactionId(consumable.getTransaction().getId());
             dto.setLastUpdated(consumable.getTransaction().getCompletedAt());
             dto.setTransactionDate(consumable.getTransaction().getTransactionDate()); // Get date from transaction
+            dto.setBatchNumber(consumable.getTransaction().getBatchNumber()); // Set batch number from transaction
         }
 
         if (consumable.getStatus() != null) {

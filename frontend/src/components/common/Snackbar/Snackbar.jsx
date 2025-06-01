@@ -58,6 +58,15 @@ const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000, p
         }
     }, [show, duration, onClose, persistent]);
 
+    // Manual close handler for persistent snackbars
+    const handleManualClose = () => {
+        setAnimationState('slide-out');
+        setTimeout(() => {
+            setVisible(false);
+            if (onClose) onClose();
+        }, animationDuration);
+    };
+
     // Don't render anything if not visible
     if (!visible) return null;
 
@@ -100,10 +109,33 @@ const Snackbar = ({ type = 'success', message, show, onClose, duration = 3000, p
         }
     };
 
+    // Check if message contains line breaks to determine layout
+    const hasMultipleLines = typeof message === 'string' && message.includes('\n');
+
     return (
-        <div className={`snackbar ${type}-snackbar ${animationState}`}>
-            {getIcon()}
-            <span>{message}</span>
+        <div className={`snackbar ${type}-snackbar ${animationState} ${persistent ? 'persistent' : ''} ${hasMultipleLines ? 'multi-line' : ''}`}>
+            <div className="snackbar-icon">
+                {getIcon()}
+            </div>
+            <div className="snackbar-content">
+                {hasMultipleLines ? (
+                    <pre className="snackbar-message">{message}</pre>
+                ) : (
+                    <span className="snackbar-message">{message}</span>
+                )}
+            </div>
+            {persistent && (
+                <button 
+                    className="snackbar-close-button" 
+                    onClick={handleManualClose}
+                    aria-label="Close notification"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            )}
         </div>
     );
 };

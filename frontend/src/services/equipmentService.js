@@ -113,6 +113,11 @@ export const equipmentService = {
         return apiClient.get(EQUIPMENT_ENDPOINTS.CONSUMABLES(equipmentId));
     },
 
+    // Get equipment consumable analytics
+    getConsumableAnalytics: (equipmentId) => {
+        return apiClient.get(EQUIPMENT_ENDPOINTS.CONSUMABLES_ANALYTICS(equipmentId));
+    },
+
     // Site Management
     getAllSites: () => {
         return apiClient.get(SITE_ENDPOINTS.BASE);

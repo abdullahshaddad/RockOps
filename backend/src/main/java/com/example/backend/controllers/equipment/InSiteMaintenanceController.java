@@ -417,7 +417,7 @@ public class InSiteMaintenanceController {
             
             return ResponseEntity.ok(analytics);
         } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
+            Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Failed to generate maintenance analytics: " + e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
         }
