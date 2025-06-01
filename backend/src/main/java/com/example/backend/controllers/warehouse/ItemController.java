@@ -53,8 +53,9 @@ public class ItemController {
             UUID itemTypeId = UUID.fromString((String) request.get("itemTypeId"));
             UUID warehouseId = UUID.fromString((String) request.get("warehouseId"));
             int initialQuantity = (int) request.get("initialQuantity");
+            String username = request.get("username").toString();
 
-            Item newItem = itemService.createItem(itemTypeId, warehouseId, initialQuantity);
+            Item newItem = itemService.createItem(itemTypeId, warehouseId, initialQuantity,username);
             return ResponseEntity.ok(newItem);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -308,6 +309,20 @@ public class ItemController {
         } catch (Exception e) {
             System.out.println("💥 Error fetching resolution history: " + e.getMessage());
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/transaction-details/{warehouseId}/{itemTypeId}")
+    public ResponseEntity<List<Item>> getItemTransactionDetails(
+            @PathVariable UUID warehouseId,
+            @PathVariable UUID itemTypeId) {
+        try {
+            List<Item> transactionDetails = itemService.getItemTransactionDetails(warehouseId, itemTypeId);
+            return ResponseEntity.ok(transactionDetails);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

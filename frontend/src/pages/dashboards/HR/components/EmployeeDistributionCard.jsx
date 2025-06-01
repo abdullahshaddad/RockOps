@@ -72,19 +72,19 @@ const EmployeeDistributionCard = ({ data }) => {
 
             <div className="distribution-tabs">
                 <button
-                    className={`tab-button ${activeTab === 'departments' ? 'active' : ''}`}
+                    className={`employee-distribution-tab-button ${activeTab === 'departments' ? 'active' : ''}`}
                     onClick={() => setActiveTab('departments')}
                 >
                     <FaBuilding /> {t('hr.dashboard.departments')}
                 </button>
                 <button
-                    className={`tab-button ${activeTab === 'positions' ? 'active' : ''}`}
+                    className={`employee-distribution-tab-button ${activeTab === 'positions' ? 'active' : ''}`}
                     onClick={() => setActiveTab('positions')}
                 >
                     <FaBriefcase /> {t('hr.dashboard.positions')}
                 </button>
                 <button
-                    className={`tab-button ${activeTab === 'employmentTypes' ? 'active' : ''}`}
+                    className={`employee-distribution-tab-button ${activeTab === 'employmentTypes' ? 'active' : ''}`}
                     onClick={() => setActiveTab('employmentTypes')}
                 >
                     <FaHourglass /> {t('hr.dashboard.employmentTypes')}
