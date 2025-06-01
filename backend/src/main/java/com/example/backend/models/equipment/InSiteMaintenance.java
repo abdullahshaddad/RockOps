@@ -35,7 +35,12 @@ public class InSiteMaintenance {
     private Employee technician;
 
     private LocalDateTime maintenanceDate;
-    private String maintenanceType;
+    
+    // Changed from String to MaintenanceType object
+    @ManyToOne
+    @JoinColumn(name = "maintenance_type_id")
+    private MaintenanceType maintenanceType;
+    
     private String description;
     private String status; // e.g., "COMPLETED", "IN_PROGRESS"
 
