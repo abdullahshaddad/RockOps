@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../../../contexts/AuthContext.jsx";
 import { siteService } from "../../../../services/siteService";
 import { useNavigate } from "react-router-dom";
+import Snackbar from "../../../../components/common/Snackbar/Snackbar";
 import "../SiteDetails.scss";
+
 
 const SiteEmployeesTab = ({ siteId }) => {
     const { t } = useTranslation();
@@ -16,11 +18,25 @@ const SiteEmployeesTab = ({ siteId }) => {
     const [availableEmployees, setAvailableEmployees] = useState([]);
     const [assigningEmployee, setAssigningEmployee] = useState(null);
     const { currentUser } = useAuth();
+    const [snackbar, setSnackbar] = useState({
+        show: false,
+        message: '',
+        type: 'success'
+    });
 
     const isSiteAdmin = currentUser?.role === "SITE_ADMIN" || currentUser?.role === "ADMIN";
 
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({ ...prev, show: false }));
+    };
+
     const handleRowClick = (row) => {
         navigate(`/sites/employee-details/${row.employeeID}`);
+        setSnackbar({
+            show: true,
+            message: `Navigating to employee details: ${row.employeeName}`,
+            type: 'info'
+        });
     };
 
     const columns = [
@@ -111,13 +127,28 @@ const SiteEmployeesTab = ({ siteId }) => {
                 });
 
                 setEmployeeData(transformedData);
+                // setSnackbar({
+                //     show: true,
+                //     message: `Successfully loaded ${transformedData.length} employees`,
+                //     type: 'success'
+                // });
             } else {
                 setEmployeeData([]);
+                setSnackbar({
+                    show: true,
+                    message: 'No employees found for this site',
+                    type: 'info'
+                });
             }
         } catch (err) {
             console.error('Error in fetchEmployees:', err);
             setError(err.message || 'Failed to fetch employees');
             setEmployeeData([]);
+            setSnackbar({
+                show: true,
+                message: err.message || 'Failed to fetch employees',
+                type: 'error'
+            });
         } finally {
             setLoading(false);
         }
@@ -126,12 +157,9 @@ const SiteEmployeesTab = ({ siteId }) => {
     const handleOpenModal = async () => {
         try {
             const response = await siteService.getUnassignedEmployees();
-            console.log('Unassigned employees response:', response); // Debug log
+            console.log('Unassigned employees response:', response);
             
-            // Ensure we have data and it's an array
             const data = response?.data || [];
-            
-            // Filter for unassigned employees and transform the data
             const unassignedEmployees = Array.isArray(data) ? data.map(emp => ({
                 id: emp.id,
                 firstName: emp.firstName || '',
@@ -141,13 +169,25 @@ const SiteEmployeesTab = ({ siteId }) => {
                 jobPositionType: emp.jobPosition?.type || emp.jobPositionType || 'Not Specified'
             })) : [];
 
-            console.log('Transformed unassigned employees:', unassignedEmployees); // Debug log
+            console.log('Transformed unassigned employees:', unassignedEmployees);
             setAvailableEmployees(unassignedEmployees);
             setShowModal(true);
+
+            if (unassignedEmployees.length === 0) {
+                setSnackbar({
+                    show: true,
+                    message: 'No available employees found to assign',
+                    type: 'info'
+                });
+            }
         } catch (err) {
             console.error("Error fetching available employees:", err);
             const errorMessage = err.response?.data?.message || err.message || "Failed to load available employees";
-            alert(`Error: ${errorMessage}. Please try again.`);
+            setSnackbar({
+                show: true,
+                message: errorMessage,
+                type: 'error'
+            });
         }
     };
 
@@ -163,9 +203,18 @@ const SiteEmployeesTab = ({ siteId }) => {
             await siteService.assignEmployee(siteId, employeeId);
             await fetchEmployees();
             handleCloseModal();
+            setSnackbar({
+                show: true,
+                message: 'Employee successfully assigned to site',
+                type: 'success'
+            });
         } catch (err) {
             console.error("Error assigning employee:", err);
-            alert("Failed to assign employee. Please try again.");
+            setSnackbar({
+                show: true,
+                message: 'Failed to assign employee',
+                type: 'error'
+            });
         } finally {
             setAssigningEmployee(null);
         }
@@ -175,9 +224,18 @@ const SiteEmployeesTab = ({ siteId }) => {
         try {
             await siteService.removeEmployee(siteId, employeeId);
             await fetchEmployees();
+            setSnackbar({
+                show: true,
+                message: 'Employee successfully unassigned from site',
+                type: 'success'
+            });
         } catch (err) {
             console.error("Error unassigning employee:", err);
-            alert("Failed to unassign employee. Please try again.");
+            setSnackbar({
+                show: true,
+                message: 'Failed to unassign employee',
+                type: 'error'
+            });
         }
     };
 
@@ -187,6 +245,13 @@ const SiteEmployeesTab = ({ siteId }) => {
 
     return (
         <div className="tab-content">
+            <Snackbar
+                show={snackbar.show}
+                message={snackbar.message}
+                type={snackbar.type}
+                onClose={handleCloseSnackbar}
+                duration={3000}
+            />
             <div className="tab-header">
                 <div className="departments-header">
                     <h3>{t('site.siteEmployeesReport')}</h3>
@@ -228,7 +293,12 @@ const SiteEmployeesTab = ({ siteId }) => {
                     <div className="assign-employee-modal-content">
                         <div className="assign-employee-modal-header">
                             <h2>{t('site.assignEmployee')}</h2>
-                            <button className="assign-employee-modal-close-button" onClick={handleCloseModal}>×</button>
+                            <button
+                                className="assign-employee-modal-close-button"
+                                onClick={handleCloseModal}
+                            >
+                                ×
+                            </button>
                         </div>
                         
                         <div className="assign-employee-modal-body">
