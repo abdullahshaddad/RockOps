@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import DataTable from "../../../components/common/DataTable/DataTable.jsx";
 import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx";
 
-const WarehouseViewItemsTable = ({ warehouseId }) => {
+const WarehouseViewItemsTable = ({ warehouseId, onAddButtonClick }) => {
   const [tableData, setTableData] = useState([]);
   const [resolutionHistory, setResolutionHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -72,6 +72,12 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
   const getLowStockCount = (items) => {
     return items.filter(item => isLowStock(item)).length;
   };
+
+  useEffect(() => {
+    if (onAddButtonClick) {
+      onAddButtonClick(handleOpenAddItemModal);
+    }
+  }, [onAddButtonClick]);
 
   // Helper function to aggregate items by type for "In Warehouse" tab
   const aggregateItemsByType = (items) => {
@@ -746,7 +752,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
         ),
         onClick: (row) => handleDeleteItem(row.id),
         className: 'delete',
-        isDisabled: (row) => row.isAggregated
+        // isDisabled: (row) => row.isAggregated
       });
     } else {
       // For discrepancy items
@@ -790,7 +796,6 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
         {/* Header with count and search */}
         <div className="header-container4">
           <div className="left-section4">
-            <h1 className="page-title4">Inventory</h1>
             <div className="item-count4">
               {activeTab === 'resolvedHistory'
                   ? `${resolutionHistory.length} resolutions`
@@ -1381,16 +1386,7 @@ const WarehouseViewItemsTable = ({ warehouseId }) => {
             </div>
         )}
 
-        {/* Blue Circular Add Button */}
-        <button
-            className="add-button2"
-            onClick={handleOpenAddItemModal}
-            title="Add New Item"
-        >
-          <svg className="plus-icon2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-        </button>
+
 
         {/* Snackbar Component */}
         <Snackbar

@@ -276,6 +276,8 @@ public class EquipmentTransactionController {
     /**
      * Accept a transaction where equipment is a party and specify the purpose
      */
+
+// Equipment Transaction Accept Method
     @PostMapping("/{equipmentId}/transactions/{transactionId}/accept")
     public ResponseEntity<Transaction> acceptTransaction(
             @PathVariable UUID equipmentId,
@@ -305,16 +307,29 @@ public class EquipmentTransactionController {
             purpose = TransactionPurpose.valueOf(requestBody.get("purpose").toString());
         }
 
-        // Convert String keys to UUID
+        // Convert String keys to UUID for receivedQuantities
         Map<UUID, Integer> receivedQuantities = new HashMap<>();
         receivedQuantitiesMap.forEach((key, value) -> {
             receivedQuantities.put(UUID.fromString(key), value);
         });
 
-        // Accept the transaction
+        // NEW: Extract itemsNotReceived map
+        Map<UUID, Boolean> itemsNotReceived = new HashMap<>();
+        if (requestBody.containsKey("itemsNotReceived")) {
+            @SuppressWarnings("unchecked")
+            Map<String, Boolean> itemsNotReceivedMap = (Map<String, Boolean>) requestBody.get("itemsNotReceived");
+
+            // Convert String keys to UUID for itemsNotReceived
+            itemsNotReceivedMap.forEach((key, value) -> {
+                itemsNotReceived.put(UUID.fromString(key), value);
+            });
+        }
+
+        // Accept the transaction with the new parameter
         Transaction updatedTransaction = transactionService.acceptEquipmentTransaction(
                 transactionId,
                 receivedQuantities,
+                itemsNotReceived, // NEW: Add this parameter
                 userDetails.getUsername(),
                 comment,
                 purpose
