@@ -8,6 +8,7 @@ const HourlyAttendanceView = ({ employees }) => {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('17:00');
+    const [breakDuration, setBreakDuration] = useState(60);
     const [searchDate, setSearchDate] = useState(new Date().toISOString().split('T')[0]);
     const [attendanceData, setAttendanceData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -16,7 +17,7 @@ const HourlyAttendanceView = ({ employees }) => {
     useEffect(() => {
         // Filter employees with HOURLY job position type
         const filtered = employees.filter(
-            employee => employee.jobPosition && employee.jobPosition.type === 'HOURLY'
+            employee => employee.jobPosition && employee.jobPosition.contractType === 'HOURLY'
         );
         setHourlyEmployees(filtered);
     }, [employees]);
@@ -36,7 +37,7 @@ const HourlyAttendanceView = ({ employees }) => {
             const month = date.getMonth() + 1;
 
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/api/v1/attendance/employee/${selectedEmployee}/monthly?year=${year}&month=${month}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/attendance/employee/${selectedEmployee}?startDate=${year}-${month.toString().padStart(2, '0')}-01&endDate=${year}-${month.toString().padStart(2, '0')}-${new Date(year, month, 0).getDate()}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -50,7 +51,7 @@ const HourlyAttendanceView = ({ employees }) => {
 
             const data = await response.json();
             // Filter to only include hourly attendance records
-            const hourlyData = data.filter(record => record.type === 'HOURLY');
+            const hourlyData = data.filter(record => record.contractType === 'HOURLY');
             setAttendanceData(hourlyData);
         } catch (err) {
             console.error('Error fetching hourly attendance:', err);
@@ -75,18 +76,24 @@ const HourlyAttendanceView = ({ employees }) => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/api/v1/attendance/hourly`, {
+
+            const requestBody = {
+                employeeId: selectedEmployee,
+                date: selectedDate,
+                contractType: 'HOURLY',
+                checkInTime: startTime + ':00',
+                checkOutTime: endTime + ':00',
+                breakDurationMinutes: parseInt(breakDuration),
+                notes: ''
+            };
+
+            const response = await fetch(`http://localhost:8080/api/v1/attendance/record`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    employeeId: selectedEmployee,
-                    date: selectedDate,
-                    startTime: startTime + ':00',
-                    endTime: endTime + ':00'
-                }),
+                body: JSON.stringify(requestBody),
             });
 
             if (!response.ok) {
@@ -108,6 +115,7 @@ const HourlyAttendanceView = ({ employees }) => {
             setSelectedDate(new Date().toISOString().split('T')[0]);
             setStartTime('09:00');
             setEndTime('17:00');
+            setBreakDuration(60);
         } catch (err) {
             console.error('Error recording hourly attendance:', err);
             setError(err.message);
@@ -116,7 +124,9 @@ const HourlyAttendanceView = ({ employees }) => {
         }
     };
 
-    const calculateHoursWorked = (start, end) => {
+    const calculateHoursWorked = (start, end, breakMinutes = 0) => {
+        if (!start || !end) return 'N/A';
+
         const startArr = start.split(':');
         const endArr = end.split(':');
 
@@ -124,7 +134,12 @@ const HourlyAttendanceView = ({ employees }) => {
         const endMinutes = parseInt(endArr[0]) * 60 + parseInt(endArr[1]);
 
         // Calculate difference in minutes
-        const diffMinutes = endMinutes - startMinutes;
+        let diffMinutes = endMinutes - startMinutes;
+
+        // Subtract break time
+        if (breakMinutes) {
+            diffMinutes -= breakMinutes;
+        }
 
         // Convert to hours and minutes
         const hours = Math.floor(diffMinutes / 60);
@@ -147,13 +162,25 @@ const HourlyAttendanceView = ({ employees }) => {
         if (timeString && timeString.split(':').length === 3) {
             return timeString.substring(0, 5);
         }
-        return timeString;
+        return timeString || 'N/A';
     };
 
     const getSelectedEmployeeName = () => {
         if (!selectedEmployee) return '';
         const employee = employees.find(emp => emp.id === selectedEmployee);
         return employee ? `${employee.firstName} ${employee.lastName}` : '';
+    };
+
+    const calculateOvertimeHours = (regularHours, totalHours) => {
+        if (!regularHours || !totalHours) return 0;
+        return Math.max(0, totalHours - regularHours);
+    };
+
+    const formatHoursFromDecimal = (decimalHours) => {
+        if (!decimalHours) return 'N/A';
+        const hours = Math.floor(decimalHours);
+        const minutes = Math.round((decimalHours - hours) * 60);
+        return `${hours}h ${minutes}m`;
     };
 
     if (loading) {
@@ -223,6 +250,17 @@ const HourlyAttendanceView = ({ employees }) => {
                             />
                         </div>
 
+                        <div className="form-group">
+                            <label>Break Duration (minutes):</label>
+                            <input
+                                type="number"
+                                value={breakDuration}
+                                onChange={(e) => setBreakDuration(e.target.value)}
+                                min="0"
+                                max="480"
+                            />
+                        </div>
+
                         <button
                             className="record-btn"
                             onClick={recordHourlyAttendance}
@@ -283,24 +321,51 @@ const HourlyAttendanceView = ({ employees }) => {
                                 <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
+                                    <th>Check-In</th>
+                                    <th>Check-Out</th>
+                                    <th>Break Duration</th>
                                     <th>Hours Worked</th>
+                                    <th>Regular Hours</th>
                                     <th>Overtime</th>
+                                    <th>Status</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {attendanceData.map(record => (
                                     <tr key={record.id}>
                                         <td>{formatDate(record.date)}</td>
-                                        <td>{formatTime(record.startTime)}</td>
-                                        <td>{formatTime(record.endTime)}</td>
+                                        <td>{formatTime(record.checkInTime)}</td>
+                                        <td>{formatTime(record.checkOutTime)}</td>
+                                        <td>{record.breakDurationMinutes ? `${record.breakDurationMinutes} min` : 'N/A'}</td>
                                         <td>
-                                            {record.startTime && record.endTime
-                                                ? calculateHoursWorked(formatTime(record.startTime), formatTime(record.endTime))
-                                                : 'N/A'}
+                                            {record.hoursWorked
+                                                ? formatHoursFromDecimal(record.hoursWorked)
+                                                : record.checkInTime && record.checkOutTime
+                                                    ? calculateHoursWorked(
+                                                        formatTime(record.checkInTime),
+                                                        formatTime(record.checkOutTime),
+                                                        record.breakDurationMinutes
+                                                    )
+                                                    : 'N/A'
+                                            }
                                         </td>
-                                        <td>{record.overtimeHours ? `${record.overtimeHours}h` : '-'}</td>
+                                        <td>
+                                            {record.regularHours
+                                                ? formatHoursFromDecimal(record.regularHours)
+                                                : 'N/A'
+                                            }
+                                        </td>
+                                        <td>
+                                            {record.overtimeHours
+                                                ? formatHoursFromDecimal(record.overtimeHours)
+                                                : '0h 0m'
+                                            }
+                                        </td>
+                                        <td>
+                                            <span className={`status-badge ${record.displayStatus?.toLowerCase() || 'unknown'}`}>
+                                                {record.displayStatus || 'Unknown'}
+                                            </span>
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>

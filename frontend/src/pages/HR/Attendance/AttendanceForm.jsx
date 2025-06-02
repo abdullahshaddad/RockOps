@@ -12,12 +12,22 @@ const AttendanceForm = ({
     const [formData, setFormData] = useState({
         employeeId: selectedEmployee ? selectedEmployee.id : '',
         date: selectedDate ? formatDate(selectedDate) : formatDate(new Date()),
+        contractType: 'MONTHLY',
+        // Monthly fields
         status: 'PRESENT',
+        // Daily fields
+        dailyStatus: 'PRESENT',
+        // Hourly fields
+        checkInTime: '09:00',
+        checkOutTime: '17:00',
+        breakDurationMinutes: 60,
+        // Common fields
         notes: '',
         locationName: '',
         latitude: '',
         longitude: '',
-        deviceInfo: navigator.userAgent
+        isHoliday: false,
+        isLeave: false
     });
 
     const [error, setError] = useState('');
@@ -25,9 +35,11 @@ const AttendanceForm = ({
     // Initialize form with selected employee and date
     useEffect(() => {
         if (selectedEmployee) {
+            const contractType = selectedEmployee.jobPosition?.contractType || 'MONTHLY';
             setFormData(prev => ({
                 ...prev,
-                employeeId: selectedEmployee.id
+                employeeId: selectedEmployee.id,
+                contractType: contractType
             }));
         }
 
@@ -91,10 +103,23 @@ const AttendanceForm = ({
 
     // Handle form input changes
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    // Handle employee selection change
+    const handleEmployeeChange = (e) => {
+        const employeeId = e.target.value;
+        const employee = employees.find(emp => emp.id === employeeId);
+        const contractType = employee?.jobPosition?.contractType || 'MONTHLY';
+
+        setFormData(prev => ({
+            ...prev,
+            employeeId,
+            contractType
         }));
     };
 
@@ -113,17 +138,42 @@ const AttendanceForm = ({
             return;
         }
 
-        if (type === 'manual' && !formData.status) {
-            setError('Please select a status');
-            return;
+        // Format data for submission based on contract type
+        let dataToSubmit = {
+            employeeId: formData.employeeId,
+            date: formData.date,
+            contractType: formData.contractType,
+            notes: formData.notes,
+            isHoliday: formData.isHoliday,
+            isLeave: formData.isLeave
+        };
+
+        // Add location data if available
+        if (formData.latitude && formData.longitude) {
+            dataToSubmit.location = formData.locationName;
+            dataToSubmit.latitude = parseFloat(formData.latitude);
+            dataToSubmit.longitude = parseFloat(formData.longitude);
         }
 
-        // Format data for submission
-        let dataToSubmit = { ...formData };
-
-        // For check-in and check-out, we don't need to send the status
-        if (type !== 'manual') {
-            delete dataToSubmit.status;
+        // Add contract-specific fields
+        switch (formData.contractType) {
+            case 'HOURLY':
+                if (formData.checkInTime) {
+                    dataToSubmit.checkInTime = formData.checkInTime + ':00';
+                }
+                if (formData.checkOutTime) {
+                    dataToSubmit.checkOutTime = formData.checkOutTime + ':00';
+                }
+                if (formData.breakDurationMinutes) {
+                    dataToSubmit.breakDurationMinutes = parseInt(formData.breakDurationMinutes);
+                }
+                break;
+            case 'DAILY':
+                dataToSubmit.dailyStatus = formData.dailyStatus;
+                break;
+            case 'MONTHLY':
+                dataToSubmit.status = formData.status;
+                break;
         }
 
         // Submit the data
@@ -137,12 +187,15 @@ const AttendanceForm = ({
                 return 'Record Check-In';
             case 'check-out':
                 return 'Record Check-Out';
-            case 'manual':
-                return 'Manual Attendance Entry';
+            case 'record':
+                return 'Record Attendance';
             default:
                 return 'Attendance Form';
         }
     };
+
+    const selectedEmployeeObj = employees.find(emp => emp.id === formData.employeeId);
+    const contractType = selectedEmployeeObj?.jobPosition?.contractType || formData.contractType;
 
     return (
         <div className="attendance-form-overlay">
@@ -165,13 +218,14 @@ const AttendanceForm = ({
                             id="employeeId"
                             name="employeeId"
                             value={formData.employeeId}
-                            onChange={handleChange}
+                            onChange={handleEmployeeChange}
                             required
                         >
                             <option value="">Select Employee</option>
                             {employees.map(employee => (
                                 <option key={employee.id} value={employee.id}>
                                     {employee.firstName} {employee.lastName}
+                                    {employee.jobPosition?.contractType && ` (${employee.jobPosition.contractType})`}
                                 </option>
                             ))}
                         </select>
@@ -189,7 +243,77 @@ const AttendanceForm = ({
                         />
                     </div>
 
-                    {type === 'manual' && (
+                    {/* Contract Type Display */}
+                    {selectedEmployeeObj && (
+                        <div className="form-group">
+                            <label>Contract Type</label>
+                            <div className="contract-type-display">
+                                <span className="contract-badge">
+                                    {contractType}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Contract-specific fields */}
+                    {contractType === 'HOURLY' && (
+                        <>
+                            <div className="form-group">
+                                <label htmlFor="checkInTime">Check-In Time</label>
+                                <input
+                                    type="time"
+                                    id="checkInTime"
+                                    name="checkInTime"
+                                    value={formData.checkInTime}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="checkOutTime">Check-Out Time</label>
+                                <input
+                                    type="time"
+                                    id="checkOutTime"
+                                    name="checkOutTime"
+                                    value={formData.checkOutTime}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="breakDurationMinutes">Break Duration (minutes)</label>
+                                <input
+                                    type="number"
+                                    id="breakDurationMinutes"
+                                    name="breakDurationMinutes"
+                                    value={formData.breakDurationMinutes}
+                                    onChange={handleChange}
+                                    min="0"
+                                    max="480"
+                                />
+                            </div>
+                        </>
+                    )}
+
+                    {contractType === 'DAILY' && (
+                        <div className="form-group">
+                            <label htmlFor="dailyStatus">Daily Status</label>
+                            <select
+                                id="dailyStatus"
+                                name="dailyStatus"
+                                value={formData.dailyStatus}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="PRESENT">Present</option>
+                                <option value="ABSENT">Absent</option>
+                                <option value="HOLIDAY">Holiday</option>
+                                <option value="LEAVE">Leave</option>
+                            </select>
+                        </div>
+                    )}
+
+                    {contractType === 'MONTHLY' && (
                         <div className="form-group">
                             <label htmlFor="status">Status</label>
                             <select
@@ -204,11 +328,32 @@ const AttendanceForm = ({
                                 <option value="LATE">Late</option>
                                 <option value="HALF_DAY">Half Day</option>
                                 <option value="ON_LEAVE">On Leave</option>
-                                <option value="WEEKEND">Weekend</option>
-                                <option value="HOLIDAY">Holiday</option>
                             </select>
                         </div>
                     )}
+
+                    {/* Holiday and Leave flags */}
+                    <div className="form-group checkbox-group">
+                        <label className="checkbox-label">
+                            <input
+                                type="checkbox"
+                                name="isHoliday"
+                                checked={formData.isHoliday}
+                                onChange={handleChange}
+                            />
+                            Holiday
+                        </label>
+
+                        <label className="checkbox-label">
+                            <input
+                                type="checkbox"
+                                name="isLeave"
+                                checked={formData.isLeave}
+                                onChange={handleChange}
+                            />
+                            On Leave
+                        </label>
+                    </div>
 
                     <div className="form-group">
                         <label htmlFor="notes">Notes</label>
@@ -229,7 +374,7 @@ const AttendanceForm = ({
                             {formData.latitude && formData.longitude ? (
                                 <div className="coordinates">
                                     <p>
-                                        <strong>Coordinates:</strong> {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
+                                        <strong>Coordinates:</strong> {parseFloat(formData.latitude).toFixed(6)}, {parseFloat(formData.longitude).toFixed(6)}
                                     </p>
                                     {formData.locationName && (
                                         <p>
