@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Users, Clock, TrendingUp, Filter, Download, Plus } from 'lucide-react';
+import { Calendar, Users, Clock, TrendingUp, Filter, Download, Plus, RefreshCw } from 'lucide-react';
 import AttendanceCalendarView from './components/AttendanceCalendarView';
 import AttendanceListView from './components/AttendanceListView';
 import AttendanceFilters from './components/AttendanceFilters';
 import AttendanceStats from './components/AttendanceStats';
 import AttendanceModal from './components/AttendanceModal';
+import QuickActionPanel from './components/QuickActionPanel';
 
 import { useSnackbar } from '../../../contexts/SnackbarContext';
 import attendanceService from "../../../services/attendanceService.js";
@@ -12,11 +13,16 @@ import { employeeService } from "../../../services/employeeService.js";
 import "./attendance.scss";
 
 const AttendancePage = () => {
-    const [view, setView] = useState('calendar'); // 'calendar' or 'list'
+    // Core state
+    const [view, setView] = useState('calendar');
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [attendanceData, setAttendanceData] = useState([]);
     const [employees, setEmployees] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+    // Filter and modal state
     const [filters, setFilters] = useState({
         employeeId: '',
         department: '',
@@ -24,72 +30,102 @@ const AttendancePage = () => {
         status: '',
         contractType: ''
     });
-    const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [selectedAttendanceRecord, setSelectedAttendanceRecord] = useState(null);
     const [stats, setStats] = useState({});
 
     const { showSnackbar } = useSnackbar();
 
-    // Fetch employees on component mount
+    // Initialize component
     useEffect(() => {
-        fetchEmployees();
+        initializeComponent();
     }, []);
 
-    // Fetch attendance data when date, employee, or filters change
+    // Watch for filter changes
     useEffect(() => {
         if (filters.employeeId || view === 'list') {
             fetchAttendanceData();
         }
     }, [selectedDate, filters, view]);
 
+    // Watch for employee selection
+    useEffect(() => {
+        if (filters.employeeId) {
+            const employee = employees.find(emp => emp.id === filters.employeeId);
+            setSelectedEmployee(employee);
+        } else {
+            setSelectedEmployee(null);
+        }
+    }, [filters.employeeId, employees]);
+
+    const initializeComponent = async () => {
+        await fetchEmployees();
+    };
+
     const fetchEmployees = async () => {
         try {
             setLoading(true);
-            const response = await employeeService.getAll();
-            setEmployees(response.data);
+
+            // Use minimal endpoint for better performance in attendance operations
+            // Falls back to full data if minimal endpoint is not available
+            let response;
+            try {
+                response = await employeeService.getMinimal();
+            } catch (minimalError) {
+                console.warn('Minimal endpoint not available, falling back to full data:', minimalError);
+                response = await employeeService.getAll();
+            }
+
+            setEmployees(response.data || []);
         } catch (error) {
             console.error('Error fetching employees:', error);
             showSnackbar('Failed to fetch employees', 'error');
+            setEmployees([]); // Set empty array as fallback
         } finally {
             setLoading(false);
         }
     };
 
     const fetchAttendanceData = async () => {
-        setLoading(true);
+        if (!filters.employeeId && view !== 'list') return;
+
         try {
+            setRefreshing(true);
             const startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
             const endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
 
             if (filters.employeeId) {
-                // Fetch specific employee attendance
-                const response = await attendanceService.getEmployeeAttendance(
-                    filters.employeeId,
-                    attendanceService.utils.formatDate(startDate),
-                    attendanceService.utils.formatDate(endDate)
-                );
-                setAttendanceData(response.data);
+                // Fetch specific employee data
+                const [attendanceResponse, statsResponse] = await Promise.all([
+                    attendanceService.getEmployeeAttendance(
+                        filters.employeeId,
+                        attendanceService.utils.formatDate(startDate),
+                        attendanceService.utils.formatDate(endDate)
+                    ),
+                    attendanceService.getMonthlyAttendanceSummary(
+                        filters.employeeId,
+                        selectedDate.getFullYear(),
+                        selectedDate.getMonth() + 1
+                    ).catch(() => ({ data: {} })) // Graceful failure for stats
+                ]);
 
-                // Fetch monthly summary for stats
-                const statsResponse = await attendanceService.getMonthlyAttendanceSummary(
-                    filters.employeeId,
-                    selectedDate.getFullYear(),
-                    selectedDate.getMonth() + 1
-                );
-                setStats(statsResponse.data);
+                setAttendanceData(attendanceResponse.data || []);
+                setStats(statsResponse.data || {});
             } else if (view === 'list') {
                 // Fetch daily summary for all employees
                 const response = await attendanceService.getDailyAttendanceSummary(
                     attendanceService.utils.formatDate(selectedDate)
                 );
-                setAttendanceData(response.data);
+                setAttendanceData(response.data || {});
+                setStats({});
             }
         } catch (error) {
             console.error('Error fetching attendance data:', error);
             showSnackbar('Failed to fetch attendance data', 'error');
+            setAttendanceData(view === 'list' ? {} : []);
+            setStats({});
         } finally {
-            setLoading(false);
+            setRefreshing(false);
         }
     };
 
@@ -97,11 +133,11 @@ const AttendancePage = () => {
         try {
             setLoading(true);
 
-            // Validate attendance data before submission
+            // Validate data
             const validation = attendanceService.utils.validateAttendanceData(attendanceRecord);
             if (!validation.isValid) {
                 showSnackbar(`Validation Error: ${validation.errors.join(', ')}`, 'error');
-                return;
+                return false;
             }
 
             if (selectedAttendanceRecord?.id) {
@@ -119,47 +155,48 @@ const AttendancePage = () => {
 
             setShowModal(false);
             setSelectedAttendanceRecord(null);
-            await fetchAttendanceData(); // Refresh data
+            await fetchAttendanceData();
+            return true;
         } catch (error) {
             console.error('Error recording attendance:', error);
             const errorMessage = error.response?.data?.message || 'Failed to record attendance';
             showSnackbar(errorMessage, 'error');
+            return false;
         } finally {
             setLoading(false);
         }
     };
 
-    const handleQuickCheckIn = async (employeeId) => {
+    const handleQuickCheckIn = async (employeeId, location = null) => {
         try {
             setLoading(true);
             const now = new Date();
             const checkInTime = attendanceService.utils.formatTime(now);
 
-            // Get current location if available
-            let location = null;
-            let latitude = null;
-            let longitude = null;
+            let coordinates = { latitude: null, longitude: null };
 
-            if (navigator.geolocation) {
+            // Get location if not provided
+            if (!location && navigator.geolocation) {
                 try {
-                    const position = await new Promise((resolve, reject) => {
-                        navigator.geolocation.getCurrentPosition(resolve, reject, {
-                            timeout: 5000,
-                            enableHighAccuracy: false
-                        });
-                    });
-
-                    latitude = position.coords.latitude;
-                    longitude = position.coords.longitude;
-                    location = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+                    const position = await getCurrentPosition();
+                    coordinates.latitude = position.coords.latitude;
+                    coordinates.longitude = position.coords.longitude;
+                    location = `${coordinates.latitude.toFixed(6)}, ${coordinates.longitude.toFixed(6)}`;
                 } catch (geoError) {
                     console.warn('Could not get location:', geoError);
                 }
             }
 
-            await attendanceService.checkIn(employeeId, checkInTime, location, latitude, longitude);
+            await attendanceService.checkIn(
+                employeeId,
+                checkInTime,
+                location,
+                coordinates.latitude,
+                coordinates.longitude
+            );
+
             showSnackbar('Employee checked in successfully', 'success');
-            await fetchAttendanceData(); // Refresh data
+            await fetchAttendanceData();
         } catch (error) {
             console.error('Error checking in employee:', error);
             const errorMessage = error.response?.data?.message || 'Failed to check in employee';
@@ -177,7 +214,7 @@ const AttendancePage = () => {
 
             await attendanceService.checkOut(employeeId, checkOutTime);
             showSnackbar('Employee checked out successfully', 'success');
-            await fetchAttendanceData(); // Refresh data
+            await fetchAttendanceData();
         } catch (error) {
             console.error('Error checking out employee:', error);
             const errorMessage = error.response?.data?.message || 'Failed to check out employee';
@@ -187,22 +224,59 @@ const AttendancePage = () => {
         }
     };
 
-    const handleEditAttendance = (record) => {
-        setSelectedAttendanceRecord(record);
-        setShowModal(true);
+    const handleBulkActions = async (action, employeeIds) => {
+        try {
+            setLoading(true);
+            let results = [];
+
+            switch (action) {
+                case 'checkIn':
+                    const checkInData = employeeIds.map(id => ({
+                        employeeId: id,
+                        checkInTime: attendanceService.utils.formatTime(new Date()),
+                        location: null
+                    }));
+                    results = await attendanceService.bulk.checkInMultiple(checkInData);
+                    break;
+
+                case 'generateMonthly':
+                    results = await attendanceService.bulk.generateMonthlyMultiple(
+                        employeeIds,
+                        selectedDate.getFullYear(),
+                        selectedDate.getMonth() + 1
+                    );
+                    break;
+
+                default:
+                    throw new Error('Unknown bulk action');
+            }
+
+            const successful = results.filter(r => r.status === 'fulfilled').length;
+            const failed = results.filter(r => r.status === 'rejected').length;
+
+            if (failed === 0) {
+                showSnackbar(`Successfully processed ${successful} employees`, 'success');
+            } else {
+                showSnackbar(`Processed ${successful} employees, ${failed} failed`, 'warning');
+            }
+
+            await fetchAttendanceData();
+        } catch (error) {
+            console.error('Error in bulk action:', error);
+            showSnackbar('Bulk operation failed', 'error');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleExportAttendance = async () => {
         try {
             setLoading(true);
-
-            // Determine what to export based on current view and filters
             let exportData = [];
             let filename = '';
 
-            if (filters.employeeId) {
+            if (filters.employeeId && selectedEmployee) {
                 // Export specific employee data
-                const employee = getSelectedEmployeeInfo();
                 const startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
                 const endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
 
@@ -212,22 +286,25 @@ const AttendancePage = () => {
                     attendanceService.utils.formatDate(endDate)
                 );
 
-                exportData = response.data;
-                filename = `${employee?.fullName || 'Employee'}_Attendance_${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}.csv`;
+                exportData = response.data || [];
+                filename = `${selectedEmployee.fullName}_Attendance_${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}.csv`;
             } else {
                 // Export daily summary
                 const response = await attendanceService.getDailyAttendanceSummary(
                     attendanceService.utils.formatDate(selectedDate)
                 );
 
-                exportData = response.data;
+                // Convert summary data to exportable format
+                exportData = convertSummaryToExportFormat(response.data);
                 filename = `Daily_Attendance_${attendanceService.utils.formatDate(selectedDate)}.csv`;
             }
 
-            // Convert to CSV and download
-            const csvContent = convertToCSV(exportData);
-            downloadCSV(csvContent, filename);
+            if (exportData.length === 0) {
+                showSnackbar('No data to export', 'warning');
+                return;
+            }
 
+            downloadCSV(exportData, filename);
             showSnackbar('Attendance data exported successfully', 'success');
         } catch (error) {
             console.error('Error exporting attendance:', error);
@@ -237,28 +314,58 @@ const AttendancePage = () => {
         }
     };
 
-    const convertToCSV = (data) => {
-        if (!data || data.length === 0) return '';
-
-        // Get headers from first object
-        const headers = Object.keys(data[0]);
-        const csvHeaders = headers.join(',');
-
-        // Convert data rows
-        const csvRows = data.map(row =>
-            headers.map(header => {
-                const value = row[header];
-                // Handle values that might contain commas
-                return typeof value === 'string' && value.includes(',')
-                    ? `"${value}"`
-                    : value;
-            }).join(',')
-        );
-
-        return [csvHeaders, ...csvRows].join('\n');
+    // Utility functions
+    const getCurrentPosition = () => {
+        return new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                timeout: 5000,
+                enableHighAccuracy: false
+            });
+        });
     };
 
-    const downloadCSV = (csvContent, filename) => {
+    const convertSummaryToExportFormat = (summaryData) => {
+        if (!summaryData || typeof summaryData !== 'object') return [];
+
+        const exportRows = [];
+
+        // Process different attendance categories
+        ['present', 'absent', 'late', 'checkedIn'].forEach(category => {
+            if (summaryData[category] && Array.isArray(summaryData[category])) {
+                summaryData[category].forEach(record => {
+                    exportRows.push({
+                        employeeName: record.employeeName || 'Unknown',
+                        employeeId: record.employeeId || '',
+                        status: category,
+                        date: record.date || attendanceService.utils.formatDate(selectedDate),
+                        checkInTime: record.checkInTime || '',
+                        checkOutTime: record.checkOutTime || '',
+                        hoursWorked: record.hoursWorked || 0,
+                        location: record.location || ''
+                    });
+                });
+            }
+        });
+
+        return exportRows;
+    };
+
+    const downloadCSV = (data, filename) => {
+        if (!data || data.length === 0) return;
+
+        const headers = Object.keys(data[0]);
+        const csvContent = [
+            headers.join(','),
+            ...data.map(row =>
+                headers.map(header => {
+                    const value = row[header];
+                    return typeof value === 'string' && value.includes(',')
+                        ? `"${value}"`
+                        : value;
+                }).join(',')
+            )
+        ].join('\n');
+
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
 
@@ -273,97 +380,24 @@ const AttendancePage = () => {
         }
     };
 
-    const handleBulkCheckIn = async (employeeIds) => {
-        try {
-            setLoading(true);
-            const now = new Date();
-            const checkInTime = attendanceService.utils.formatTime(now);
-
-            const checkInData = employeeIds.map(employeeId => ({
-                employeeId,
-                checkInTime,
-                location: null // Could be enhanced with location
-            }));
-
-            const results = await attendanceService.bulk.checkInMultiple(checkInData);
-
-            // Count successful and failed operations
-            const successful = results.filter(result => result.status === 'fulfilled').length;
-            const failed = results.filter(result => result.status === 'rejected').length;
-
-            if (failed === 0) {
-                showSnackbar(`Successfully checked in ${successful} employees`, 'success');
-            } else {
-                showSnackbar(`Checked in ${successful} employees, ${failed} failed`, 'warning');
-            }
-
-            await fetchAttendanceData(); // Refresh data
-        } catch (error) {
-            console.error('Error in bulk check-in:', error);
-            showSnackbar('Bulk check-in operation failed', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleGenerateMonthlyAttendance = async (employeeIds = null) => {
-        try {
-            setLoading(true);
-            const year = selectedDate.getFullYear();
-            const month = selectedDate.getMonth() + 1;
-
-            const targetEmployeeIds = employeeIds ||
-                employees
-                    .filter(emp => emp.jobPosition?.contractType === 'MONTHLY')
-                    .map(emp => emp.id);
-
-            if (targetEmployeeIds.length === 0) {
-                showSnackbar('No monthly contract employees found', 'warning');
-                return;
-            }
-
-            const results = await attendanceService.bulk.generateMonthlyMultiple(
-                targetEmployeeIds,
-                year,
-                month
-            );
-
-            // Count successful and failed operations
-            const successful = results.filter(result => result.status === 'fulfilled').length;
-            const failed = results.filter(result => result.status === 'rejected').length;
-
-            if (failed === 0) {
-                showSnackbar(`Monthly attendance generated for ${successful} employees`, 'success');
-            } else {
-                showSnackbar(`Generated for ${successful} employees, ${failed} failed`, 'warning');
-            }
-
-            await fetchAttendanceData(); // Refresh data
-        } catch (error) {
-            console.error('Error generating monthly attendance:', error);
-            showSnackbar('Failed to generate monthly attendance', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const getSelectedEmployeeInfo = () => {
-        return employees.find(emp => emp.id === filters.employeeId);
-    };
-
     const handleDateNavigation = (direction) => {
         const newDate = new Date(selectedDate);
         if (view === 'calendar') {
-            // Navigate by month
             newDate.setMonth(newDate.getMonth() + direction);
         } else {
-            // Navigate by day
             newDate.setDate(newDate.getDate() + direction);
         }
         setSelectedDate(newDate);
     };
 
-    // Keyboard navigation
+    const refreshData = async () => {
+        await Promise.all([
+            fetchEmployees(),
+            fetchAttendanceData()
+        ]);
+    };
+
+    // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.ctrlKey || event.metaKey) {
@@ -384,6 +418,10 @@ const AttendancePage = () => {
                         event.preventDefault();
                         handleExportAttendance();
                         break;
+                    case 'r':
+                        event.preventDefault();
+                        refreshData();
+                        break;
                     default:
                         break;
                 }
@@ -392,7 +430,7 @@ const AttendancePage = () => {
 
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [selectedDate, view]);
+    }, [selectedDate, view, filters]);
 
     return (
         <div className="rockops-attendance-page">
@@ -411,6 +449,16 @@ const AttendancePage = () => {
                 <div className="rockops-attendance-header-actions">
                     <button
                         className="rockops-btn rockops-btn--outline"
+                        onClick={refreshData}
+                        disabled={loading || refreshing}
+                        title="Refresh data (Ctrl+R)"
+                    >
+                        <RefreshCw size={16} className={refreshing ? 'spinning' : ''} />
+                        Refresh
+                    </button>
+
+                    <button
+                        className="rockops-btn rockops-btn--outline"
                         onClick={handleExportAttendance}
                         disabled={loading}
                         title="Export attendance data (Ctrl+E)"
@@ -418,18 +466,6 @@ const AttendancePage = () => {
                         <Download size={16} />
                         Export
                     </button>
-
-                    {employees.some(emp => emp.jobPosition?.contractType === 'MONTHLY') && (
-                        <button
-                            className="rockops-btn rockops-btn--outline"
-                            onClick={() => handleGenerateMonthlyAttendance()}
-                            disabled={loading}
-                            title="Generate monthly attendance for all monthly employees"
-                        >
-                            <Calendar size={16} />
-                            Generate Monthly
-                        </button>
-                    )}
 
                     <button
                         className="rockops-btn rockops-btn--primary"
@@ -443,11 +479,20 @@ const AttendancePage = () => {
                 </div>
             </div>
 
+            {/* Quick Action Panel */}
+            <QuickActionPanel
+                onQuickCheckIn={handleQuickCheckIn}
+                onQuickCheckOut={handleQuickCheckOut}
+                onBulkAction={handleBulkActions}
+                selectedDate={selectedDate}
+                loading={loading}
+            />
+
             {/* Stats Section */}
-            {filters.employeeId && Object.keys(stats).length > 0 && (
+            {selectedEmployee && Object.keys(stats).length > 0 && (
                 <AttendanceStats
                     stats={stats}
-                    employee={getSelectedEmployeeInfo()}
+                    employee={selectedEmployee}
                 />
             )}
 
@@ -460,7 +505,7 @@ const AttendancePage = () => {
                 setSelectedDate={setSelectedDate}
             />
 
-            {/* View Toggle */}
+            {/* View Controls */}
             <div className="rockops-attendance-view-controls">
                 <div className="rockops-attendance-view-toggle">
                     <button
@@ -481,17 +526,16 @@ const AttendancePage = () => {
                     </button>
                 </div>
 
-                {/* Navigation Helper */}
                 <div className="rockops-attendance-navigation-hint">
                     <span className="rockops-attendance-hint-text">
-                        Use Ctrl+← → to navigate, Ctrl+N for new record, Ctrl+E to export
+                        Keyboard shortcuts: Ctrl+← → (navigate), Ctrl+N (new), Ctrl+E (export), Ctrl+R (refresh)
                     </span>
                 </div>
             </div>
 
             {/* Content */}
             <div className="rockops-attendance-content">
-                {loading ? (
+                {loading && !refreshing ? (
                     <div className="rockops-attendance-loading">
                         <div className="rockops-attendance-loading-spinner"></div>
                         <p>Loading attendance data...</p>
@@ -503,22 +547,28 @@ const AttendancePage = () => {
                                 selectedDate={selectedDate}
                                 setSelectedDate={setSelectedDate}
                                 attendanceData={attendanceData}
-                                selectedEmployee={getSelectedEmployeeInfo()}
-                                onEditAttendance={handleEditAttendance}
+                                selectedEmployee={selectedEmployee}
+                                onEditAttendance={(record) => {
+                                    setSelectedAttendanceRecord(record);
+                                    setShowModal(true);
+                                }}
                                 onQuickCheckIn={handleQuickCheckIn}
                                 onQuickCheckOut={handleQuickCheckOut}
-                                loading={loading}
+                                loading={refreshing}
                             />
                         ) : (
                             <AttendanceListView
                                 attendanceData={attendanceData}
                                 employees={employees}
                                 selectedDate={selectedDate}
-                                onEditAttendance={handleEditAttendance}
+                                onEditAttendance={(record) => {
+                                    setSelectedAttendanceRecord(record);
+                                    setShowModal(true);
+                                }}
                                 onQuickCheckIn={handleQuickCheckIn}
                                 onQuickCheckOut={handleQuickCheckOut}
-                                onBulkCheckIn={handleBulkCheckIn}
-                                loading={loading}
+                                onBulkAction={handleBulkActions}
+                                loading={refreshing}
                             />
                         )}
                     </>
@@ -540,9 +590,6 @@ const AttendancePage = () => {
                     loading={loading}
                 />
             )}
-
-            {/* Error Boundary would go here in a real app */}
-            {/* <ErrorBoundary> content </ErrorBoundary> */}
         </div>
     );
 };

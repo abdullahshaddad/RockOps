@@ -426,7 +426,7 @@
       gap: 1rem;
 
       .rockops-attendance-employee-avatar {
-        
+
         width: 3rem;
         height: 3rem;
       }
@@ -1431,7 +1431,7 @@
   }
 
   .modal-footer {
-    
+
     justify-content: flex-end;
     padding: 1.5rem;
     border-top: 1px solid var(--border-color);
@@ -1675,7 +1675,7 @@
   }
 
   // High contrast mode support
-  
+
   // Reduced motion support
   @media (prefers-reduced-motion: reduce) {
     * {
@@ -1698,7 +1698,1301 @@
   white-space: nowrap;
   border: 0;
 }
+/* ====================================
+   ATTENDANCE MODULE STYLES - IMPROVED
+   Enhanced for better usability and UX
+   ==================================== */
 
+.rockops-attendance-page {
+  padding: 2rem;
+  background-color: var(--main-background-color);
+  min-height: 100vh;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+/* ====================================
+   HEADER STYLES - ENHANCED
+   ==================================== */
+
+.rockops-attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .rockops-attendance-header-left {
+    flex: 1;
+
+    .rockops-attendance-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 2rem;
+      font-weight: var(--bold-font-weight);
+      color: var(--head-title-color);
+      margin-bottom: 0.5rem;
+
+      .rockops-attendance-title-icon {
+        color: var(--color-primary);
+      }
+
+      @media (max-width: 768px) {
+        font-size: 1.5rem;
+      }
+    }
+
+    .rockops-attendance-subtitle {
+      color: var(--paragraph-color);
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
+
+  .rockops-attendance-header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .spinning {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+/* ====================================
+   QUICK ACTION PANEL - NEW
+   ==================================== */
+
+.quick-action-panel {
+  background: var(--section-background-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+
+  .quick-action-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    .quick-action-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--color-text-primary);
+
+      h3 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: var(--bold-font-weight);
+      }
+
+      .employee-count {
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+        font-weight: normal;
+      }
+    }
+
+    .expand-toggle {
+      background: none;
+      border: none;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+
+      &:hover {
+        background-color: var(--color-surface-hover);
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  .quick-action-content {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+
+    .quick-action-filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+
+      .search-box {
+        position: relative;
+        flex: 1;
+        min-width: 250px;
+
+        svg {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--color-text-secondary);
+          z-index: 1;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-sm);
+          font-size: 0.875rem;
+          background: var(--color-surface);
+          color: var(--color-text-primary);
+          transition: all var(--transition-fast);
+
+          &:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.1);
+          }
+
+          &::placeholder {
+            color: var(--color-text-tertiary);
+          }
+        }
+      }
+
+      .contract-filter {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        background: var(--color-surface);
+        color: var(--color-text-primary);
+        min-width: 150px;
+
+        &:focus {
+          outline: none;
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.1);
+        }
+      }
+    }
+
+    .bulk-action-controls {
+      background: var(--color-surface-secondary);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-color);
+
+      .selection-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+
+        span {
+          font-weight: 500;
+          color: var(--color-text-primary);
+        }
+
+        .clear-selection {
+          background: none;
+          border: none;
+          color: var(--color-text-secondary);
+          cursor: pointer;
+          font-size: 0.875rem;
+          text-decoration: underline;
+
+          &:hover {
+            color: var(--color-primary);
+          }
+        }
+      }
+
+      .bulk-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+
+        .bulk-action-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: var(--radius-sm);
+          font-size: 0.875rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all var(--transition-fast);
+
+          &.primary {
+            background: var(--color-primary);
+            color: var(--color-text-inverse);
+            border: 1px solid var(--color-primary);
+
+            &:hover {
+              background: var(--color-primary-dark);
+            }
+          }
+        }
+      }
+    }
+
+    .quick-action-buttons {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+
+      .quick-action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background: var(--color-surface);
+        color: var(--color-text-primary);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+
+        &:hover {
+          background: var(--color-surface-hover);
+          border-color: var(--color-primary);
+          color: var(--color-primary);
+        }
+
+        &.monthly-generate {
+          background: var(--color-success);
+          color: var(--color-text-inverse);
+          border-color: var(--color-success);
+
+          &:hover {
+            background: #388e3c;
+          }
+        }
+
+        &.select-all {
+          background: var(--color-info);
+          color: var(--color-text-inverse);
+          border-color: var(--color-info);
+
+          &:hover {
+            background: #1976d2;
+          }
+        }
+      }
+    }
+
+    .employee-grid {
+      .contract-group {
+        margin-bottom: 1.5rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .contract-group-title {
+          margin: 0 0 1rem 0;
+          font-size: 1rem;
+          color: var(--color-text-primary);
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .employee-cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 0.75rem;
+
+          .quick-action-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--color-surface);
+            transition: all var(--transition-fast);
+
+            &:hover {
+              background: var(--color-surface-hover);
+              transform: translateY(-1px);
+              box-shadow: var(--shadow-sm);
+            }
+
+            &.selected {
+              border-color: var(--color-primary);
+              background: rgba(72, 128, 255, 0.05);
+            }
+
+            .employee-quick-info {
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              flex: 1;
+
+              .employee-checkbox {
+                margin: 0;
+              }
+
+              .employee-quick-avatar {
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 1px solid var(--border-color);
+              }
+
+              .employee-quick-details {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+
+                .employee-quick-name {
+                  font-weight: 500;
+                  color: var(--color-text-primary);
+                  font-size: 0.875rem;
+                }
+
+                .employee-quick-position {
+                  font-size: 0.75rem;
+                  color: var(--color-text-secondary);
+                }
+              }
+            }
+
+            .employee-quick-actions {
+              display: flex;
+              gap: 0.5rem;
+
+              .quick-action-btn {
+                padding: 0.5rem;
+                border-radius: var(--radius-sm);
+                border: 1px solid var(--border-color);
+                background: var(--color-surface);
+                cursor: pointer;
+                transition: all var(--transition-fast);
+
+                &:hover {
+                  transform: translateY(-1px);
+                  box-shadow: var(--shadow-sm);
+                }
+
+                &.check-in {
+                  color: var(--color-success);
+                  border-color: var(--color-success);
+
+                  &:hover {
+                    background: var(--color-success);
+                    color: var(--color-text-inverse);
+                  }
+                }
+
+                &.check-out {
+                  color: var(--color-warning);
+                  border-color: var(--color-warning);
+
+                  &:hover {
+                    background: var(--color-warning);
+                    color: var(--color-text-inverse);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .no-employees {
+      text-align: center;
+      padding: 2rem;
+      color: var(--color-text-secondary);
+
+      svg {
+        opacity: 0.5;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+/* ====================================
+   IMPROVED LIST VIEW STYLES
+   ==================================== */
+
+.rockops-attendance-list-view {
+  background: var(--section-background-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+
+  .rockops-attendance-list-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--color-surface-secondary);
+
+    .rockops-attendance-list-filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+
+      .rockops-attendance-search-box {
+        position: relative;
+        min-width: 300px;
+        flex: 1;
+
+        svg {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--color-text-secondary);
+        }
+
+        .rockops-attendance-search-input {
+          width: 100%;
+          padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-sm);
+          font-size: 0.875rem;
+          background: var(--color-surface);
+          color: var(--color-text-primary);
+          transition: all var(--transition-fast);
+
+          &:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.1);
+          }
+
+          &::placeholder {
+            color: var(--color-text-tertiary);
+          }
+        }
+      }
+
+      .rockops-attendance-status-filters {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        .status-filter-btn {
+          padding: 0.375rem 0.75rem;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-sm);
+          background: var(--color-surface);
+          color: var(--color-text-secondary);
+          font-size: 0.8125rem;
+          cursor: pointer;
+          transition: all var(--transition-fast);
+          white-space: nowrap;
+
+          &:hover {
+            background: var(--color-surface-hover);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+          }
+
+          &.active {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: var(--color-text-inverse);
+          }
+
+          .count {
+            margin-left: 0.25rem;
+            opacity: 0.8;
+          }
+        }
+      }
+    }
+
+    .rockops-attendance-bulk-actions {
+      background: rgba(72, 128, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      border: 1px solid rgba(72, 128, 255, 0.2);
+
+      .bulk-selection-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+
+        span {
+          font-weight: 500;
+          color: var(--color-text-primary);
+          font-size: 0.875rem;
+        }
+
+        .clear-selection-btn {
+          background: none;
+          border: none;
+          color: var(--color-text-secondary);
+          cursor: pointer;
+          font-size: 0.8125rem;
+          text-decoration: underline;
+
+          &:hover {
+            color: var(--color-primary);
+          }
+        }
+      }
+
+      .bulk-action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  .rockops-attendance-results-summary {
+    padding: 0.75rem 1.5rem;
+    background: var(--color-surface-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+
+    .results-count {
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+  }
+
+  .rockops-attendance-list-table {
+    overflow-x: auto;
+
+    .rockops-attendance-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+
+      .rockops-attendance-table-header {
+        background: var(--table-header-bg);
+        border-bottom: 2px solid var(--border-color);
+
+        th {
+          padding: 1rem 0.75rem;
+          text-align: left;
+          font-weight: var(--bold-font-weight);
+          color: var(--color-text-secondary);
+          font-size: 0.8125rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          white-space: nowrap;
+
+          &.rockops-attendance-sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: color var(--transition-fast);
+
+            &:hover {
+              color: var(--color-text-primary);
+              background: var(--table-header-hover);
+            }
+
+            svg {
+              margin-left: 0.25rem;
+              vertical-align: middle;
+            }
+          }
+
+          &.checkbox-col { width: 40px; }
+          &.name-col { min-width: 200px; }
+          &.position-col { min-width: 150px; }
+          &.contract-col { width: 100px; }
+          &.status-col { width: 120px; }
+          &.checkin-col { width: 100px; }
+          &.checkout-col { width: 100px; }
+          &.hours-col { width: 80px; }
+          &.site-col { min-width: 120px; }
+          &.actions-col { width: 140px; }
+        }
+      }
+
+      .rockops-attendance-table-body {
+        .rockops-attendance-table-row {
+          border-bottom: 1px solid var(--border-color);
+          transition: background-color var(--transition-fast);
+
+          &:hover {
+            background-color: var(--table-row-hover);
+          }
+
+          td {
+            padding: 0.875rem 0.75rem;
+            vertical-align: middle;
+            color: var(--color-text-primary);
+
+            &.checkbox-col {
+              .rockops-attendance-checkbox {
+                margin: 0;
+              }
+            }
+
+            &.name-col {
+              .rockops-attendance-employee-info {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+
+                .rockops-attendance-employee-avatar {
+                  width: 2.25rem;
+                  height: 2.25rem;
+                  border-radius: 50%;
+                  object-fit: cover;
+                  border: 1px solid var(--border-color);
+                  background: var(--color-surface-hover);
+                }
+
+                .rockops-attendance-employee-details {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.25rem;
+
+                  .rockops-attendance-employee-name {
+                    font-weight: 500;
+                    color: var(--color-text-primary);
+                    font-size: 0.875rem;
+                  }
+
+                  .rockops-attendance-employee-id {
+                    font-size: 0.75rem;
+                    color: var(--color-text-secondary);
+                  }
+                }
+              }
+            }
+
+            &.contract-col {
+              .contract-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.25rem 0.5rem;
+                border-radius: var(--radius-sm);
+                font-size: 0.75rem;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              }
+            }
+
+            &.actions-col {
+              .rockops-attendance-action-buttons {
+                display: flex;
+                gap: 0.375rem;
+                align-items: center;
+
+                .action-btn {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 2rem;
+                  height: 2rem;
+                  padding: 0;
+                  border: 1px solid var(--border-color);
+                  border-radius: var(--radius-sm);
+                  background: var(--color-surface);
+                  cursor: pointer;
+                  transition: all var(--transition-fast);
+
+                  &:hover {
+                    transform: translateY(-1px);
+                    box-shadow: var(--shadow-sm);
+                  }
+
+                  &.check-in-btn {
+                    color: var(--color-success);
+                    border-color: var(--color-success);
+
+                    &:hover {
+                      background: var(--color-success);
+                      color: var(--color-text-inverse);
+                    }
+                  }
+
+                  &.check-out-btn {
+                    color: var(--color-warning);
+                    border-color: var(--color-warning);
+
+                    &:hover {
+                      background: var(--color-warning);
+                      color: var(--color-text-inverse);
+                    }
+                  }
+
+                  &.edit-btn {
+                    color: var(--color-edit);
+                    border-color: var(--color-edit);
+
+                    &:hover {
+                      background: var(--color-edit);
+                      color: var(--color-text-inverse);
+                    }
+                  }
+
+                  &.details-btn {
+                    color: var(--color-text-secondary);
+
+                    &:hover {
+                      background: var(--color-view-bg);
+                      color: var(--color-view);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .rockops-attendance-details-row {
+          background: var(--color-surface-secondary);
+          border-bottom: 1px solid var(--border-color);
+
+          .rockops-attendance-details-cell {
+            padding: 1.5rem;
+
+            .rockops-attendance-details-content {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+              gap: 1.5rem;
+
+              .details-section {
+                .details-title {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  margin: 0 0 1rem 0;
+                  font-size: 0.9375rem;
+                  font-weight: var(--bold-font-weight);
+                  color: var(--color-text-primary);
+
+                  svg {
+                    color: var(--color-text-secondary);
+                  }
+                }
+
+                .details-grid {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.75rem;
+
+                  .detail-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    font-size: 0.8125rem;
+
+                    .detail-label {
+                      color: var(--color-text-secondary);
+                      font-weight: 500;
+                    }
+
+                    .detail-value {
+                      color: var(--color-text-primary);
+                      font-weight: 500;
+                    }
+                  }
+                }
+
+                .notes-content {
+                  margin: 0;
+                  padding: 0.75rem;
+                  background: var(--color-surface);
+                  border-radius: var(--radius-sm);
+                  border: 1px solid var(--border-color);
+                  font-size: 0.875rem;
+                  color: var(--color-text-primary);
+                  line-height: 1.5;
+                }
+              }
+            }
+          }
+        }
+
+        .no-data-cell {
+          padding: 3rem;
+          text-align: center;
+
+          .no-data-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            color: var(--color-text-secondary);
+
+            svg {
+              opacity: 0.5;
+            }
+
+            p {
+              margin: 0;
+              font-size: 1rem;
+            }
+
+            .clear-search-btn {
+              padding: 0.5rem 1rem;
+              background: var(--color-primary);
+              color: var(--color-text-inverse);
+              border: none;
+              border-radius: var(--radius-sm);
+              cursor: pointer;
+              font-size: 0.875rem;
+              transition: background-color var(--transition-fast);
+
+              &:hover {
+                background: var(--color-primary-dark);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ====================================
+   ENHANCED STATUS BADGES
+   ==================================== */
+
+.rockops-attendance-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.rockops-attendance-status-present {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--color-success);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+  }
+
+  &.rockops-attendance-status-absent {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--color-danger);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+  }
+
+  &.rockops-attendance-status-late {
+    background: rgba(255, 152, 0, 0.1);
+    color: var(--color-warning);
+    border: 1px solid rgba(255, 152, 0, 0.3);
+  }
+
+  &.rockops-attendance-status-checkedin {
+    background: rgba(33, 150, 243, 0.1);
+    color: var(--color-info);
+    border: 1px solid rgba(33, 150, 243, 0.3);
+  }
+
+  &.rockops-attendance-status-leave {
+    background: rgba(156, 39, 176, 0.1);
+    color: #9c27b0;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+  }
+
+  &.rockops-attendance-status-holiday {
+    background: rgba(103, 58, 183, 0.1);
+    color: #673ab7;
+    border: 1px solid rgba(103, 58, 183, 0.3);
+  }
+
+  &.rockops-attendance-status-unknown {
+    background: rgba(158, 158, 158, 0.1);
+    color: var(--color-text-tertiary);
+    border: 1px solid rgba(158, 158, 158, 0.3);
+  }
+}
+
+/* ====================================
+   ENHANCED MODAL STYLES
+   ==================================== */
+
+.attendance-modal {
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  .modal-header {
+    background: var(--color-surface-secondary);
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .attendance-form {
+    .form-section {
+      margin-bottom: 2rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.125rem;
+        color: var(--head-title-color);
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+    }
+
+    .time-input-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      input[type="time"] {
+        flex: 1;
+      }
+
+      .time-now-btn {
+        padding: 0.5rem 0.75rem;
+        background: var(--color-primary);
+        color: var(--color-text-inverse);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.8125rem;
+        cursor: pointer;
+        transition: background-color var(--transition-fast);
+        white-space: nowrap;
+
+        &:hover {
+          background: var(--color-primary-dark);
+        }
+      }
+    }
+
+    .location-input-group {
+      display: flex;
+      gap: 0.5rem;
+
+      input {
+        flex: 1;
+      }
+
+      .location-btn {
+        padding: 0.75rem 1rem;
+        background: var(--color-success);
+        color: var(--color-text-inverse);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        white-space: nowrap;
+        min-width: 80px;
+
+        &:hover:not(:disabled) {
+          background: #388e3c;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .spinning {
+          animation: spin 1s linear infinite;
+        }
+      }
+    }
+
+    .employee-info-card {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--color-surface-hover);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+
+      .contract-badge {
+        background: var(--color-primary);
+        color: var(--color-text-inverse);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .error-summary {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: rgba(244, 67, 54, 0.1);
+      border: 1px solid rgba(244, 67, 54, 0.3);
+      border-radius: var(--radius-md);
+      color: var(--color-danger);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 2px solid var(--border-color);
+    background: var(--color-surface-secondary);
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* ====================================
+   LOADING AND ANIMATIONS
+   ==================================== */
+
+.rockops-attendance-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-secondary);
+
+  .rockops-attendance-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--color-surface-hover);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ====================================
+   RESPONSIVE IMPROVEMENTS
+   ==================================== */
+
+@media (max-width: 1024px) {
+  .rockops-attendance-page {
+    padding: 1.5rem;
+  }
+
+  .quick-action-panel .quick-action-content .employee-grid .contract-group .employee-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .rockops-attendance-list-view .rockops-attendance-results-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .rockops-attendance-page {
+    padding: 1rem;
+  }
+
+  .rockops-attendance-header {
+    .rockops-attendance-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  .quick-action-panel .quick-action-content {
+    .quick-action-filters {
+      flex-direction: column;
+
+      .search-box {
+        min-width: auto;
+      }
+    }
+
+    .quick-action-buttons {
+      flex-direction: column;
+
+      .quick-action-btn {
+        justify-content: center;
+      }
+    }
+  }
+
+  .rockops-attendance-list-view {
+    .rockops-attendance-list-header {
+      .rockops-attendance-list-filters {
+        flex-direction: column;
+        align-items: stretch;
+
+        .rockops-attendance-search-box {
+          min-width: auto;
+        }
+
+        .rockops-attendance-status-filters {
+          justify-content: center;
+        }
+      }
+    }
+
+    .rockops-attendance-list-table {
+      .rockops-attendance-table {
+        min-width: 800px;
+
+        .rockops-attendance-table-header th {
+          padding: 0.75rem 0.5rem;
+          font-size: 0.75rem;
+        }
+
+        .rockops-attendance-table-body td {
+          padding: 0.75rem 0.5rem;
+        }
+      }
+    }
+  }
+
+  .attendance-modal {
+    max-width: 95vw;
+    margin: 1rem;
+
+    .attendance-form {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .time-input-group,
+      .location-input-group {
+        flex-direction: column;
+
+        .time-now-btn,
+        .location-btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .rockops-attendance-list-view .rockops-attendance-list-header .rockops-attendance-list-filters .rockops-attendance-status-filters {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+
+    .status-filter-btn {
+      text-align: center;
+    }
+  }
+}
+
+/* ====================================
+   DARK THEME ADJUSTMENTS
+   ==================================== */
+
+[data-theme="dark"] {
+  .quick-action-panel .quick-action-content .bulk-action-controls {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .rockops-attendance-list-view .rockops-attendance-list-header .rockops-attendance-bulk-actions {
+    background: rgba(72, 128, 255, 0.1);
+    border-color: rgba(72, 128, 255, 0.3);
+  }
+}
+
+/* ====================================
+   PRINT STYLES
+   ==================================== */
+
+@media print {
+  .rockops-attendance-page {
+    padding: 0;
+    background: white !important;
+  }
+
+  .rockops-attendance-header-actions,
+  .quick-action-panel,
+  .rockops-attendance-view-controls,
+  .rockops-attendance-bulk-actions,
+  .action-btn,
+  .modal-overlay {
+    display: none !important;
+  }
+
+  .rockops-attendance-list-view,
+  .rockops-attendance-table {
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  .rockops-attendance-table {
+    font-size: 11px;
+
+    th, td {
+      padding: 0.5rem 0.25rem;
+    }
+  }
+
+  .rockops-attendance-status-badge {
+    border: 1px solid currentColor !important;
+    background: white !important;
+  }
+}
 /* ====================================
    QUICK FILTERS STYLES
    ==================================== */
@@ -1765,5 +3059,1396 @@
         font-size: 0.8125rem;
       }
     }
+  }
+}
+
+/* ====================================
+   ATTENDANCE MODULE STYLES - IMPROVED
+   Enhanced for better usability and UX
+   ==================================== */
+
+.rockops-attendance-page {
+  padding: 2rem;
+  background-color: var(--main-background-color);
+  min-height: 100vh;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+/* ====================================
+   HEADER STYLES - ENHANCED
+   ==================================== */
+
+.rockops-attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .rockops-attendance-header-left {
+    flex: 1;
+
+    .rockops-attendance-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 2rem;
+      font-weight: var(--bold-font-weight);
+      color: var(--head-title-color);
+      margin-bottom: 0.5rem;
+
+      .rockops-attendance-title-icon {
+        color: var(--color-primary);
+      }
+
+      @media (max-width: 768px) {
+        font-size: 1.5rem;
+      }
+    }
+
+    .rockops-attendance-subtitle {
+      color: var(--paragraph-color);
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
+
+  .rockops-attendance-header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .spinning {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+/* ====================================
+   QUICK ACTION PANEL - NEW
+   ==================================== */
+
+.quick-action-panel {
+  background: var(--section-background-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+
+  .quick-action-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    .quick-action-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--color-text-primary);
+
+      h3 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: var(--bold-font-weight);
+      }
+
+      .employee-count {
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+        font-weight: normal;
+      }
+
+      .error-indicator {
+        color: var(--color-warning);
+        font-size: 0.875rem;
+        cursor: help;
+      }
+    }
+
+    .quick-action-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .refresh-btn {
+        background: none;
+        border: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: var(--radius-sm);
+        transition: all var(--transition-fast);
+
+        &:hover {
+          background-color: var(--color-surface-hover);
+          color: var(--color-primary);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .spinning {
+          animation: spin 1s linear infinite;
+        }
+      }
+
+      .expand-toggle {
+        background: none;
+        border: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: var(--radius-sm);
+        transition: all var(--transition-fast);
+
+        &:hover {
+          background-color: var(--color-surface-hover);
+          color: var(--color-primary);
+        }
+      }
+    }
+  }
+
+  .quick-action-content {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+
+    .quick-action-filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+
+      .search-box, .filter-box {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+
+        svg {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--color-text-secondary);
+          z-index: 1;
+        }
+
+        .search-input, .contract-filter {
+          width: 100%;
+          padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-sm);
+          font-size: 0.875rem;
+          background: var(--color-surface);
+          color: var(--color-text-primary);
+          transition: all var(--transition-fast);
+
+          &:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.1);
+          }
+
+          &::placeholder {
+            color: var(--color-text-tertiary);
+          }
+        }
+      }
+    }
+
+    .bulk-action-controls {
+      background: var(--color-surface-secondary);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-color);
+
+      .selection-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+
+        span {
+          font-weight: 500;
+          color: var(--color-text-primary);
+        }
+
+        .clear-selection {
+          background: none;
+          border: none;
+          color: var(--color-text-secondary);
+          cursor: pointer;
+          font-size: 0.875rem;
+          text-decoration: underline;
+
+          &:hover {
+            color: var(--color-primary);
+          }
+        }
+      }
+
+      .bulk-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+
+        .bulk-action-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: var(--radius-sm);
+          font-size: 0.875rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all var(--transition-fast);
+
+          &.primary {
+            background: var(--color-primary);
+            color: var(--color-text-inverse);
+            border: 1px solid var(--color-primary);
+
+            &:hover {
+              background: var(--color-primary-dark);
+            }
+          }
+        }
+      }
+    }
+
+    .quick-action-buttons {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+
+      .quick-action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background: var(--color-surface);
+        color: var(--color-text-primary);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+
+        &:hover {
+          background: var(--color-surface-hover);
+          border-color: var(--color-primary);
+          color: var(--color-primary);
+        }
+
+        &.monthly-generate {
+          background: var(--color-success);
+          color: var(--color-text-inverse);
+          border-color: var(--color-success);
+
+          &:hover {
+            background: #388e3c;
+          }
+        }
+
+        &.select-all {
+          background: var(--color-info);
+          color: var(--color-text-inverse);
+          border-color: var(--color-info);
+
+          &:hover {
+            background: #1976d2;
+          }
+        }
+      }
+    }
+
+    .employee-grid {
+      .contract-group {
+        margin-bottom: 1.5rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .contract-group-title {
+          margin: 0 0 1rem 0;
+          font-size: 1rem;
+          color: var(--color-text-primary);
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid var(--border-color);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .select-all-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+
+            &:hover {
+              background: var(--color-primary);
+              color: var(--color-text-inverse);
+              border-color: var(--color-primary);
+            }
+          }
+        }
+
+        .employee-cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 0.75rem;
+
+          .quick-action-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--color-surface);
+            transition: all var(--transition-fast);
+
+            &:hover {
+              background: var(--color-surface-hover);
+              transform: translateY(-1px);
+              box-shadow: var(--shadow-sm);
+            }
+
+            &.selected {
+              border-color: var(--color-primary);
+              background: rgba(72, 128, 255, 0.05);
+            }
+
+            .employee-quick-info {
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              flex: 1;
+
+              .employee-checkbox {
+                margin: 0;
+              }
+
+              .employee-quick-avatar {
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 1px solid var(--border-color);
+              }
+
+              .employee-quick-details {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+
+                .employee-quick-name {
+                  font-weight: 500;
+                  color: var(--color-text-primary);
+                  font-size: 0.875rem;
+                }
+
+                .employee-quick-position {
+                  font-size: 0.75rem;
+                  color: var(--color-text-secondary);
+                }
+              }
+            }
+
+            .employee-quick-actions {
+              display: flex;
+              gap: 0.5rem;
+
+              .quick-action-btn {
+                padding: 0.5rem;
+                border-radius: var(--radius-sm);
+                border: 1px solid var(--border-color);
+                background: var(--color-surface);
+                cursor: pointer;
+                transition: all var(--transition-fast);
+
+                &:hover {
+                  transform: translateY(-1px);
+                  box-shadow: var(--shadow-sm);
+                }
+
+                &.check-in {
+                  color: var(--color-success);
+                  border-color: var(--color-success);
+
+                  &:hover {
+                    background: var(--color-success);
+                    color: var(--color-text-inverse);
+                  }
+                }
+
+                &.check-out {
+                  color: var(--color-warning);
+                  border-color: var(--color-warning);
+
+                  &:hover {
+                    background: var(--color-warning);
+                    color: var(--color-text-inverse);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .loading-state, .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+
+      .loading-spinner {
+        width: 2rem;
+        height: 2rem;
+        border: 3px solid var(--color-surface-hover);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+      }
+
+      .error-message {
+        color: var(--color-danger);
+        margin-bottom: 1rem;
+      }
+
+      .retry-btn {
+        padding: 0.5rem 1rem;
+        background: var(--color-primary);
+        color: var(--color-text-inverse);
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-size: 0.875rem;
+
+        &:hover {
+          background: var(--color-primary-dark);
+        }
+      }
+    }
+
+    .no-employees {
+      text-align: center;
+      padding: 2rem;
+      color: var(--color-text-secondary);
+
+      svg {
+        opacity: 0.5;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        margin: 0 0 1rem 0;
+        font-size: 1rem;
+      }
+
+      .clear-filters-btn {
+        padding: 0.5rem 1rem;
+        background: var(--color-primary);
+        color: var(--color-text-inverse);
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-size: 0.875rem;
+
+        &:hover {
+          background: var(--color-primary-dark);
+        }
+      }
+    }
+  }
+}
+
+/* ====================================
+   IMPROVED LIST VIEW STYLES
+   ==================================== */
+
+.rockops-attendance-list-view {
+  background: var(--section-background-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+
+  .rockops-attendance-list-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--color-surface-secondary);
+
+    .rockops-attendance-list-filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+
+      .rockops-attendance-search-box {
+        position: relative;
+        min-width: 300px;
+        flex: 1;
+
+        svg {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--color-text-secondary);
+        }
+
+        .rockops-attendance-search-input {
+          width: 100%;
+          padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-sm);
+          font-size: 0.875rem;
+          background: var(--color-surface);
+          color: var(--color-text-primary);
+          transition: all var(--transition-fast);
+
+          &:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(72, 128, 255, 0.1);
+          }
+
+          &::placeholder {
+            color: var(--color-text-tertiary);
+          }
+        }
+      }
+
+      .rockops-attendance-status-filters {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        .status-filter-btn {
+          padding: 0.375rem 0.75rem;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-sm);
+          background: var(--color-surface);
+          color: var(--color-text-secondary);
+          font-size: 0.8125rem;
+          cursor: pointer;
+          transition: all var(--transition-fast);
+          white-space: nowrap;
+
+          &:hover {
+            background: var(--color-surface-hover);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+          }
+
+          &.active {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: var(--color-text-inverse);
+          }
+
+          .count {
+            margin-left: 0.25rem;
+            opacity: 0.8;
+          }
+        }
+      }
+    }
+
+    .rockops-attendance-bulk-actions {
+      background: rgba(72, 128, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      border: 1px solid rgba(72, 128, 255, 0.2);
+
+      .bulk-selection-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+
+        span {
+          font-weight: 500;
+          color: var(--color-text-primary);
+          font-size: 0.875rem;
+        }
+
+        .clear-selection-btn {
+          background: none;
+          border: none;
+          color: var(--color-text-secondary);
+          cursor: pointer;
+          font-size: 0.8125rem;
+          text-decoration: underline;
+
+          &:hover {
+            color: var(--color-primary);
+          }
+        }
+      }
+
+      .bulk-action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  .rockops-attendance-results-summary {
+    padding: 0.75rem 1.5rem;
+    background: var(--color-surface-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+
+    .results-count {
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+  }
+
+  .rockops-attendance-list-table {
+    overflow-x: auto;
+
+    .rockops-attendance-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+
+      .rockops-attendance-table-header {
+        background: var(--table-header-bg);
+        border-bottom: 2px solid var(--border-color);
+
+        th {
+          padding: 1rem 0.75rem;
+          text-align: left;
+          font-weight: var(--bold-font-weight);
+          color: var(--color-text-secondary);
+          font-size: 0.8125rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          white-space: nowrap;
+
+          &.rockops-attendance-sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: color var(--transition-fast);
+
+            &:hover {
+              color: var(--color-text-primary);
+              background: var(--table-header-hover);
+            }
+
+            svg {
+              margin-left: 0.25rem;
+              vertical-align: middle;
+            }
+          }
+
+          &.checkbox-col { width: 40px; }
+          &.name-col { min-width: 200px; }
+          &.position-col { min-width: 150px; }
+          &.contract-col { width: 100px; }
+          &.status-col { width: 120px; }
+          &.checkin-col { width: 100px; }
+          &.checkout-col { width: 100px; }
+          &.hours-col { width: 80px; }
+          &.site-col { min-width: 120px; }
+          &.actions-col { width: 140px; }
+        }
+      }
+
+      .rockops-attendance-table-body {
+        .rockops-attendance-table-row {
+          border-bottom: 1px solid var(--border-color);
+          transition: background-color var(--transition-fast);
+
+          &:hover {
+            background-color: var(--table-row-hover);
+          }
+
+          td {
+            padding: 0.875rem 0.75rem;
+            vertical-align: middle;
+            color: var(--color-text-primary);
+
+            &.checkbox-col {
+              .rockops-attendance-checkbox {
+                margin: 0;
+              }
+            }
+
+            &.name-col {
+              .rockops-attendance-employee-info {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+
+                .rockops-attendance-employee-avatar {
+                  width: 2.25rem;
+                  height: 2.25rem;
+                  border-radius: 50%;
+                  object-fit: cover;
+                  border: 1px solid var(--border-color);
+                  background: var(--color-surface-hover);
+                }
+
+                .rockops-attendance-employee-details {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.25rem;
+
+                  .rockops-attendance-employee-name {
+                    font-weight: 500;
+                    color: var(--color-text-primary);
+                    font-size: 0.875rem;
+                  }
+
+                  .rockops-attendance-employee-id {
+                    font-size: 0.75rem;
+                    color: var(--color-text-secondary);
+                  }
+                }
+              }
+            }
+
+            &.contract-col {
+              .contract-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.25rem 0.5rem;
+                border-radius: var(--radius-sm);
+                font-size: 0.75rem;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              }
+            }
+
+            &.actions-col {
+              .rockops-attendance-action-buttons {
+                display: flex;
+                gap: 0.375rem;
+                align-items: center;
+
+                .action-btn {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 2rem;
+                  height: 2rem;
+                  padding: 0;
+                  border: 1px solid var(--border-color);
+                  border-radius: var(--radius-sm);
+                  background: var(--color-surface);
+                  cursor: pointer;
+                  transition: all var(--transition-fast);
+
+                  &:hover {
+                    transform: translateY(-1px);
+                    box-shadow: var(--shadow-sm);
+                  }
+
+                  &.check-in-btn {
+                    color: var(--color-success);
+                    border-color: var(--color-success);
+
+                    &:hover {
+                      background: var(--color-success);
+                      color: var(--color-text-inverse);
+                    }
+                  }
+
+                  &.check-out-btn {
+                    color: var(--color-warning);
+                    border-color: var(--color-warning);
+
+                    &:hover {
+                      background: var(--color-warning);
+                      color: var(--color-text-inverse);
+                    }
+                  }
+
+                  &.edit-btn {
+                    color: var(--color-edit);
+                    border-color: var(--color-edit);
+
+                    &:hover {
+                      background: var(--color-edit);
+                      color: var(--color-text-inverse);
+                    }
+                  }
+
+                  &.details-btn {
+                    color: var(--color-text-secondary);
+
+                    &:hover {
+                      background: var(--color-view-bg);
+                      color: var(--color-view);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .rockops-attendance-details-row {
+          background: var(--color-surface-secondary);
+          border-bottom: 1px solid var(--border-color);
+
+          .rockops-attendance-details-cell {
+            padding: 1.5rem;
+
+            .rockops-attendance-details-content {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+              gap: 1.5rem;
+
+              .details-section {
+                .details-title {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  margin: 0 0 1rem 0;
+                  font-size: 0.9375rem;
+                  font-weight: var(--bold-font-weight);
+                  color: var(--color-text-primary);
+
+                  svg {
+                    color: var(--color-text-secondary);
+                  }
+                }
+
+                .details-grid {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.75rem;
+
+                  .detail-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    font-size: 0.8125rem;
+
+                    .detail-label {
+                      color: var(--color-text-secondary);
+                      font-weight: 500;
+                    }
+
+                    .detail-value {
+                      color: var(--color-text-primary);
+                      font-weight: 500;
+                    }
+                  }
+                }
+
+                .notes-content {
+                  margin: 0;
+                  padding: 0.75rem;
+                  background: var(--color-surface);
+                  border-radius: var(--radius-sm);
+                  border: 1px solid var(--border-color);
+                  font-size: 0.875rem;
+                  color: var(--color-text-primary);
+                  line-height: 1.5;
+                }
+              }
+            }
+          }
+        }
+
+        .no-data-cell {
+          padding: 3rem;
+          text-align: center;
+
+          .no-data-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            color: var(--color-text-secondary);
+
+            svg {
+              opacity: 0.5;
+            }
+
+            p {
+              margin: 0;
+              font-size: 1rem;
+            }
+
+            .clear-search-btn {
+              padding: 0.5rem 1rem;
+              background: var(--color-primary);
+              color: var(--color-text-inverse);
+              border: none;
+              border-radius: var(--radius-sm);
+              cursor: pointer;
+              font-size: 0.875rem;
+              transition: background-color var(--transition-fast);
+
+              &:hover {
+                background: var(--color-primary-dark);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ====================================
+   ENHANCED STATUS BADGES
+   ==================================== */
+
+.rockops-attendance-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.rockops-attendance-status-present {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--color-success);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+  }
+
+  &.rockops-attendance-status-absent {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--color-danger);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+  }
+
+  &.rockops-attendance-status-late {
+    background: rgba(255, 152, 0, 0.1);
+    color: var(--color-warning);
+    border: 1px solid rgba(255, 152, 0, 0.3);
+  }
+
+  &.rockops-attendance-status-checkedin {
+    background: rgba(33, 150, 243, 0.1);
+    color: var(--color-info);
+    border: 1px solid rgba(33, 150, 243, 0.3);
+  }
+
+  &.rockops-attendance-status-leave {
+    background: rgba(156, 39, 176, 0.1);
+    color: #9c27b0;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+  }
+
+  &.rockops-attendance-status-holiday {
+    background: rgba(103, 58, 183, 0.1);
+    color: #673ab7;
+    border: 1px solid rgba(103, 58, 183, 0.3);
+  }
+
+  &.rockops-attendance-status-unknown {
+    background: rgba(158, 158, 158, 0.1);
+    color: var(--color-text-tertiary);
+    border: 1px solid rgba(158, 158, 158, 0.3);
+  }
+}
+
+/* ====================================
+   ENHANCED MODAL STYLES
+   ==================================== */
+
+.attendance-modal {
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  .modal-header {
+    background: var(--color-surface-secondary);
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .attendance-form {
+    .form-section {
+      margin-bottom: 2rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.125rem;
+        color: var(--head-title-color);
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+    }
+
+    .time-input-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      input[type="time"] {
+        flex: 1;
+      }
+
+      .time-now-btn {
+        padding: 0.5rem 0.75rem;
+        background: var(--color-primary);
+        color: var(--color-text-inverse);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.8125rem;
+        cursor: pointer;
+        transition: background-color var(--transition-fast);
+        white-space: nowrap;
+
+        &:hover {
+          background: var(--color-primary-dark);
+        }
+      }
+    }
+
+    .location-input-group {
+      display: flex;
+      gap: 0.5rem;
+
+      input {
+        flex: 1;
+      }
+
+      .location-btn {
+        padding: 0.75rem 1rem;
+        background: var(--color-success);
+        color: var(--color-text-inverse);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        white-space: nowrap;
+        min-width: 80px;
+
+        &:hover:not(:disabled) {
+          background: #388e3c;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .spinning {
+          animation: spin 1s linear infinite;
+        }
+      }
+    }
+
+    .employee-info-card {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--color-surface-hover);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+
+      .contract-badge {
+        background: var(--color-primary);
+        color: var(--color-text-inverse);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .error-summary {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: rgba(244, 67, 54, 0.1);
+      border: 1px solid rgba(244, 67, 54, 0.3);
+      border-radius: var(--radius-md);
+      color: var(--color-danger);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 2px solid var(--border-color);
+    background: var(--color-surface-secondary);
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* ====================================
+   LOADING AND ANIMATIONS
+   ==================================== */
+
+.rockops-attendance-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-secondary);
+
+  .rockops-attendance-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--color-surface-hover);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ====================================
+   RESPONSIVE IMPROVEMENTS
+   ==================================== */
+
+@media (max-width: 1024px) {
+  .rockops-attendance-page {
+    padding: 1.5rem;
+  }
+
+  .quick-action-panel .quick-action-content .employee-grid .contract-group .employee-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .rockops-attendance-list-view .rockops-attendance-results-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .rockops-attendance-page {
+    padding: 1rem;
+  }
+
+  .rockops-attendance-header {
+    .rockops-attendance-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  .quick-action-panel .quick-action-content {
+    .quick-action-filters {
+      flex-direction: column;
+
+      .search-box {
+        min-width: auto;
+      }
+    }
+
+    .quick-action-buttons {
+      flex-direction: column;
+
+      .quick-action-btn {
+        justify-content: center;
+      }
+    }
+  }
+
+  .rockops-attendance-list-view {
+    .rockops-attendance-list-header {
+      .rockops-attendance-list-filters {
+        flex-direction: column;
+        align-items: stretch;
+
+        .rockops-attendance-search-box {
+          min-width: auto;
+        }
+
+        .rockops-attendance-status-filters {
+          justify-content: center;
+        }
+      }
+    }
+
+    .rockops-attendance-list-table {
+      .rockops-attendance-table {
+        min-width: 800px;
+
+        .rockops-attendance-table-header th {
+          padding: 0.75rem 0.5rem;
+          font-size: 0.75rem;
+        }
+
+        .rockops-attendance-table-body td {
+          padding: 0.75rem 0.5rem;
+        }
+      }
+    }
+  }
+
+  .attendance-modal {
+    max-width: 95vw;
+    margin: 1rem;
+
+    .attendance-form {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .time-input-group,
+      .location-input-group {
+        flex-direction: column;
+
+        .time-now-btn,
+        .location-btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .rockops-attendance-list-view .rockops-attendance-list-header .rockops-attendance-list-filters .rockops-attendance-status-filters {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+
+    .status-filter-btn {
+      text-align: center;
+    }
+  }
+}
+
+/* ====================================
+   DARK THEME ADJUSTMENTS
+   ==================================== */
+
+[data-theme="dark"] {
+  .quick-action-panel .quick-action-content .bulk-action-controls {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .rockops-attendance-list-view .rockops-attendance-list-header .rockops-attendance-bulk-actions {
+    background: rgba(72, 128, 255, 0.1);
+    border-color: rgba(72, 128, 255, 0.3);
+  }
+}
+
+/* ====================================
+   PRINT STYLES
+   ==================================== */
+
+@media print {
+  .rockops-attendance-page {
+    padding: 0;
+    background: white !important;
+  }
+
+  .rockops-attendance-header-actions,
+  .quick-action-panel,
+  .rockops-attendance-view-controls,
+  .rockops-attendance-bulk-actions,
+  .action-btn,
+  .modal-overlay {
+    display: none !important;
+  }
+
+  .rockops-attendance-list-view,
+  .rockops-attendance-table {
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  .rockops-attendance-table {
+    font-size: 11px;
+
+    th, td {
+      padding: 0.5rem 0.25rem;
+    }
+  }
+
+  .rockops-attendance-status-badge {
+    border: 1px solid currentColor !important;
+    background: white !important;
   }
 }
