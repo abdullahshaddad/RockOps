@@ -113,6 +113,11 @@ export const equipmentService = {
         return apiClient.get(EQUIPMENT_ENDPOINTS.CONSUMABLES(equipmentId));
     },
 
+    // Get equipment consumable analytics
+    getConsumableAnalytics: (equipmentId) => {
+        return apiClient.get(EQUIPMENT_ENDPOINTS.CONSUMABLES_ANALYTICS(equipmentId));
+    },
+
     // Site Management
     getAllSites: () => {
         return apiClient.get(SITE_ENDPOINTS.BASE);
@@ -153,6 +158,29 @@ export const equipmentService = {
     // NEW: Check driver compatibility for equipment
     checkDriverCompatibility: (equipmentId, employeeId) => {
         return apiClient.get(EQUIPMENT_ENDPOINTS.CHECK_DRIVER_COMPATIBILITY(equipmentId, employeeId));
+    },
+
+    // NEW: Get supported work types for equipment type
+    getSupportedWorkTypesForEquipmentType: (typeId) => {
+        return apiClient.get(EQUIPMENT_ENDPOINTS.SUPPORTED_WORK_TYPES(typeId));
+    },
+
+    // NEW: Manage supported work types for equipment types
+    setSupportedWorkTypesForEquipmentType: (typeId, workTypeIds) => {
+        return apiClient.put(EQUIPMENT_ENDPOINTS.TYPE_SUPPORTED_WORK_TYPES(typeId), workTypeIds);
+    },
+
+    addSupportedWorkTypesForEquipmentType: (typeId, workTypeIds) => {
+        return apiClient.post(EQUIPMENT_ENDPOINTS.TYPE_SUPPORTED_WORK_TYPES(typeId), workTypeIds);
+    },
+
+    removeSupportedWorkTypesForEquipmentType: (typeId, workTypeIds) => {
+        return apiClient.delete(EQUIPMENT_ENDPOINTS.TYPE_SUPPORTED_WORK_TYPES(typeId), { data: workTypeIds });
+    },
+
+    // NEW: Get sarky analytics for equipment dashboard
+    getSarkyAnalyticsForEquipment: (equipmentId) => {
+        return apiClient.get(EQUIPMENT_ENDPOINTS.SARKY_ANALYTICS(equipmentId));
     },
 
     // Update createEquipment method

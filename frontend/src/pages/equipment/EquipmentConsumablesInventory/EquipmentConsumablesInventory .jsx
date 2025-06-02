@@ -1,5 +1,7 @@
 import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react';
-import axios from 'axios';
+import { useSnackbar } from '../../../contexts/SnackbarContext.jsx';
+import { equipmentService } from '../../../services/equipmentService';
+import { transactionService } from '../../../services/transactionService';
 import './EquipmentConsumablesInventory.scss';
 import DataTable from '../../../components/common/DataTable/DataTable';
 
@@ -15,17 +17,53 @@ const EquipmentConsumablesInventory = forwardRef(({equipmentId, onAddClick}, ref
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
-    const token = localStorage.getItem('token');
-    const axiosInstance = axios.create({
-        headers: {Authorization: `Bearer ${token}`}
-    });
+    const { showInfo } = useSnackbar();
+
+    // Function to fetch transaction details and show in snackbar
+    const showTransactionDetails = async (transactionId, batchNumber) => {
+        if (!batchNumber) {
+            showInfo(`Batch #N/A - No batch number available`, 4000);
+            return;
+        }
+
+        try {
+            const response = await transactionService.getByBatchNumber(batchNumber);
+            const transaction = response.data;
+            console.log(transaction);
+
+            // Format transaction details in a more readable, structured way
+            const details = `TRANSACTION DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 Batch Number: ${batchNumber}
+
+📊 Status: ${transaction.status || 'N/A'}
+
+📅 Date: ${transaction.transactionDate ? new Date(transaction.transactionDate).toLocaleDateString() : 'N/A'}
+
+📤 From: ${transaction.senderName || 'N/A'}
+
+📥 To: ${transaction.receiverName || 'N/A'}
+
+📋 Items: ${transaction.items?.length || 0} item(s)
+
+👤 Added by: ${transaction.addedBy || 'N/A'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Click the ✕ button to close`;
+
+            // Use persistent snackbar so it stays until manually closed
+            showInfo(details, 0, true);
+        } catch (error) {
+            console.error('Error fetching transaction details:', error);
+            showInfo(`Batch #${batchNumber} - Unable to fetch transaction details`, 4000);
+        }
+    };
 
     const fetchConsumables = async () => {
         try {
             setLoading(true);
-            // Fetch all consumables, we'll filter them in the frontend
-            const endpoint = `http://localhost:8080/api/equipment/${equipmentId}/consumables`;
-            const response = await axiosInstance.get(endpoint);
+            const response = await equipmentService.getEquipmentConsumables(equipmentId);
             setConsumables(response.data);
             console.log("Consumables data:", response.data);
 
@@ -115,9 +153,17 @@ const EquipmentConsumablesInventory = forwardRef(({equipmentId, onAddClick}, ref
         },
         {header: 'Unit', accessor: 'unit'},
         {
-            header: 'Transaction Date',
-            accessor: 'transactionDate',
-            render: (row, value) => value ? new Date(value).toLocaleDateString() : "N/A"
+            header: 'Batch Number',
+            accessor: 'batchNumber',
+            render: (row, value) => (
+                <button
+                    className="info-button"
+                    title="Show Transaction Details"
+                    onClick={() => showTransactionDetails(row.transactionId, value)}
+                >
+                    {value || 'N/A'}
+                </button>
+            )
         },
         {
             header: 'Last Updated',
@@ -149,7 +195,7 @@ const EquipmentConsumablesInventory = forwardRef(({equipmentId, onAddClick}, ref
         {header: 'Category', accessor: 'itemTypeCategory'},
         {header: 'Quantity', accessor: 'quantity'},
         {header: 'Unit', accessor: 'unit'},
-        {header: 'Transaction Date', accessor: 'transactionDate'},
+        {header: 'Batch Number', accessor: 'batchNumber'},
         {header: 'Last Updated', accessor: 'lastUpdated'}
     ];
 
