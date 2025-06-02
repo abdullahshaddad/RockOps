@@ -504,15 +504,7 @@ const WarehousesList = () => {
 
                                     <div className="warehouse-list-card-actions">
 
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation(); // Prevents click event from bubbling to the card
-                                                    handleOpenEditModal(warehouse);
-                                                }}
-                                                className="warehouse-list-edit-button"
-                                            >
-                                                Edit Warehouse
-                                            </button>
+
 
 
                                         <button

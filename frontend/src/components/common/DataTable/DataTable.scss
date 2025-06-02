@@ -1279,6 +1279,8 @@
   }
 }
 
+// Replace the existing .rockops-table__pagination-btn hover styles with this:
+
 .rockops-table__pagination-btn {
   display: flex;
   align-items: center;
@@ -1291,7 +1293,7 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
@@ -1303,43 +1305,24 @@
     box-shadow: var(--shadow-sm);
   }
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.5s;
-  }
-
   svg {
     width: 14px;
     height: 14px;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
   }
 
+  // SIMPLIFIED HOVER - Light grey background
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    border-color: #2563eb;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #374151;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 
     [data-theme="dark"] & {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      border-color: var(--color-primary-dark);
-      color: var(--color-text-inverse);
-      box-shadow: 0 4px 8px rgba(72, 128, 255, 0.3);
-    }
-
-    &::before {
-      left: 100%;
-    }
-
-    svg {
-      transform: scale(1.1);
+      background: var(--color-surface-hover);
+      border-color: var(--color-text-secondary);
+      color: var(--color-text-primary);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
   }
 
@@ -1366,7 +1349,6 @@
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
 
     [data-theme="dark"] & {
       background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
@@ -1374,14 +1356,14 @@
       box-shadow: 0 2px 6px rgba(72, 128, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
+    // SIMPLIFIED ACTIVE HOVER - Slightly darker blue
     &:hover {
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      box-shadow: 0 3px 8px rgba(59, 130, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
+      background: #2563eb;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.5);
 
       [data-theme="dark"] & {
-        background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-dark) 100%);
-        box-shadow: 0 3px 8px rgba(72, 128, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        background: var(--color-primary-dark);
+        box-shadow: 0 2px 6px rgba(72, 128, 255, 0.5);
       }
     }
   }

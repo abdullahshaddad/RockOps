@@ -14,6 +14,7 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [viewTransaction, setViewTransaction] = useState(null); // Add this state
     const [receivedQuantities, setReceivedQuantities] = useState({});
+    const [itemsNotReceived, setItemsNotReceived] = useState({}); // NEW: Track items not received
     const [rejectionReason, setRejectionReason] = useState("");
     const [comments, setComments] = useState("");
     const [acceptError, setAcceptError] = useState("");
@@ -181,13 +182,16 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         setComments("");
         setAcceptError("");
 
-        // Initialize received quantities with empty values
+        // Initialize received quantities and not received flags
         if (transaction.items && transaction.items.length > 0) {
             const initialQuantities = {};
+            const initialNotReceived = {};
             transaction.items.forEach((item, index) => {
                 initialQuantities[index] = ""; // Start with empty values
+                initialNotReceived[index] = false; // Start with all items as received
             });
             setReceivedQuantities(initialQuantities);
+            setItemsNotReceived(initialNotReceived);
         }
 
         setIsAcceptModalOpen(true);
@@ -221,19 +225,42 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         }));
     };
 
+    // NEW: Handle item not received checkbox change
+    const handleItemNotReceivedChange = (index, notReceived) => {
+        setItemsNotReceived(prev => ({
+            ...prev,
+            [index]: notReceived
+        }));
+
+        // If item is marked as not received, clear the quantity
+        if (notReceived) {
+            setReceivedQuantities(prev => ({
+                ...prev,
+                [index]: ""
+            }));
+        }
+    };
+
     // Function to accept transaction
     const handleAcceptTransaction = async (e) => {
         e.preventDefault();
         setProcessingAction(true);
         setAcceptError("");
 
-        // Check if all quantities are valid
-        const hasInvalidQuantities = Object.values(receivedQuantities).some(
-            qty => isNaN(qty) || qty === "" || parseInt(qty) < 0
-        );
+        // Validate inputs: either quantity is valid or item is marked as not received
+        const hasInvalidInputs = selectedTransaction.items.some((item, index) => {
+            const quantity = receivedQuantities[index];
+            const notReceived = itemsNotReceived[index];
 
-        if (hasInvalidQuantities) {
-            setAcceptError("Please enter valid quantities for all items");
+            // If not marked as "not received", must have a valid quantity
+            if (!notReceived) {
+                return isNaN(quantity) || quantity === "" || parseInt(quantity) < 0;
+            }
+            return false; // If marked as not received, it's valid
+        });
+
+        if (hasInvalidInputs) {
+            setAcceptError("Please enter valid quantities for all items or mark them as not received");
             setProcessingAction(false);
             return;
         }
@@ -255,10 +282,11 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                 }
             }
 
-            // Format the received quantities for the API - using transactionItemId instead of itemTypeId
+            // Format the received quantities for the API
             const receivedItems = selectedTransaction.items.map((item, index) => ({
-                transactionItemId: item.id, // Using the transaction item ID instead of item type ID
-                receivedQuantity: parseInt(receivedQuantities[index])
+                transactionItemId: item.id,
+                receivedQuantity: itemsNotReceived[index] ? 0 : parseInt(receivedQuantities[index]), // 0 if not received
+                itemNotReceived: itemsNotReceived[index] || false // NEW: Include not received flag
             }));
 
             const response = await fetch(`http://localhost:8080/api/v1/transactions/${selectedTransaction.id}/accept`, {
@@ -327,7 +355,6 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
 
     // Define table columns for DataTable
     const columns = [
-
         {
             header: 'SENDER',
             accessor: 'sender',
@@ -364,7 +391,6 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
 
     // Filterable columns for DataTable
     const filterableColumns = [
-
         {
             header: 'SENDER',
             accessor: 'sender',
@@ -543,14 +569,16 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                                                 </div>
                                             </div>
 
+                                            {/* Quantity Section */}
                                             <div className="quantity-section">
                                                 <div className="quantity-label">
-                                                    Sent/Received Quantity <span className="required-mark">*</span>
+                                                    Sent/Received Quantity {!itemsNotReceived[index] && <span className="required-mark">*</span>}
                                                     {item.itemType?.measuringUnit && (
                                                         <span className="quantity-unit"> ({item.itemType.measuringUnit})</span>
                                                     )}
                                                 </div>
-                                                <div className="quantity-controls">
+
+                                                <div className={`quantity-controls ${itemsNotReceived[index] ? 'disabled' : ''}`}>
                                                     <button
                                                         type="button"
                                                         className="decrement-btn"
@@ -558,17 +586,17 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                                                             const current = parseInt(receivedQuantities[index]) || 0;
                                                             handleItemQuantityChange(index, Math.max(0, current - 1));
                                                         }}
-                                                        disabled={processingAction || (parseInt(receivedQuantities[index]) || 0) <= 0}
+                                                        disabled={processingAction || itemsNotReceived[index] || (parseInt(receivedQuantities[index]) || 0) <= 0}
                                                     >
                                                         −
                                                     </button>
                                                     <input
                                                         type="text"
-                                                        value={receivedQuantities[index] || ""}
+                                                        value={itemsNotReceived[index] ? "" : (receivedQuantities[index] || "")}
                                                         onChange={(e) => handleItemQuantityChange(index, e.target.value)}
-                                                        placeholder="Enter quantity"
-                                                        required
-                                                        disabled={processingAction}
+                                                        placeholder={itemsNotReceived[index] ? "Not received" : "Enter quantity"}
+                                                        required={!itemsNotReceived[index]}
+                                                        disabled={processingAction || itemsNotReceived[index]}
                                                     />
                                                     <button
                                                         type="button"
@@ -577,10 +605,23 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                                                             const current = parseInt(receivedQuantities[index]) || 0;
                                                             handleItemQuantityChange(index, current + 1);
                                                         }}
-                                                        disabled={processingAction}
+                                                        disabled={processingAction || itemsNotReceived[index]}
                                                     >
                                                         +
                                                     </button>
+                                                </div>
+
+                                                {/* Checkbox below the quantity controls */}
+                                                <div className="item-not-received-section">
+                                                    <label className="item-not-received-checkbox">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={itemsNotReceived[index] || false}
+                                                            onChange={(e) => handleItemNotReceivedChange(index, e.target.checked)}
+                                                            disabled={processingAction}
+                                                        />
+                                                        <span className="checkbox-label">Item not sent/received</span>
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -622,11 +663,14 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                                 type="button"
                                 className="accept-button"
                                 onClick={handleAcceptTransaction}
-                                disabled={processingAction || selectedTransaction.items?.some((_, index) =>
-                                    receivedQuantities[index] === undefined ||
-                                    receivedQuantities[index] === "" ||
-                                    parseInt(receivedQuantities[index]) < 0
-                                )}
+                                disabled={processingAction || selectedTransaction.items?.some((_, index) => {
+                                    // If item is marked as not received, it's valid
+                                    if (itemsNotReceived[index]) return false;
+                                    // If not marked as not received, must have valid quantity
+                                    return receivedQuantities[index] === undefined ||
+                                        receivedQuantities[index] === "" ||
+                                        parseInt(receivedQuantities[index]) < 0;
+                                })}
                             >
                                 {processingAction ? "Processing..." : (
                                     <>

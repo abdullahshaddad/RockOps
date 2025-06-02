@@ -3,7 +3,7 @@ import DataTable from "../../../components/common/DataTable/DataTable.jsx"; // U
 import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx";
 import "./WarehouseViewItemTypesTable.scss";
 
-const WarehouseViewItemTypesTable = () => {
+const WarehouseViewItemTypesTable = ({ warehouseId, onAddButtonClick }) => {
     const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,6 +26,40 @@ const WarehouseViewItemTypesTable = () => {
     const [notificationType, setNotificationType] = useState('success');
 
     const [userRole, setUserRole] = useState("");
+
+    const openItemModal = (item = null) => {
+        if (item) {
+            setSelectedItem(item);
+            setNewItemType({
+                name: item.name,
+                itemCategory: item.itemCategory ? item.itemCategory.id : "",
+                minQuantity: item.minQuantity,
+                measuringUnit: item.measuringUnit,
+                serialNumber: item.serialNumber,
+                status: item.status,
+                comment: item.comment
+            });
+        } else {
+            setSelectedItem(null);
+            setNewItemType({
+                name: "",
+                itemCategory: "",
+                minQuantity: 0,
+                measuringUnit: "",
+                serialNumber: "",
+                status: "AVAILABLE",
+                comment: ""
+            });
+        }
+        setIsModalOpen(true);
+    };
+
+    // Register the add function with parent component
+    useEffect(() => {
+        if (onAddButtonClick) {
+            onAddButtonClick(openItemModal);
+        }
+    }, [onAddButtonClick]);
 
     // Fetch item types - updated to use global endpoint
     useEffect(() => {
@@ -309,33 +343,6 @@ const WarehouseViewItemTypesTable = () => {
         }
     };
 
-    const openItemModal = (item = null) => {
-        if (item) {
-            setSelectedItem(item);
-            setNewItemType({
-                name: item.name,
-                itemCategory: item.itemCategory ? item.itemCategory.id : "",
-                minQuantity: item.minQuantity,
-                measuringUnit: item.measuringUnit,
-                serialNumber: item.serialNumber,
-                status: item.status,
-                comment: item.comment
-            });
-        } else {
-            setSelectedItem(null);
-            setNewItemType({
-                name: "",
-                itemCategory: "",
-                minQuantity: 0,
-                measuringUnit: "",
-                serialNumber: "",
-                status: "AVAILABLE",
-                comment: ""
-            });
-        }
-        setIsModalOpen(true);
-    };
-
     const deleteItemType = async (id) => {
         try {
             const token = localStorage.getItem("token");
@@ -411,11 +418,10 @@ const WarehouseViewItemTypesTable = () => {
     };
 
     return (
-        <div className="warehouse-view">
+        <>
             {/* Header with count */}
             <div className="header-container">
                 <div className="left-section">
-                    <h1 className="page-title">Item Types</h1>
                     <div className="item-count">{tableData.length} items</div>
                 </div>
             </div>
@@ -435,15 +441,6 @@ const WarehouseViewItemTypesTable = () => {
                 defaultItemsPerPage={10}
                 actionsColumnWidth="160px"
             />
-
-            {/* Add button */}
-            {userRole === "WAREHOUSE_MANAGER" && (
-                <button className="add-button" onClick={() => openItemModal()}>
-                    <svg className="plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 5v14M5 12h14" />
-                    </svg>
-                </button>
-            )}
 
             {/* Modal */}
             {isModalOpen && (
@@ -536,8 +533,6 @@ const WarehouseViewItemTypesTable = () => {
                                         placeholder="Enter serial number "
                                     />
                                 </div>
-
-
                             </div>
 
                             <div className="form-row">
@@ -571,7 +566,7 @@ const WarehouseViewItemTypesTable = () => {
                 onClose={() => setShowNotification(false)}
                 duration={3000}
             />
-        </div>
+        </>
     );
 };
 
