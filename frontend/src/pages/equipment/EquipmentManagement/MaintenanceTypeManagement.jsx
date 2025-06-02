@@ -218,7 +218,7 @@ const MaintenanceTypeManagement = () => {
                     <p className="header-subtitle">Manage maintenance types that can be performed on equipment</p>
                 </div>
                 <button 
-                    className="equipment-types-add-button" 
+                    className="btn btn-primary"
                     onClick={() => handleOpenModal()}
                 >
                     <FaPlus /> Add Maintenance Type

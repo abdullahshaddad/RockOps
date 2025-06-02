@@ -304,7 +304,7 @@ const WorkTypeManagement = () => {
             <div className="equipment-types-header">
                 <h1>Work Types</h1>
                 <button
-                    className="equipment-types-add-button"
+                    className="btn btn-primary"
                     onClick={() => handleOpenModal()}
                 >
                     <FaPlus /> Add Work Type
