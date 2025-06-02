@@ -283,7 +283,7 @@ const WarehouseViewItemCategoriesTable = ({ warehouseId }) => {
   if (loading) {
     return (
       <div className="warehouse-view2">
-        <div className="page-header">
+        <div className="page-header-categories">
           <h1 className="page-title2">Item Categories</h1>
         </div>
         <div style={{ padding: '40px', textAlign: 'center' }}>

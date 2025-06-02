@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import "./WarehouseViewTransactions.scss";
-import PendingTransactionsTable from "./PendingTransactionsTable";
+import PendingTransactionsTable from "./PendingTransactions/PendingTransactionsTable.jsx";
 import ValidatedTransactionsTable from "./ValidatedTransactionsTable";
 import IncomingTransactionsTable from "./IncomingTransactionsTable";
 import Snackbar from "../../../components/common/Snackbar2/Snackbar2"; // Import the Snackbar component

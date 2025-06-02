@@ -5,7 +5,7 @@ import Sidebar from '../../components/common/Sidebar/Sidebar';
 import UserDashboard from './UserDashboard.jsx';
 import SiteAdminDashboard from './SiteAdminDashboard.jsx';
 import ProcurementDashboard from './ProcurementDashboard';
-import WarehouseManagerDashboard from './WarehouseManagerDashboard.jsx';
+import WarehouseDashboard from '../../pages/warehouse/WarehouseDashboard/WarehouseDashboard.jsx';
 import SecretaryDashboard from './SecretaryDashboard.jsx';
 import EquipmentManagerDashboard from './EquipmentManagerDashboard.jsx';
 import HRManagerDashboard from './HRManagerDashboard.jsx';
@@ -67,7 +67,7 @@ const DashboardPage = () => {
             case 'PROCUREMENT':
                 return <ProcurementDashboard/>;
             case 'WAREHOUSE_MANAGER':
-                return <WarehouseManagerDashboard/>;
+                return <WarehouseDashboard/>;
             case 'SECRETARY':
                 return <SecretaryDashboard/>;
             case 'EQUIPMENT_MANAGER':
