@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { BsCalendarCheck, BsClipboardData, BsClock } from 'react-icons/bs';
+import { BsCalendarCheck, BsClipboardData, BsClock, BsPersonCheck } from 'react-icons/bs';
 import MonthlyAttendanceView from './MonthlyAttendanceView';
 import DailyAttendanceView from './DailyAttendanceView';
 import HourlyAttendanceView from './HourlyAttendanceView';
+import ContractBasedAttendanceView from './ContractBasedAttendanceView';
 import './AttendanceManagement.scss';
 
 const AttendanceManagement = () => {
-    const [activeTab, setActiveTab] = useState('daily');
+    const [activeTab, setActiveTab] = useState('contract-based');
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -61,6 +62,8 @@ const AttendanceManagement = () => {
         }
 
         switch (activeTab) {
+            case 'contract-based':
+                return <ContractBasedAttendanceView employees={employees} />;
             case 'daily':
                 return <DailyAttendanceView employees={employees} />;
             case 'monthly':
@@ -68,7 +71,7 @@ const AttendanceManagement = () => {
             case 'hourly':
                 return <HourlyAttendanceView employees={employees} />;
             default:
-                return <DailyAttendanceView employees={employees} />;
+                return <ContractBasedAttendanceView employees={employees} />;
         }
     };
 
@@ -77,6 +80,12 @@ const AttendanceManagement = () => {
             <div className="attendance-header">
                 <h1>Attendance Management</h1>
                 <div className="attendance-tabs">
+                    <button
+                        className={`tab-btn ${activeTab === 'contract-based' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('contract-based')}
+                    >
+                        <BsPersonCheck /> Contract-Based Attendance
+                    </button>
                     <button
                         className={`tab-btn ${activeTab === 'daily' ? 'active' : ''}`}
                         onClick={() => setActiveTab('daily')}

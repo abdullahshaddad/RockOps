@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { BsCalendarWeek, BsClipboardCheck, BsFileEarmarkBarGraph, BsListCheck } from 'react-icons/bs';
+import { BsCalendarWeek, BsClipboardCheck, BsFileEarmarkBarGraph, BsListCheck, BsPersonCheck } from 'react-icons/bs';
 import AttendanceManagement from './AttendanceManagement';
 import AttendanceCalendar from './AttendanceCalendar';
-import AttendanceForm from './AttendanceForm';
 import AttendanceReport from './AttendanceReport';
 import './AttendancePage.scss';
 
@@ -66,8 +65,8 @@ const AttendancePage = () => {
                 return <AttendanceManagement employees={employees} />;
             case 'calendar':
                 return <AttendanceCalendar employees={employees} />;
-            case 'form':
-                return <AttendanceForm employees={employees} />;
+            case 'list':
+                return <AttendanceList employees={employees} />;
             case 'report':
                 return <AttendanceReport employees={employees} />;
             default:
@@ -75,13 +74,44 @@ const AttendancePage = () => {
         }
     };
 
+    // Get employee statistics for display
+    const getEmployeeStats = () => {
+        const hourlyCount = employees.filter(emp => emp.jobPosition?.contractType === 'HOURLY').length;
+        const dailyCount = employees.filter(emp => emp.jobPosition?.contractType === 'DAILY').length;
+        const monthlyCount = employees.filter(emp => emp.jobPosition?.contractType === 'MONTHLY').length;
+
+        return { hourlyCount, dailyCount, monthlyCount, total: employees.length };
+    };
+
+    const stats = getEmployeeStats();
+
     return (
         <div className="attendance-page">
             <div className="page-header">
                 <h1>Attendance Management System</h1>
                 <p className="description">
-                    Track and manage employee attendance, generate reports, and view attendance statistics
+                    Track and manage employee attendance across different contract types, generate reports, and view attendance statistics
                 </p>
+
+                {/* Employee Statistics */}
+                <div className="employee-stats">
+                    <div className="stat-item">
+                        <span className="stat-label">Total Employees:</span>
+                        <span className="stat-value">{stats.total}</span>
+                    </div>
+                    <div className="stat-item">
+                        <span className="stat-label">Hourly:</span>
+                        <span className="stat-value">{stats.hourlyCount}</span>
+                    </div>
+                    <div className="stat-item">
+                        <span className="stat-label">Daily:</span>
+                        <span className="stat-value">{stats.dailyCount}</span>
+                    </div>
+                    <div className="stat-item">
+                        <span className="stat-label">Monthly:</span>
+                        <span className="stat-value">{stats.monthlyCount}</span>
+                    </div>
+                </div>
             </div>
 
             <div className="nav-tabs">
@@ -89,7 +119,7 @@ const AttendancePage = () => {
                     className={`nav-tab ${activeView === 'management' ? 'active' : ''}`}
                     onClick={() => setActiveView('management')}
                 >
-                    <BsListCheck /> Attendance Management
+                    <BsPersonCheck /> Contract-Based Management
                 </button>
                 <button
                     className={`nav-tab ${activeView === 'calendar' ? 'active' : ''}`}
@@ -97,7 +127,12 @@ const AttendancePage = () => {
                 >
                     <BsCalendarWeek /> Calendar View
                 </button>
-
+                <button
+                    className={`nav-tab ${activeView === 'list' ? 'active' : ''}`}
+                    onClick={() => setActiveView('list')}
+                >
+                    <BsListCheck /> Attendance List
+                </button>
                 <button
                     className={`nav-tab ${activeView === 'report' ? 'active' : ''}`}
                     onClick={() => setActiveView('report')}
