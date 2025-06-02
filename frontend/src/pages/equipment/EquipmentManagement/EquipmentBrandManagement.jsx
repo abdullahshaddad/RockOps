@@ -188,7 +188,7 @@ const EquipmentBrandManagement = () => {
             <div className="equipment-types-header">
                 <h1>Equipment Brands</h1>
                 <button
-                    className="equipment-types-add-button"
+                    className="btn btn-primary"
                     onClick={() => handleOpenModal()}
                 >
                     <FaPlus /> Add Equipment Brand
