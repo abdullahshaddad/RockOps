@@ -86,6 +86,8 @@ public class TransactionController {
         return ResponseEntity.ok(transaction);
     }
 
+
+    // Warehouse Transaction Accept Method
     @PostMapping("/{transactionId}/accept")
     public ResponseEntity<Transaction> acceptTransaction(
             @PathVariable UUID transactionId,
@@ -101,6 +103,7 @@ public class TransactionController {
             }
 
             Map<UUID, Integer> receivedQuantities = new HashMap<>();
+            Map<UUID, Boolean> itemsNotReceived = new HashMap<>(); // NEW: Add this map
 
             for (Object itemObj : receivedItemsList) {
                 if (!(itemObj instanceof Map<?, ?> itemMap)) {
@@ -109,6 +112,7 @@ public class TransactionController {
 
                 Object idObj = itemMap.get("transactionItemId");
                 Object quantityObj = itemMap.get("receivedQuantity");
+                Object notReceivedObj = itemMap.get("itemNotReceived"); // NEW: Extract this
 
                 if (idObj == null || quantityObj == null) {
                     throw new IllegalArgumentException("Missing item data in receivedItems");
@@ -116,13 +120,16 @@ public class TransactionController {
 
                 UUID itemId = UUID.fromString(idObj.toString());
                 int receivedQuantity = Integer.parseInt(quantityObj.toString());
+                boolean itemNotReceived = notReceivedObj != null && Boolean.parseBoolean(notReceivedObj.toString()); // NEW: Parse boolean
 
                 receivedQuantities.put(itemId, receivedQuantity);
+                itemsNotReceived.put(itemId, itemNotReceived); // NEW: Add to map
             }
 
             Transaction transaction = transactionService.acceptTransaction(
                     transactionId,
                     receivedQuantities,
+                    itemsNotReceived, // NEW: Add this parameter
                     username,
                     acceptanceComment
             );

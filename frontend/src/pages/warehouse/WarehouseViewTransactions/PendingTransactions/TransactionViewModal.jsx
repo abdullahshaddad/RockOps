@@ -33,6 +33,9 @@ const TransactionViewModal = ({ transaction, isOpen, onClose, hideItemQuantities
         return `warehouse-transaction-view-status-badge ${status?.toLowerCase() || 'unknown'}`;
     };
 
+    // Check if there are any item rejection reasons
+    const hasItemRejections = transaction.items?.some(item => item.rejectionReason);
+
     return (
         <div className="warehouse-transaction-view-modal-overlay" onClick={onClose}>
             <div className="warehouse-transaction-view-modal" onClick={(e) => e.stopPropagation()}>
@@ -59,7 +62,6 @@ const TransactionViewModal = ({ transaction, isOpen, onClose, hideItemQuantities
                         </div>
 
                         <div className="warehouse-transaction-view-overview-grid">
-
                             <div className="warehouse-transaction-view-overview-item">
                                 <label>Batch Number</label>
                                 <span>{transaction.batchNumber || "N/A"}</span>
@@ -83,7 +85,6 @@ const TransactionViewModal = ({ transaction, isOpen, onClose, hideItemQuantities
                                 </div>
                                 <div className="warehouse-transaction-view-party-details">
                                     <div className="warehouse-transaction-view-party-name">{getEntityName(transaction.sender)}</div>
-
                                 </div>
                             </div>
 
@@ -101,7 +102,6 @@ const TransactionViewModal = ({ transaction, isOpen, onClose, hideItemQuantities
                                 </div>
                                 <div className="warehouse-transaction-view-party-details">
                                     <div className="warehouse-transaction-view-party-name">{getEntityName(transaction.receiver)}</div>
-
                                 </div>
                             </div>
                         </div>
@@ -128,6 +128,9 @@ const TransactionViewModal = ({ transaction, isOpen, onClose, hideItemQuantities
                                                 </div>
                                             )}
                                         </div>
+
+
+
                                     </div>
                                 ))}
                             </div>
@@ -142,43 +145,104 @@ const TransactionViewModal = ({ transaction, isOpen, onClose, hideItemQuantities
                     <div className="warehouse-transaction-view-timeline">
                         <h3>Transaction Timeline</h3>
                         <div className="warehouse-transaction-view-timeline-grid">
-                            <div className="warehouse-transaction-view-timeline-item">
-                                <label>Created At</label>
-                                <span>{formatDateTime(transaction.createdAt)}</span>
+                            <div className="warehouse-transaction-view-timeline-item created">
+                                <div className="timeline-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12,6 12,12 16,14"/>
+                                    </svg>
+                                </div>
+                                <div className="timeline-content">
+                                    <label>Created At</label>
+                                    <span>{formatDateTime(transaction.createdAt)}</span>
+                                </div>
                             </div>
-                            <div className="warehouse-transaction-view-timeline-item">
-                                <label>Created By</label>
-                                <span>{transaction.addedBy || "N/A"}</span>
+
+                            <div className="warehouse-transaction-view-timeline-item user">
+                                <div className="timeline-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                </div>
+                                <div className="timeline-content">
+                                    <label>Created By</label>
+                                    <span>{transaction.addedBy || "N/A"}</span>
+                                </div>
                             </div>
+
                             {transaction.completedAt && (
-                                <div className="warehouse-transaction-view-timeline-item">
-                                    <label>Completed At</label>
-                                    <span>{formatDateTime(transaction.completedAt)}</span>
+                                <div className="warehouse-transaction-view-timeline-item completed">
+                                    <div className="timeline-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polyline points="9,11 12,14 22,4"/>
+                                            <path d="M21,12v7a2,2 0 0,1 -2,2H5a2,2 0 0,1 -2,-2V5a2,2 0 0,1 2,-2h11"/>
+                                        </svg>
+                                    </div>
+                                    <div className="timeline-content">
+                                        <label>Completed At</label>
+                                        <span>{formatDateTime(transaction.completedAt)}</span>
+                                    </div>
                                 </div>
                             )}
+
                             {transaction.approvedBy && (
-                                <div className="warehouse-transaction-view-timeline-item">
-                                    <label>Completed By</label>
-                                    <span>{transaction.approvedBy}</span>
+                                <div className="warehouse-transaction-view-timeline-item completed">
+                                    <div className="timeline-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                            <circle cx="9" cy="7" r="4"/>
+                                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                        </svg>
+                                    </div>
+                                    <div className="timeline-content">
+                                        <label>Completed By</label>
+                                        <span>{transaction.approvedBy}</span>
+                                    </div>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Comments & Rejection Reason */}
-                    {(transaction.acceptanceComment || transaction.rejectionReason) && (
+                    {/* Comments & Rejection Reasons */}
+                    {(transaction.acceptanceComment || hasItemRejections) && (
                         <div className="warehouse-transaction-view-comments">
                             <h3>Comments & Notes</h3>
+
+                            {/* Transaction-level acceptance comment only */}
                             {transaction.acceptanceComment && (
                                 <div className="warehouse-transaction-view-comment-item warehouse-transaction-view-acceptance">
                                     <label>Acceptance Comment</label>
                                     <p>{transaction.acceptanceComment}</p>
                                 </div>
                             )}
-                            {transaction.rejectionReason && (
-                                <div className="warehouse-transaction-view-comment-item warehouse-transaction-view-rejection">
-                                    <label>Rejection Reason</label>
-                                    <p>{transaction.rejectionReason}</p>
+
+                            {/* Item-level rejection reasons */}
+                            {hasItemRejections && (
+                                <div className="warehouse-transaction-view-item-rejections">
+                                    <div className="warehouse-transaction-view-item-rejection-header">
+                                        Item Rejection Details
+                                    </div>
+                                    {transaction.items
+                                        .filter(item => item.rejectionReason)
+                                        .map((item, index) => (
+                                            <div key={index} className="warehouse-transaction-view-item-rejection-item">
+                                                <div className="item-rejection-header">
+                                                    <span className="item-name">
+                                                        {item.itemType?.name || "Unknown Item"}
+                                                    </span>
+                                                    {!hideItemQuantities && (
+                                                        <span className="item-quantity">
+                                                            Qty: {item.quantity}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="item-rejection-reason">
+                                                    {item.rejectionReason}
+                                                </p>
+                                            </div>
+                                        ))}
                                 </div>
                             )}
                         </div>
@@ -201,7 +265,6 @@ const TransactionViewModal = ({ transaction, isOpen, onClose, hideItemQuantities
 
                 {/* Modal Footer */}
                 <div className="warehouse-transaction-view-modal-footer">
-
                 </div>
             </div>
         </div>

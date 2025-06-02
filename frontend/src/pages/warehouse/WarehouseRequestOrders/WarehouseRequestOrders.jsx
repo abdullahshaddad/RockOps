@@ -567,9 +567,7 @@ const WarehouseRequestOrders = ({ warehouseId }) => {
 
     return (
         <div className="warehouse-request-orders-container">
-            <div className="request-orders-header">
-                <h1 className="request-orders-title">Request Orders</h1>
-            </div>
+
 
             {/* Pending Orders Section */}
             <div className="request-orders-section">
