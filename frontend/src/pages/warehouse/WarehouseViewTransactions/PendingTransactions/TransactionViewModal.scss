@@ -1,12 +1,13 @@
-/* TransactionViewModal.scss - Warehouse Transaction View Modal with specific class names */
+/* TransactionViewModal.scss - Completely rebuilt for Dark Mode Support */
 
+/* Warehouse Transaction View Modal */
 .warehouse-transaction-view-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--adv-table-filter);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,17 +17,18 @@
 }
 
 .warehouse-transaction-view-modal {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  background: var(--section-background-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   max-width: 900px;
   width: 100%;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: warehouseTransactionViewModalSlideIn 0.3s ease-out;
-  margin: auto; /* Center the modal */
+  animation: warehouseTransactionViewModalSlideIn var(--transition-normal) ease-out;
+  margin: auto;
+  border: 1px solid var(--border-color);
 
   @media (max-width: 768px) {
     max-width: 95vw;
@@ -52,28 +54,28 @@
   align-items: center;
   justify-content: space-between;
   padding: 24px 28px;
-  border-bottom: 1px solid #e5e7eb;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid var(--border-color-light);
+  background: var(--section-background-color);
 
   h2 {
     margin: 0;
     font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-primary);
   }
 
   .warehouse-transaction-view-close-button {
-    background: none;
-    border: none;
+    background: var(--color-surface);
+    border: 1px solid var(--border-color);
     padding: 8px;
     cursor: pointer;
-    border-radius: 6px;
-    color: #6b7280;
-    transition: all 0.2s ease;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast) ease;
 
     &:hover {
-      background-color: #fee2e2;
-      color: #dc2626;
+      background-color: var(--color-surface-hover);
+      color: var(--color-text-primary);
     }
 
     svg {
@@ -88,6 +90,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 28px;
+  background: var(--section-background-color);
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -95,16 +98,16 @@
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--color-surface);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: var(--border-color-dark);
     border-radius: 3px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: var(--color-text-secondary);
   }
 }
 
@@ -119,11 +122,11 @@
 
   h3 {
     font-size: 1.125rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-primary);
     margin: 0 0 16px 0;
     padding-bottom: 8px;
-    border-bottom: 2px solid #e5e7eb;
+    border-bottom: 2px solid var(--border-color-light);
   }
 }
 
@@ -148,16 +151,17 @@
 }
 
 .warehouse-transaction-view-overview-item {
-  background: #f8fafc;
+  background: var(--color-surface);
   padding: 16px;
-  border-radius: 8px;
-  border-left: 4px solid #3b82f6;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--color-primary);
+  border: 1px solid var(--border-color);
 
   label {
     display: block;
     font-size: 0.75rem;
-    font-weight: 600;
-    color: #6b7280;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 6px;
@@ -165,7 +169,7 @@
 
   span {
     font-size: 0.875rem;
-    color: #1f2937;
+    color: var(--color-text-primary);
     font-weight: 500;
     word-break: break-all;
   }
@@ -176,32 +180,33 @@
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: var(--bold-font-weight);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  border: 1px solid;
 
   &.pending {
-    background: #fef3c7;
-    color: #d97706;
-    border: 1px solid #f59e0b;
+    background: var(--color-warning);
+    color: var(--section-background-color);
+    border-color: var(--color-warning);
   }
 
   &.approved {
-    background: #d1fae5;
-    color: #059669;
-    border: 1px solid #10b981;
+    background: var(--color-success);
+    color: var(--section-background-color);
+    border-color: var(--color-success);
   }
 
   &.rejected {
-    background: #fee2e2;
-    color: #dc2626;
-    border: 1px solid #ef4444;
+    background: var(--color-danger);
+    color: var(--section-background-color);
+    border-color: var(--color-danger);
   }
 
   &.completed {
-    background: #dbeafe;
-    color: #2563eb;
-    border: 1px solid #3b82f6;
+    background: var(--color-primary);
+    color: var(--section-background-color);
+    border-color: var(--color-primary);
   }
 }
 
@@ -219,22 +224,23 @@
 }
 
 .warehouse-transaction-view-party-card {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 20px;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast) ease;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
+    background: var(--color-surface-hover);
   }
 
   &.warehouse-transaction-view-sender {
-    border-left: 4px solid #ef4444;
+    border-left: 4px solid var(--color-danger);
   }
 
   &.warehouse-transaction-view-receiver {
-    border-left: 4px solid #10b981;
+    border-left: 4px solid var(--color-success);
   }
 
   .warehouse-transaction-view-party-header {
@@ -246,33 +252,34 @@
     h4 {
       margin: 0;
       font-size: 0.875rem;
-      font-weight: 600;
-      color: #374151;
+      font-weight: var(--bold-font-weight);
+      color: var(--color-text-primary);
     }
 
     .warehouse-transaction-view-party-type {
-      background: #e5e7eb;
-      color: #4b5563;
+      background: var(--color-surface-secondary);
+      color: var(--color-text-secondary);
       padding: 4px 8px;
       border-radius: 12px;
       font-size: 0.625rem;
-      font-weight: 600;
+      font-weight: var(--bold-font-weight);
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      border: 1px solid var(--border-color);
     }
   }
 
   .warehouse-transaction-view-party-details {
     .warehouse-transaction-view-party-name {
       font-size: 1rem;
-      font-weight: 600;
-      color: #1f2937;
+      font-weight: var(--bold-font-weight);
+      color: var(--color-text-primary);
       margin-bottom: 4px;
     }
 
     .warehouse-transaction-view-party-id {
       font-size: 0.75rem;
-      color: #6b7280;
+      color: var(--color-text-secondary);
       font-family: 'Courier New', monospace;
     }
   }
@@ -285,7 +292,7 @@
   svg {
     width: 24px;
     height: 24px;
-    color: #6b7280;
+    color: var(--color-text-secondary);
   }
 
   @media (max-width: 768px) {
@@ -300,14 +307,15 @@
 }
 
 .warehouse-transaction-view-item-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 16px;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast) ease;
 
   &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-sm);
+    background: var(--color-surface-hover);
   }
 
   .warehouse-transaction-view-item-header {
@@ -319,17 +327,17 @@
     h4 {
       margin: 0;
       font-size: 0.95rem;
-      font-weight: 600;
-      color: #1f2937;
+      font-weight: var(--bold-font-weight);
+      color: var(--color-text-primary);
     }
 
     .warehouse-transaction-view-item-quantity {
-      background: #3b82f6;
-      color: white;
+      background: var(--color-primary);
+      color: var(--section-background-color);
       padding: 4px 10px;
       border-radius: 12px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: var(--bold-font-weight);
     }
   }
 
@@ -343,8 +351,8 @@
     label {
       display: block;
       font-size: 0.65rem;
-      font-weight: 600;
-      color: #6b7280;
+      font-weight: var(--bold-font-weight);
+      color: var(--color-text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 4px;
@@ -352,7 +360,7 @@
 
     span {
       font-size: 0.8rem;
-      color: #374151;
+      color: var(--color-text-primary);
       font-family: 'Courier New', monospace;
     }
   }
@@ -361,7 +369,7 @@
 .warehouse-transaction-view-no-items {
   text-align: center;
   padding: 40px 20px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 
   p {
     margin: 0;
@@ -377,16 +385,17 @@
 }
 
 .warehouse-transaction-view-timeline-item {
-  background: #f1f5f9;
+  background: var(--color-surface);
   padding: 14px;
-  border-radius: 6px;
-  border-left: 3px solid #3b82f6;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-primary);
+  border: 1px solid var(--border-color);
 
   label {
     display: block;
     font-size: 0.7rem;
-    font-weight: 600;
-    color: #4b5563;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 6px;
@@ -394,7 +403,7 @@
 
   span {
     font-size: 0.85rem;
-    color: #1f2937;
+    color: var(--color-text-primary);
     font-weight: 500;
   }
 }
@@ -403,24 +412,44 @@
 .warehouse-transaction-view-comment-item {
   margin-bottom: 16px;
   padding: 16px;
-  border-radius: 8px;
-  border-left: 4px solid #e5e7eb;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--border-color-light);
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
 
   &.warehouse-transaction-view-acceptance {
-    background: #f0fdf4;
-    border-left-color: #10b981;
+    background: var(--color-success);
+    border-left-color: var(--color-success);
+    border-color: var(--color-success);
+
+    label {
+      color: var(--section-background-color);
+    }
+
+    p {
+      color: var(--section-background-color);
+    }
   }
 
   &.warehouse-transaction-view-rejection {
-    background: #fef2f2;
-    border-left-color: #ef4444;
+    background: var(--color-danger);
+    border-left-color: var(--color-danger);
+    border-color: var(--color-danger);
+
+    label {
+      color: var(--section-background-color);
+    }
+
+    p {
+      color: var(--section-background-color);
+    }
   }
 
   label {
     display: block;
     font-size: 0.75rem;
-    font-weight: 600;
-    color: #4b5563;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 8px;
@@ -429,7 +458,7 @@
   p {
     margin: 0;
     font-size: 0.875rem;
-    color: #1f2937;
+    color: var(--color-text-primary);
     line-height: 1.5;
   }
 }
@@ -442,16 +471,17 @@
 }
 
 .warehouse-transaction-view-maintenance-item {
-  background: #fef7ff;
+  background: var(--color-surface);
   padding: 14px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border-left: 3px solid #a855f7;
+  border: 1px solid var(--border-color);
 
   label {
     display: block;
     font-size: 0.7rem;
-    font-weight: 600;
-    color: #7c3aed;
+    font-weight: var(--bold-font-weight);
+    color: #a855f7;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 6px;
@@ -459,7 +489,7 @@
 
   span {
     font-size: 0.85rem;
-    color: #1f2937;
+    color: var(--color-text-primary);
     font-weight: 500;
   }
 }
@@ -467,28 +497,30 @@
 /* Modal Footer */
 .warehouse-transaction-view-modal-footer {
   padding: 20px 28px;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-top: 1px solid var(--border-color-light);
+  background: var(--section-background-color);
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 
   .warehouse-transaction-view-close-btn {
-    background: #6b7280;
-    color: white;
-    border: none;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--border-color);
     padding: 10px 20px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-fast) ease;
 
     &:hover {
-      background: #4b5563;
+      background: var(--color-surface-hover);
     }
   }
-}/* TransactionViewModal.scss */
+}
+
+/* Regular Transaction Modal - Same styling with different class names */
 
 .transaction-view-modal-overlay {
   position: fixed;
@@ -496,7 +528,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--adv-table-filter);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -506,16 +538,17 @@
 }
 
 .transaction-view-modal {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  background: var(--section-background-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   max-width: 900px;
   width: 100%;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: modalSlideIn 0.3s ease-out;
+  animation: modalSlideIn var(--transition-normal) ease-out;
+  border: 1px solid var(--border-color);
 
   @media (max-width: 768px) {
     max-width: 95vw;
@@ -541,28 +574,28 @@
   align-items: center;
   justify-content: space-between;
   padding: 24px 28px;
-  border-bottom: 1px solid #e5e7eb;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid var(--border-color-light);
+  background: var(--section-background-color);
 
   h2 {
     margin: 0;
     font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-primary);
   }
 
   .close-button {
-    background: none;
-    border: none;
+    background: var(--color-surface);
+    border: 1px solid var(--border-color);
     padding: 8px;
     cursor: pointer;
-    border-radius: 6px;
-    color: #6b7280;
-    transition: all 0.2s ease;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast) ease;
 
     &:hover {
-      background-color: #fee2e2;
-      color: #dc2626;
+      background-color: var(--color-surface-hover);
+      color: var(--color-text-primary);
     }
 
     svg {
@@ -577,6 +610,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 28px;
+  background: var(--section-background-color);
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -584,16 +618,16 @@
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--color-surface);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: var(--border-color-dark);
     border-radius: 3px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: var(--color-text-secondary);
   }
 }
 
@@ -608,11 +642,11 @@
 
   h3 {
     font-size: 1.125rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-primary);
     margin: 0 0 16px 0;
     padding-bottom: 8px;
-    border-bottom: 2px solid #e5e7eb;
+    border-bottom: 2px solid var(--border-color-light);
   }
 }
 
@@ -637,16 +671,17 @@
 }
 
 .overview-item {
-  background: #f8fafc;
+  background: var(--color-surface);
   padding: 16px;
-  border-radius: 8px;
-  border-left: 4px solid #3b82f6;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--color-primary);
+  border: 1px solid var(--border-color);
 
   label {
     display: block;
     font-size: 0.75rem;
-    font-weight: 600;
-    color: #6b7280;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 6px;
@@ -654,7 +689,7 @@
 
   span {
     font-size: 0.875rem;
-    color: #1f2937;
+    color: var(--color-text-primary);
     font-weight: 500;
     word-break: break-all;
   }
@@ -665,32 +700,33 @@
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: var(--bold-font-weight);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  border: 1px solid;
 
   &.pending {
-    background: #fef3c7;
-    color: #d97706;
-    border: 1px solid #f59e0b;
+    background: var(--color-warning);
+    color: var(--section-background-color);
+    border-color: var(--color-warning);
   }
 
   &.approved {
-    background: #d1fae5;
-    color: #059669;
-    border: 1px solid #10b981;
+    background: var(--color-success);
+    color: var(--section-background-color);
+    border-color: var(--color-success);
   }
 
   &.rejected {
-    background: #fee2e2;
-    color: #dc2626;
-    border: 1px solid #ef4444;
+    background: var(--color-danger);
+    color: var(--section-background-color);
+    border-color: var(--color-danger);
   }
 
   &.completed {
-    background: #dbeafe;
-    color: #2563eb;
-    border: 1px solid #3b82f6;
+    background: var(--color-primary);
+    color: var(--section-background-color);
+    border-color: var(--color-primary);
   }
 }
 
@@ -708,22 +744,23 @@
 }
 
 .party-card {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 20px;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast) ease;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
+    background: var(--color-surface-hover);
   }
 
   &.sender {
-    border-left: 4px solid #ef4444;
+    border-left: 4px solid var(--color-danger);
   }
 
   &.receiver {
-    border-left: 4px solid #10b981;
+    border-left: 4px solid var(--color-success);
   }
 
   .party-header {
@@ -735,33 +772,34 @@
     h4 {
       margin: 0;
       font-size: 0.875rem;
-      font-weight: 600;
-      color: #374151;
+      font-weight: var(--bold-font-weight);
+      color: var(--color-text-primary);
     }
 
     .party-type {
-      background: #e5e7eb;
-      color: #4b5563;
+      background: var(--color-surface-secondary);
+      color: var(--color-text-secondary);
       padding: 4px 8px;
       border-radius: 12px;
       font-size: 0.625rem;
-      font-weight: 600;
+      font-weight: var(--bold-font-weight);
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      border: 1px solid var(--border-color);
     }
   }
 
   .party-details {
     .party-name {
       font-size: 1rem;
-      font-weight: 600;
-      color: #1f2937;
+      font-weight: var(--bold-font-weight);
+      color: var(--color-text-primary);
       margin-bottom: 4px;
     }
 
     .party-id {
       font-size: 0.75rem;
-      color: #6b7280;
+      color: var(--color-text-secondary);
       font-family: 'Courier New', monospace;
     }
   }
@@ -774,7 +812,7 @@
   svg {
     width: 24px;
     height: 24px;
-    color: #6b7280;
+    color: var(--color-text-secondary);
   }
 
   @media (max-width: 768px) {
@@ -789,14 +827,15 @@
 }
 
 .item-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 16px;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast) ease;
 
   &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-sm);
+    background: var(--color-surface-hover);
   }
 
   .item-header {
@@ -808,17 +847,17 @@
     h4 {
       margin: 0;
       font-size: 0.95rem;
-      font-weight: 600;
-      color: #1f2937;
+      font-weight: var(--bold-font-weight);
+      color: var(--color-text-primary);
     }
 
     .item-quantity {
-      background: #3b82f6;
-      color: white;
+      background: var(--color-primary);
+      color: var(--section-background-color);
       padding: 4px 10px;
       border-radius: 12px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: var(--bold-font-weight);
     }
   }
 
@@ -832,8 +871,8 @@
     label {
       display: block;
       font-size: 0.65rem;
-      font-weight: 600;
-      color: #6b7280;
+      font-weight: var(--bold-font-weight);
+      color: var(--color-text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 4px;
@@ -841,7 +880,7 @@
 
     span {
       font-size: 0.8rem;
-      color: #374151;
+      color: var(--color-text-primary);
       font-family: 'Courier New', monospace;
     }
   }
@@ -850,7 +889,7 @@
 .no-items {
   text-align: center;
   padding: 40px 20px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 
   p {
     margin: 0;
@@ -866,16 +905,17 @@
 }
 
 .timeline-item {
-  background: #f1f5f9;
+  background: var(--color-surface);
   padding: 14px;
-  border-radius: 6px;
-  border-left: 3px solid #3b82f6;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-primary);
+  border: 1px solid var(--border-color);
 
   label {
     display: block;
     font-size: 0.7rem;
-    font-weight: 600;
-    color: #4b5563;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 6px;
@@ -883,7 +923,7 @@
 
   span {
     font-size: 0.85rem;
-    color: #1f2937;
+    color: var(--color-text-primary);
     font-weight: 500;
   }
 }
@@ -892,24 +932,44 @@
 .comment-item {
   margin-bottom: 16px;
   padding: 16px;
-  border-radius: 8px;
-  border-left: 4px solid #e5e7eb;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--border-color-light);
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
 
   &.acceptance {
-    background: #f0fdf4;
-    border-left-color: #10b981;
+    background: var(--color-success);
+    border-left-color: var(--color-success);
+    border-color: var(--color-success);
+
+    label {
+      color: var(--section-background-color);
+    }
+
+    p {
+      color: var(--section-background-color);
+    }
   }
 
   &.rejection {
-    background: #fef2f2;
-    border-left-color: #ef4444;
+    background: var(--color-danger);
+    border-left-color: var(--color-danger);
+    border-color: var(--color-danger);
+
+    label {
+      color: var(--section-background-color);
+    }
+
+    p {
+      color: var(--section-background-color);
+    }
   }
 
   label {
     display: block;
     font-size: 0.75rem;
-    font-weight: 600;
-    color: #4b5563;
+    font-weight: var(--bold-font-weight);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 8px;
@@ -918,7 +978,7 @@
   p {
     margin: 0;
     font-size: 0.875rem;
-    color: #1f2937;
+    color: var(--color-text-primary);
     line-height: 1.5;
   }
 }
@@ -931,16 +991,17 @@
 }
 
 .maintenance-item {
-  background: #fef7ff;
+  background: var(--color-surface);
   padding: 14px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border-left: 3px solid #a855f7;
+  border: 1px solid var(--border-color);
 
   label {
     display: block;
     font-size: 0.7rem;
-    font-weight: 600;
-    color: #7c3aed;
+    font-weight: var(--bold-font-weight);
+    color: #a855f7;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 6px;
@@ -948,7 +1009,7 @@
 
   span {
     font-size: 0.85rem;
-    color: #1f2937;
+    color: var(--color-text-primary);
     font-weight: 500;
   }
 }
@@ -956,25 +1017,25 @@
 /* Modal Footer */
 .modal-footer {
   padding: 20px 28px;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-top: 1px solid var(--border-color-light);
+  background: var(--section-background-color);
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 
   .close-btn {
-    background: #6b7280;
-    color: white;
-    border: none;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--border-color);
     padding: 10px 20px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-fast) ease;
 
     &:hover {
-      background: #4b5563;
+      background: var(--color-surface-hover);
     }
   }
 }

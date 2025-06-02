@@ -40,8 +40,8 @@ export const SnackbarProvider = ({ children }) => {
     const showError = useCallback((message, duration) =>
         showSnackbar(message, 'error', duration), [showSnackbar]);
 
-    const showInfo = useCallback((message, duration) =>
-        showSnackbar(message, 'info', duration), [showSnackbar]);
+    const showInfo = useCallback((message, duration, persistent = false) =>
+        showSnackbar(message, 'info', duration, persistent), [showSnackbar]);
 
     const showWarning = useCallback((message, duration, persistent = false) =>
         showSnackbar(message, 'warning', duration, persistent), [showSnackbar]);
