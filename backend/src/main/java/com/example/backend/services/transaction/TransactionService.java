@@ -361,7 +361,7 @@ public class TransactionService {
             System.out.println("✅ Transaction ACCEPTED - Inventory reflects reality");
         } else {
             transaction.setStatus(TransactionStatus.REJECTED);
-            transaction.setRejectionReason("Quantity mismatches detected - inventory updated to reflect actual transfers");
+            transaction.setRejectionReason("Quantity mismatches detected - Resolve issue in the Inventory");
             System.out.println("❌ Transaction REJECTED - But inventory updated to reflect reality");
         }
 

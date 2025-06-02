@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./WarehouseViewTransactions.scss";
 import "./AcceptRejectModal.scss";
-import DataTable from "../../../components/common/DataTable/DataTable.jsx"; // Updated import
+import TransactionViewModal from "./PendingTransactions/TransactionViewModal.jsx"; // Add this import
+import DataTable from "../../../components/common/DataTable/DataTable.jsx";
 import Snackbar from "../../../components/common/Snackbar2/Snackbar2.jsx";
 
 const IncomingTransactionsTable = ({ warehouseId }) => {
@@ -9,7 +10,9 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
     const [pendingTransactions, setPendingTransactions] = useState([]);
     const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false); // Add this state
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [viewTransaction, setViewTransaction] = useState(null); // Add this state
     const [receivedQuantities, setReceivedQuantities] = useState({});
     const [rejectionReason, setRejectionReason] = useState("");
     const [comments, setComments] = useState("");
@@ -198,6 +201,18 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
         setIsRejectModalOpen(true);
     };
 
+    // Function to handle opening the view modal
+    const handleOpenViewModal = (transaction) => {
+        setViewTransaction(transaction);
+        setIsViewModalOpen(true);
+    };
+
+    // Function to close the view modal
+    const handleCloseViewModal = () => {
+        setIsViewModalOpen(false);
+        setViewTransaction(null);
+    };
+
     // Handle item quantity change
     const handleItemQuantityChange = (index, value) => {
         setReceivedQuantities(prev => ({
@@ -312,14 +327,7 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
 
     // Define table columns for DataTable
     const columns = [
-        {
-            header: 'ITEMS',
-            accessor: 'items',
-            sortable: true,
-            width: '200px',
-            minWidth: '120px',
-            render: (row) => row.items?.length || 0
-        },
+
         {
             header: 'SENDER',
             accessor: 'sender',
@@ -351,44 +359,12 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
             width: '200px',
             minWidth: '150px',
             render: (row) => formatDate(row.transactionDate)
-        },
-        {
-            header: 'CREATED AT',
-            accessor: 'createdAt',
-            sortable: true,
-            width: '200px',
-            minWidth: '150px',
-            render: (row) => formatDateTime(row.createdAt)
-        },
-        {
-            header: 'CREATED BY',
-            accessor: 'addedBy',
-            sortable: true,
-            width: '200px',
-            minWidth: '120px',
-            render: (row) => row.addedBy || "N/A"
-        },
-        {
-            header: 'STATUS',
-            accessor: 'status',
-            sortable: true,
-            width: '200px',
-            minWidth: '100px',
-            render: (row) => (
-                <span className={`status-badge3 ${row.status?.toLowerCase()}`}>
-                    {row.status}
-                </span>
-            )
         }
     ];
 
     // Filterable columns for DataTable
     const filterableColumns = [
-        {
-            header: 'ITEMS',
-            accessor: 'items',
-            filterType: 'number'
-        },
+
         {
             header: 'SENDER',
             accessor: 'sender',
@@ -408,21 +384,22 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
             header: 'TRANSACTION DATE',
             accessor: 'transactionDate',
             filterType: 'text'
-        },
-        {
-            header: 'CREATED AT',
-            accessor: 'createdAt',
-            filterType: 'text'
-        },
-        {
-            header: 'CREATED BY',
-            accessor: 'addedBy',
-            filterType: 'text'
         }
     ];
 
-    // Actions array for DataTable
+    // Actions array for DataTable - Updated with View button
     const actions = [
+        {
+            label: 'View',
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                </svg>
+            ),
+            className: 'view',
+            onClick: (row) => handleOpenViewModal(row)
+        },
         {
             label: 'Accept',
             icon: (
@@ -430,7 +407,7 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                     <path d="M5 13l4 4L19 7"/>
                 </svg>
             ),
-            className: 'accept-button3',
+            className: 'approve',
             onClick: (row) => openAcceptModal(row)
         }
     ];
@@ -463,6 +440,16 @@ const IncomingTransactionsTable = ({ warehouseId }) => {
                 defaultItemsPerPage={10}
                 actionsColumnWidth="200px"
             />
+
+            {/* View Transaction Modal */}
+            {isViewModalOpen && viewTransaction && (
+                <TransactionViewModal
+                    transaction={viewTransaction}
+                    isOpen={isViewModalOpen}
+                    onClose={handleCloseViewModal}
+                    hideItemQuantities={true}
+                />
+            )}
 
             {/* Modal for accepting transaction with multiple items */}
             {isAcceptModalOpen && selectedTransaction && (

@@ -138,7 +138,7 @@ const WarehouseDetails = () => {
   return (
       <Fragment>
         <div className="WarehouseDetailsContainer">
-          <h1 className="SectionHeaderLabel">Warehouse Details</h1>
+
 
           <div className="warehouse-card">
             <div className="left-side">
