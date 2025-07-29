@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./MerchantDetails.scss";
-import { merchantService } from '../../../services/merchantService';
+import { merchantService } from '../../../services/merchant/merchantService';
 
 const MerchantDetails = () => {
     const { id } = useParams();
