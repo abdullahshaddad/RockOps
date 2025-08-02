@@ -29,6 +29,7 @@ public class EquipmentUpdateDTO {
     private Double shipping;
     private Double customs;
     private Double taxes;
+
     private EquipmentStatus status;
     private String relatedDocuments;
     private Integer workedHours;
